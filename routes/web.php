@@ -16,6 +16,11 @@ Route::get('/profil', function () {
     return view('pages.public.profil');
 });
 
+// Rute untuk Halaman Visi & Misi
+Route::get('/visi-misi', function () {
+    return view('pages.public.visi-misi');
+});
+
 
 // ==============================
 // RUTE AUTENTIKASI & ADMIN
@@ -26,13 +31,8 @@ Route::get('/login', function () {
     return view('auth.login');
 });
 
-// Route sementara untuk melihat kerangka Dashboard Admin
+// Route untuk Dashboard Admin
 Route::get('/admin/dashboard', function () {
-    // Memanggil layout admin dengan konten placeholder sementara
-    return view('components.layouts.admin')->with('slot', '
-        <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Selamat Datang di Dashboard</h2>
-            <p class="text-gray-500">Konten widget dan statistik akan dirakit di halaman ini pada langkah selanjutnya.</p>
-        </div>
-    ');
+    // Memanggil view yang sesuai dengan struktur folder: pages > admin > dashboard > index.blade.php
+    return view('pages.admin.dashboard.index');
 });
