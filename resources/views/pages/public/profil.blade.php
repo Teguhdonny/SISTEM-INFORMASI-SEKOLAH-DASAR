@@ -65,9 +65,11 @@
                     </div>
                 </div>
 
-                <!-- Kotak 2: Visi, Misi & Nilai Sekolah -->
+                <!-- Kotak 2: Visi, Misi & Nilai Sekolah (Kini Boleh Diklik) -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    
+                    <!-- Kad Visi (Diubah menjadi tag <a>) -->
+                    <a href="/visi-misi" class="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 relative overflow-hidden hover:shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer" data-aos="fade-up" data-aos-delay="100">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
                                 <i class="fas fa-bullseye"></i>
@@ -75,9 +77,10 @@
                             <h3 class="font-bold text-blue-900">Visi Sekolah</h3>
                         </div>
                         <p class="text-gray-600 text-sm italic">"Terwujudnya peserta didik yang beriman, berilmu, berkarakter, dan berprestasi."</p>
-                    </div>
+                    </a>
 
-                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 relative overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <!-- Kad Misi (Diubah menjadi tag <a>) -->
+                    <a href="/visi-misi" class="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 relative overflow-hidden hover:shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer" data-aos="fade-up" data-aos-delay="200">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center">
                                 <i class="fas fa-list-ol"></i>
@@ -88,9 +91,10 @@
                             <li class="flex gap-2"><span class="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shrink-0">1</span> Meningkatkan kualitas pembelajaran...</li>
                             <li class="flex gap-2"><span class="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shrink-0">2</span> Menumbuhkan sikap religius...</li>
                         </ul>
-                    </div>
+                    </a>
 
-                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 relative overflow-hidden" data-aos="fade-up" data-aos-delay="300">
+                    <!-- Kad Nilai-Nilai (Diubah menjadi tag <a>) -->
+                    <a href="/visi-misi" class="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 relative overflow-hidden hover:shadow-md hover:-translate-y-1 transition duration-300 cursor-pointer" data-aos="fade-up" data-aos-delay="300">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="w-10 h-10 bg-green-100 text-green-700 rounded-full flex items-center justify-center">
                                 <i class="fas fa-leaf"></i>
@@ -103,7 +107,8 @@
                             <li class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i> Tanggung Jawab</li>
                             <li class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i> Peduli</li>
                         </ul>
-                    </div>
+                    </a>
+
                 </div>
 
             </div>
