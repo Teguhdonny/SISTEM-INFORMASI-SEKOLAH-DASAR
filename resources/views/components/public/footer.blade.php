@@ -5,7 +5,7 @@
             <div class="flex items-center gap-3 mb-4">
                 <i class="fas fa-home text-2xl"></i>
                 <h3 class="font-bold text-lg">Informasi Sekolah</h3>
-            </div>
+            </div>x
             <p class="text-sm text-blue-200">SDN Pojok 2 Kota Kediri siap memberikan pelayanan terbaik untuk seluruh siswa, orang tua, dan masyarakat.</p>
             <button class="mt-4 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-700">Hubungi Kami &rarr;</button>
         </div>
