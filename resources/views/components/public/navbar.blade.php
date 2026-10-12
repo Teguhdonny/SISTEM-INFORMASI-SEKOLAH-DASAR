@@ -17,15 +17,11 @@
             <div class="hidden lg:flex items-center space-x-6 text-sm font-semibold text-gray-600">
                 <a href="/" class="{{ request()->is('/') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Beranda</a>
                 <a href="/profil" class="{{ request()->is('profil') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Profil Sekolah</a>
-                
-                <!-- Pautan Visi & Misi yang Diaktifkan -->
                 <a href="/visi-misi" class="{{ request()->is('visi-misi') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Visi & Misi</a>
-                
-                <!-- Menu lainnya (akan diaktifkan pada sprint berikutnya) -->
-                <a href="#" class="hover:text-red-600 transition">Daftar Guru</a>
-                <a href="#" class="hover:text-red-600 transition">Ekstrakurikuler</a>
-                <a href="#" class="hover:text-red-600 transition">Program Sekolah</a>
-                <a href="#" class="hover:text-red-600 transition">Registrasi Daftar Ulang</a>
+                <a href="/daftar-guru" class="{{ request()->is('daftar-guru') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Daftar Guru</a>
+                <a href="/ekstrakurikuler" class="{{ request()->is('ekstrakurikuler') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Ekstrakurikuler</a>
+                <a href="/program-sekolah" class="{{ request()->is('program-sekolah') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Program Sekolah</a>
+                <a href="/registrasi-daftar-ulang" class="{{ request()->is('registrasi-daftar-ulang') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Registrasi Daftar Ulang</a>
             </div>
 
             <!-- Bagian Kanan: Pencarian & Tombol Log Masuk -->
