@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\PendaftaranWebController;
-
+use App\Models\Guru;
+use Illuminate\Support\Facades\Route;
 
 // ==============================
 // RUTE PUBLIK (Sesuai Navbar Website)
@@ -10,7 +11,7 @@ use App\Http\Controllers\PendaftaranWebController;
 
 // Rute untuk Halaman Beranda
 Route::get('/', function () {
-    return view('pages.public.home'); 
+    return view('pages.public.home');
 });
 
 // Rute untuk Halaman Profil Sekolah
@@ -25,8 +26,10 @@ Route::get('/visi-misi', function () {
 
 // Rute untuk Halaman Daftar Guru
 Route::get('/daftar-guru', function () {
-    return view('pages.public.guru');
-});
+    $guru = Guru::query()->orderBy('nama')->paginate(12);
+
+    return view('pages.public.guru', compact('guru'));
+})->name('guru.public.index');
 
 // Rute untuk Halaman Ekstrakurikuler
 Route::get('/ekstrakurikuler', function () {
@@ -42,7 +45,6 @@ Route::get('/program-sekolah', function () {
 Route::get('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'create']);
 Route::post('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'store']);
 
-
 // ==============================
 // RUTE AUTENTIKASI & ADMIN
 // ==============================
@@ -57,6 +59,8 @@ Route::get('/admin/dashboard', function () {
     return view('pages.admin.dashboard.index');
 });
 
+Route::resource('/admin/guru', GuruController::class)->names('admin.guru');
+
 // Route Tambahan Panel Admin (Menu Sidebar Admin PPDB & Galeri)
 Route::get('/admin/pendaftaran', [PendaftaranWebController::class, 'adminIndex']);
 
@@ -66,11 +70,10 @@ Route::get('/admin/galeri', function () {
 
 Route::get('/admin/ekstrakurikuler', function () {
     return view('pages.admin.ekstrakurikuler.index');
-    
+
 });
 
 // Tambahkan di dalam fail routes/web.php
-
 
 Route::get('/admin/pendaftaran', [PendaftaranWebController::class, 'adminIndex']);
 Route::post('/admin/pendaftaran/{id}/status', [PendaftaranWebController::class, 'updateStatus']);

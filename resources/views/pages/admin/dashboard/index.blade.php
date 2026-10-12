@@ -142,7 +142,7 @@
                     <div class="w-10 h-10 bg-red-100 text-red-600 group-hover:bg-red-600 group-hover:text-white transition rounded-lg flex items-center justify-center mb-3 shadow-sm"><i class="fas fa-edit"></i></div>
                     <span class="text-xs font-semibold text-gray-600">Tambah Berita</span>
                 </a>
-                <a href="#" class="flex flex-col items-center justify-center py-4 bg-gray-50 hover:bg-blue-50 hover:border-blue-100 rounded-xl border border-gray-100 transition group">
+                <a href="{{ route('admin.guru.index') }}" class="flex flex-col items-center justify-center py-4 bg-gray-50 hover:bg-blue-50 hover:border-blue-100 rounded-xl border border-gray-100 transition group">
                     <div class="w-10 h-10 bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition rounded-lg flex items-center justify-center mb-3 shadow-sm"><i class="fas fa-users"></i></div>
                     <span class="text-xs font-semibold text-gray-600">Kelola Guru</span>
                 </a>

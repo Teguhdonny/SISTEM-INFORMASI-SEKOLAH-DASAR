@@ -23,7 +23,7 @@
             <i class="fas fa-building w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Profil Sekolah</span>
         </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+        <a href="{{ route('admin.guru.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/guru*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-users w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Guru & Staff</span>
         </a>
