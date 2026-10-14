@@ -40,7 +40,7 @@ class PendaftaranController extends Controller
             'file_kk' => 'nullable',
         ]);
 
-        // Simpan data utama siswa (tambahkan tanggal_lahir jika kolomnya ada di tabel siswa_ppdb)
+        // Simpan data utama siswa
         $siswa = SiswaPpdb::create([
             'no_pendaftaran' => $request->no_pendaftaran,
             'nisn' => $request->nisn,
@@ -55,12 +55,16 @@ class PendaftaranController extends Controller
         $fileAktaPath = null;
         if ($request->hasFile('file_akta')) {
             $fileAktaPath = $request->file('file_akta')->store('dokumen_ppdb', 'public');
+        } elseif ($request->filled('file_akta')) {
+            $fileAktaPath = $request->input('file_akta'); // Menangani string URL/path jika dikirim langsung
         }
 
         // Jika ada upload file KK dari Android
         $fileKkPath = null;
         if ($request->hasFile('file_kk')) {
             $fileKkPath = $request->file('file_kk')->store('dokumen_ppdb', 'public');
+        } elseif ($request->filled('file_kk')) {
+            $fileKkPath = $request->input('file_kk'); // Menangani string URL/path jika dikirim langsung
         }
 
         // Simpan data relasi daftar ulang / berkas
@@ -77,7 +81,7 @@ class PendaftaranController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pendaftaran berhasil dikirim dan tersimpan di database web!',
-            'data' => $siswa,
+            'data' => $siswa->load('daftarUlang'),
         ], 200); 
     }
 
@@ -124,5 +128,35 @@ class PendaftaranController extends Controller
             'success' => true,
             'message' => 'Data pendaftaran berhasil dihapus!',
         ], 200);
+    }
+
+    public function validasi(Request $request, $id)
+    {
+        try {
+            // 1. GUNAKAN SiswaPpdb (sesuai nama model Anda) dan relasi daftarUlang
+            $siswa = SiswaPpdb::with('daftarUlang')->findOrFail($id);
+
+            // 2. Pastikan relasi daftarUlang ada
+            if ($siswa->daftarUlang) {
+                $siswa->daftarUlang->update([
+                    'status' => $request->status 
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Status berhasil diperbarui',
+                    'data'    => $siswa->daftarUlang
+                ]);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Data daftar ulang tidak ditemukan'], 404);
+
+        } catch (\Exception $e) {
+            // Jika ada error, Laravel akan mengirimkan pesan teknisnya ke Android
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan server: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
