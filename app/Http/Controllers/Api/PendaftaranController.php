@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class PendaftaranController extends Controller
 {
-    // 1. READ: Mengambil semua data pendaftar (untuk ditampilkan di list Android)
+    // Mengambil semua data pendaftar (untuk ditampilkan di list Android)
     public function index(): JsonResponse
     {
         $pendaftaran = SiswaPpdb::with('daftarUlang')->latest()->get();
@@ -21,7 +21,7 @@ class PendaftaranController extends Controller
         ], 200);
     }
 
-    // 2. CREATE: Menambah pendaftaran baru dari aplikasi Android
+    // Menambah pendaftaran baru dari aplikasi Android
     public function store(Request $request)
     {
         // Validasi data yang dikirim dari Android
@@ -56,7 +56,7 @@ class PendaftaranController extends Controller
         if ($request->hasFile('file_akta')) {
             $fileAktaPath = $request->file('file_akta')->store('dokumen_ppdb', 'public');
         } elseif ($request->filled('file_akta')) {
-            $fileAktaPath = $request->input('file_akta'); // Menangani string URL/path jika dikirim langsung
+            $fileAktaPath = $request->input('file_akta');
         }
 
         // Jika ada upload file KK dari Android
@@ -64,7 +64,7 @@ class PendaftaranController extends Controller
         if ($request->hasFile('file_kk')) {
             $fileKkPath = $request->file('file_kk')->store('dokumen_ppdb', 'public');
         } elseif ($request->filled('file_kk')) {
-            $fileKkPath = $request->input('file_kk'); // Menangani string URL/path jika dikirim langsung
+            $fileKkPath = $request->input('file_kk');
         }
 
         // Simpan data relasi daftar ulang / berkas
@@ -82,10 +82,10 @@ class PendaftaranController extends Controller
             'success' => true,
             'message' => 'Pendaftaran berhasil dikirim dan tersimpan di database web!',
             'data' => $siswa->load('daftarUlang'),
-        ], 200); 
+        ], 200);
     }
 
-    // 3. SHOW: Melihat detail satu siswa berdasarkan ID
+    // Melihat detail satu siswa berdasarkan ID
     public function show($id)
     {
         $siswa = SiswaPpdb::with('daftarUlang')->find($id);
@@ -97,7 +97,7 @@ class PendaftaranController extends Controller
         return response()->json(['success' => true, 'data' => $siswa], 200);
     }
 
-    // 4. UPDATE: Mengubah data pendaftar dari Android
+    // Mengubah data pendaftar dari Android
     public function update(Request $request, $id)
     {
         $siswa = SiswaPpdb::find($id);
@@ -114,7 +114,7 @@ class PendaftaranController extends Controller
         ], 200);
     }
 
-    // 5. DELETE: Menghapus data pendaftar
+    // Menghapus data pendaftar
     public function destroy($id)
     {
         $siswa = SiswaPpdb::find($id);
@@ -139,23 +139,23 @@ class PendaftaranController extends Controller
             // 2. Pastikan relasi daftarUlang ada
             if ($siswa->daftarUlang) {
                 $siswa->daftarUlang->update([
-                    'status' => $request->status 
+                    'status' => $request->status,
                 ]);
 
                 return response()->json([
                     'success' => true,
                     'message' => 'Status berhasil diperbarui',
-                    'data'    => $siswa->daftarUlang
+                    'data' => $siswa->daftarUlang,
                 ]);
             }
 
             return response()->json(['success' => false, 'message' => 'Data daftar ulang tidak ditemukan'], 404);
 
         } catch (\Exception $e) {
-            // Jika ada error, Laravel akan mengirimkan pesan teknisnya ke Android
+            // Kirimkan pesan teknisnya ke Android jika error
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan server: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan server: '.$e->getMessage(),
             ], 500);
         }
     }

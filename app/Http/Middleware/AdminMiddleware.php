@@ -13,11 +13,12 @@ class AdminMiddleware
      *
      * @param  Closure(Request): (Response)  $next
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check() && auth()->user()->role === 'admin') {
             return $next($request);
         }
-        return redirect('/login')->with('error', 'Akses ditolak! Khusus Admin.');
+
+        abort(Response::HTTP_FORBIDDEN);
     }
 }

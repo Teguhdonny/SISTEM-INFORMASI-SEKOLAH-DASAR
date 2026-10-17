@@ -82,17 +82,24 @@
                 <p class="text-gray-400 text-xs font-medium">Silakan masuk ke akun Anda untuk melanjutkan</p>
             </div>
 
-            <form action="/admin/dashboard" method="GET" class="space-y-5">
+            <form action="{{ route('login.store') }}" method="POST" class="space-y-5">
+                @csrf
+                @if (session('error'))
+                    <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{{ session('error') }}</div>
+                @endif
+                @if ($errors->any())
+                    <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{{ $errors->first() }}</div>
+                @endif
                 <!-- Username -->
                 <div>
                     <label class="block text-xs font-bold text-[#1e3a8a] mb-1.5 flex items-center gap-1.5">
-                        <i class="fas fa-user-circle text-gray-400"></i> Username / Email
+                        <i class="fas fa-user-circle text-gray-400"></i> Username
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <i class="fas fa-user text-gray-300 text-xs"></i>
                         </div>
-                        <input type="text" class="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent outline-none transition text-sm shadow-sm" placeholder="Masukkan username atau email">
+                        <input type="text" name="username" value="{{ old('username') }}" required autofocus autocomplete="username" class="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent outline-none transition text-sm shadow-sm" placeholder="Masukkan username">
                     </div>
                 </div>
 
@@ -105,7 +112,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <i class="fas fa-lock text-gray-300 text-xs"></i>
                         </div>
-                        <input type="password" class="w-full pl-9 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent outline-none transition text-sm shadow-sm" placeholder="Masukkan password">
+                        <input type="password" name="password" required autocomplete="current-password" class="w-full pl-9 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent outline-none transition text-sm shadow-sm" placeholder="Masukkan password">
                         <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center cursor-pointer text-gray-300 hover:text-[#3b82f6] transition">
                             <i class="fas fa-eye-slash text-xs"></i>
                         </div>
@@ -115,10 +122,10 @@
                 <!-- Opsi (Ingat Saya & Lupa Password) -->
                 <div class="flex items-center justify-between pt-2">
                     <label class="flex items-center cursor-pointer group">
-                        <input type="checkbox" class="w-3.5 h-3.5 rounded border-gray-300 text-[#3b82f6] focus:ring-[#3b82f6] transition">
+                        <input type="checkbox" name="remember" value="1" class="w-3.5 h-3.5 rounded border-gray-300 text-[#3b82f6] focus:ring-[#3b82f6] transition">
                         <span class="ml-2 text-xs text-gray-500 font-medium group-hover:text-[#1d4ed8] transition">Ingat saya</span>
                     </label>
-                    <a href="#" class="text-xs text-[#3b82f6] hover:text-[#1d4ed8] font-bold transition">Lupa Password?</a>
+                    <span class="text-xs text-gray-400">Akses khusus admin</span>
                 </div>
 
                 <!-- Tombol Submit -->

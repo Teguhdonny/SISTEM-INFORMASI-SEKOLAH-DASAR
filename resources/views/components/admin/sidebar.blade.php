@@ -27,11 +27,11 @@
             <i class="fas fa-users w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Guru & Staff</span>
         </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+        <a href="{{ route('admin.program.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/program-sekolah*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-clipboard-list w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Program Sekolah</span>
         </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+        <a href="{{ route('admin.ekstrakurikuler.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/ekstrakurikuler*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-running w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Ekstrakurikuler</span>
         </a>
@@ -77,9 +77,12 @@
 
     <!-- Logout Bottom -->
     <div class="p-4 border-t border-blue-800/50 relative z-10">
-        <a href="/" class="flex items-center px-4 py-2 text-white hover:bg-black/20 rounded transition font-bold">
-            <i class="fas fa-sign-out-alt w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm" x-show="sidebarOpen">Logout</span>
-        </a>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="flex w-full items-center rounded px-4 py-2 text-left font-bold text-white transition hover:bg-black/20">
+                <i class="fas fa-sign-out-alt w-5 text-center shrink-0"></i>
+                <span class="ml-3 text-sm" x-show="sidebarOpen">Logout</span>
+            </button>
+        </form>
     </div>
 </aside>
