@@ -33,15 +33,11 @@
                                 <h3 class="mb-1.5 border-b border-gray-200 pb-1 font-bold uppercase leading-tight text-blue-900">{{ $item->nama }}</h3>
                                 <dl class="space-y-1.5 leading-tight">
                                     <div>
-                                        <dt class="font-bold text-blue-900">Pendidikan</dt>
-                                        <dd class="whitespace-pre-line break-words text-gray-700">{{ $item->lulusan ?: '—' }}</dd>
-                                    </div>
-                                    <div>
                                         <dt class="font-bold text-blue-900">NIP</dt>
                                         <dd class="break-words text-gray-700">{{ $item->nip ?: '—' }}</dd>
                                     </div>
                                     <div>
-                                        <dt class="font-bold text-blue-900">Bagian</dt>
+                                        <dt class="font-bold text-blue-900">Status & Tugas</dt>
                                         <dd class="break-words text-gray-700">{{ $item->bagian }}</dd>
                                     </div>
                                 </dl>

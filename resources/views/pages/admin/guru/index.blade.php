@@ -39,7 +39,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[900px] text-left text-sm">
                     <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
-                        <tr><th class="px-5 py-4 font-semibold">Nama</th><th class="px-5 py-4 font-semibold">NIP</th><th class="px-5 py-4 font-semibold">Lulusan</th><th class="px-5 py-4 font-semibold">Bagian</th><th class="px-5 py-4 font-semibold">Email</th><th class="px-5 py-4 text-right font-semibold">Aksi</th></tr>
+                        <tr><th class="px-5 py-4 font-semibold">Nama</th><th class="px-5 py-4 font-semibold">NIP</th><th class="px-5 py-4 font-semibold">Status & Tugas</th><th class="px-5 py-4 font-semibold">Email</th><th class="px-5 py-4 text-right font-semibold">Aksi</th></tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($guru as $item)
@@ -53,7 +53,6 @@
                                     <span class="font-semibold text-gray-800">{{ $item->nama }}</span>
                                 </div></td>
                                 <td class="px-5 py-4 text-gray-600">{{ $item->nip ?: '—' }}</td>
-                                <td class="whitespace-pre-line px-5 py-4 text-gray-600">{{ $item->lulusan ?: '—' }}</td>
                                 <td class="px-5 py-4 text-gray-600">{{ $item->bagian }}</td>
                                 <td class="px-5 py-4 text-gray-600">{{ $item->email ?: '—' }}</td>
                                 <td class="px-5 py-4"><div class="flex justify-end gap-2">
@@ -65,7 +64,7 @@
                                 </div></td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="px-5 py-14 text-center">
+                            <tr><td colspan="5" class="px-5 py-14 text-center">
                                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-xl text-blue-600"><i class="fas fa-user-friends"></i></div>
                                 <p class="mt-4 font-semibold text-gray-800">{{ $search ? 'Guru tidak ditemukan' : 'Belum ada data guru' }}</p>
                                 <p class="mt-1 text-sm text-gray-500">{{ $search ? 'Coba gunakan kata pencarian lain.' : 'Tambahkan data guru untuk mulai mengisi daftar.' }}</p>
