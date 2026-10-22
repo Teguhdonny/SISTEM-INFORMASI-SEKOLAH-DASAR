@@ -17,17 +17,21 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 gap-4">
-            <div class="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-xl text-blue-700"><i class="fas fa-users"></i></div>
-                <div><p class="text-sm text-gray-500">Total Data Guru</p><p class="text-2xl font-bold text-gray-800">{{ $totalGuru }}</p></div>
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm text-gray-500">Total Data Guru</p>
+                    <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><i class="fas fa-users"></i></span>
+                </div>
+                <p class="mt-3 text-3xl font-black text-gray-800">{{ $totalGuru }}</p>
+                <p class="mt-1 text-xs text-gray-500">Tenaga pendidik terdaftar</p>
             </div>
         </div>
 
         <section class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
             <div class="flex flex-col gap-4 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h2 class="font-bold text-gray-800">Semua Guru</h2>
+                    <h2 class="flex items-center gap-2 font-bold text-gray-800"><span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><i class="fas fa-user-group"></i></span>Semua Guru</h2>
                     <p class="mt-1 text-xs text-gray-500">{{ $guru->total() }} data tenaga pendidik</p>
                 </div>
                 <form method="GET" action="{{ route('admin.guru.index') }}" class="flex gap-2">

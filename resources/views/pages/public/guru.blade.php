@@ -11,7 +11,7 @@
     <section class="mx-auto w-full px-6 py-10 lg:px-16 xl:px-24">
         <div class="mb-6 flex flex-col gap-4 border-b border-gray-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="text-2xl font-bold text-blue-900">Daftar Guru & Staff</h2>
+                <h2 class="flex items-center gap-2 text-2xl font-bold text-blue-900"><i class="fas fa-user-group text-blue-600"></i>Daftar Guru & Staff</h2>
                 <p class="mt-1 text-sm text-gray-500">Tenaga pendidik SDN Pojok 2 Kota Kediri</p>
             </div>
             <div class="inline-flex items-center gap-2 self-start rounded-lg bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800 sm:self-auto"><i class="fas fa-users"></i>{{ $guru->total() }} tenaga pendidik</div>
