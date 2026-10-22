@@ -18,7 +18,6 @@
             <!-- Gambar -->
             <div class="w-full md:w-1/2">
                 <div class="rounded-2xl overflow-hidden shadow-2xl border-8 border-white relative transform hover:-translate-y-2 transition duration-500">
-                    <!-- Ganti src dengan gambar sekolah yang sesuai jika ada -->
                     <img src="{{ asset('images/sekolah.jpg') }}" alt="SDN Pojok 2" class="w-full h-auto object-cover bg-gray-200 min-h-[250px]">
                 </div>
             </div>
@@ -32,11 +31,11 @@
             <div class="w-24 h-24 shrink-0 rounded-full bg-blue-50 flex items-center justify-center border-4 border-blue-100 shadow-inner">
                 <i class="fas fa-bullseye text-5xl text-blue-600"></i>
             </div>
-            <!-- Teks Visi -->
+            <!-- Teks Visi Resmi 2026 -->
             <div>
                 <h2 class="text-2xl font-extrabold text-blue-900 mb-3 uppercase tracking-wider">VISI</h2>
-                <p class="text-2xl md:text-3xl font-bold text-blue-800 leading-snug">
-                    "Terwujudnya peserta didik yang beriman, berilmu, berkarakter, dan berprestasi."
+                <p class="text-xl md:text-2xl font-bold text-blue-800 leading-snug">
+                    "Mewujudkan Generasi Muda yang Berakhlak Mulia, Mandiri, Kreatif Berwawasan Global dan Peduli Lingkungan."
                 </p>
             </div>
         </div>
@@ -54,51 +53,36 @@
                 <h2 class="text-3xl font-extrabold text-blue-900 uppercase tracking-wider">MISI</h2>
             </div>
             
-            <!-- Grid Daftar Misi (2 Kolom) -->
+            <!-- Grid Daftar 5 Misi Resmi (2 Kolom) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 relative z-10">
                 <!-- Misi 1 -->
                 <div class="flex items-start gap-4 group">
                     <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">1</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Meningkatkan kualitas pembelajaran yang aktif, kreatif, dan menyenangkan.</p>
+                    <p class="text-gray-600 leading-relaxed font-medium">Melaksanakan pembelajaran dan bimbingan secara efektif dan efisien, sehingga setiap siswa dapat berkembang secara optimal.</p>
                 </div>
                 <!-- Misi 2 -->
                 <div class="flex items-start gap-4 group">
                     <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">2</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Menumbuhkan sikap religius dan berakhlak mulia.</p>
+                    <p class="text-gray-600 leading-relaxed font-medium">Menumbuhkan semangat keunggulan secara kompetitif dan interaktif kepada seluruh warga sekolah.</p>
                 </div>
                 <!-- Misi 3 -->
                 <div class="flex items-start gap-4 group">
                     <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">3</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Mengembangkan potensi, bakat, dan minat peserta didik.</p>
+                    <p class="text-gray-600 leading-relaxed font-medium">Mengembangkan potensi berdasarkan minat dan bakat anak.</p>
                 </div>
                 <!-- Misi 4 -->
                 <div class="flex items-start gap-4 group">
                     <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">4</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Mewujudkan lingkungan sekolah yang aman, bersih, dan nyaman.</p>
+                    <p class="text-gray-600 leading-relaxed font-medium">Menanamkan perilaku hidup sesuai norma-norma dan ajaran agama.</p>
                 </div>
                 <!-- Misi 5 -->
-                <div class="flex items-start gap-4 group">
+                <div class="flex items-start gap-4 group md:col-span-2">
                     <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">5</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Meningkatkan kompetensi pendidik dan tenaga kependidikan secara berkelanjutan.</p>
-                </div>
-                <!-- Misi 6 -->
-                <div class="flex items-start gap-4 group">
-                    <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">6</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Mengoptimalkan sarana dan prasarana pendidikan yang memadai.</p>
-                </div>
-                <!-- Misi 7 -->
-                <div class="flex items-start gap-4 group">
-                    <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">7</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Menjalin kerja sama dengan orang tua, masyarakat, dan pihak terkait.</p>
-                </div>
-                <!-- Misi 8 -->
-                <div class="flex items-start gap-4 group">
-                    <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">8</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Mewujudkan sekolah yang berprestasi di tingkat lokal, regional, maupun nasional.</p>
+                    <p class="text-gray-600 leading-relaxed font-medium">Menumbuhkan rasa cinta lingkungan sebagai sumber belajar.</p>
                 </div>
             </div>
 
-            <!-- Dekorasi Grafis Lengkungan di Kanan Bawah (Mirip di Desain) -->
+            <!-- Dekorasi Grafis Lengkungan di Kanan Bawah -->
             <div class="absolute bottom-0 right-0 w-64 h-64 pointer-events-none z-0 opacity-80 translate-x-10 translate-y-10">
                 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full transform rotate-12">
                     <path fill="#dc2626" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.3C91.4,-33.5,98.1,-18,97.7,-2.8C97.3,12.4,89.8,27.3,80.1,40.1C70.4,52.9,58.6,63.6,45.1,72.1C31.6,80.6,16.4,86.9,0.7,85.7C-15,84.5,-30,75.8,-42.6,65.9C-55.2,56,-65.4,44.9,-73.2,32.2C-81,19.5,-86.4,5.2,-85.4,-8.7C-84.4,-22.6,-77.1,-36,-67.2,-46.5C-57.3,-57,-44.8,-64.6,-31.8,-72.1C-18.8,-79.6,-5.3,-87,9.3,-88.1C23.9,-89.2,30.5,-83.6,44.7,-76.4Z" transform="translate(100 100) scale(1.1)" />

@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('pages.public.home');
-});
+})->name('home');
 
 Route::get('/profil', function () {
     return view('pages.public.profil');
-});
+})->name('profil.public.index');
 
 Route::get('/visi-misi', function () {
     return view('pages.public.visi-misi');
-});
+})->name('visi-misi.public.index');
 
 Route::get('/daftar-guru', function () {
     $guru = Guru::query()->orderBy('nama')->paginate(12);
@@ -55,9 +55,19 @@ Route::get('/program-sekolah', function () {
     return view('pages.public.program', compact('programs'));
 })->name('program.public.index');
 
+// Tambahkan 2 rute ini di bagian RUTE PUBLIK pada routes/web.php:
+
+Route::get('/jadwal-pelajaran', function () {
+    return view('pages.public.jadwal');
+})->name('jadwal.public.index');
+
+Route::get('/informasi-ppdb', function () {
+    return view('pages.public.registrasi.ppdb');
+})->name('ppdb.public.index');
+
 // Halaman Registrasi Daftar Ulang (PPDB Publik - Tanpa Login)
-Route::get('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'create']);
-Route::post('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'store']);
+Route::get('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'create'])->name('registrasi.public.create');
+Route::post('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'store'])->name('registrasi.public.store');
 
 // ==============================
 // RUTE AUTENTIKASI & ADMIN
@@ -70,6 +80,11 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 Route::get('/admin/dashboard', function () {
     return view('pages.admin.dashboard.index');
 })->middleware(['auth', 'admin'])->name('admin.dashboard');
+
+// Rute Admin Profil Sekolah & Visi Misi (BARU DITAMBAHKAN)
+Route::get('/admin/profil', function () {
+    return view('pages.admin.profil.index');
+})->middleware(['auth', 'admin'])->name('admin.profil.index');
 
 Route::resource('/admin/guru', GuruController::class)->names('admin.guru')->middleware(['auth', 'admin']);
 
@@ -87,12 +102,12 @@ Route::get('/admin/program-sekolah', function () {
 })->middleware(['auth', 'admin'])->name('admin.program.index');
 
 // Panel Admin PPDB & Menu Lainnya
-Route::get('/admin/pendaftaran', [PendaftaranWebController::class, 'adminIndex'])->middleware(['auth', 'admin']);
-Route::post('/admin/pendaftaran/{id}/status', [PendaftaranWebController::class, 'updateStatus'])->middleware(['auth', 'admin']);
+Route::get('/admin/pendaftaran', [PendaftaranWebController::class, 'adminIndex'])->middleware(['auth', 'admin'])->name('admin.pendaftaran.index');
+Route::post('/admin/pendaftaran/{id}/status', [PendaftaranWebController::class, 'updateStatus'])->middleware(['auth', 'admin'])->name('admin.pendaftaran.status');
 
 Route::get('/admin/galeri', function () {
     return view('pages.admin.galeri.index');
-})->middleware(['auth', 'admin']);
+})->middleware(['auth', 'admin'])->name('admin.galeri.index');
 
 Route::get('/admin/ekstrakurikuler', function () {
     $ekstrakurikuler = [
