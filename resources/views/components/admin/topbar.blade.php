@@ -5,12 +5,12 @@
         <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-blue-600 focus:outline-none">
             <i class="fas fa-bars text-lg"></i>
         </button>
-        <div class="relative w-full max-w-md hidden md:block">
+        <form method="GET" action="{{ route('admin.search') }}" class="relative w-full max-w-md hidden md:block">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fas fa-search text-gray-400"></i>
             </div>
-            <input type="text" class="bg-gray-100 text-sm rounded-full w-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Cari menu atau informasi...">
-        </div>
+            <input type="search" name="q" value="{{ request('q') }}" class="bg-gray-100 text-sm rounded-full w-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Cari menu atau informasi..." aria-label="Cari menu atau informasi">
+        </form>
     </div>
 
     <!-- Kanan: Notifikasi & Profil -->

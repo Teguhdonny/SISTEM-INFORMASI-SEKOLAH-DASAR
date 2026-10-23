@@ -32,7 +32,7 @@
                     <span class="text-gray-700 font-semibold" x-text="breadcrumbs[activeTab]">Profil Sekolah</span>
                 </div>
                 <h4 class="text-blue-800 font-extrabold uppercase tracking-wider text-xs mb-1" x-text="titles[activeTab]">PROFIL SEKOLAH</h4>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-red-600 mb-3">SDN Pojok 2 Kota Kediri</h1>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-red-600 mb-3">{{ $profilSekolah?->nama_sekolah ?? 'SDN Pojok 2 Kota Kediri' }}</h1>
                 <p class="text-gray-600 text-sm md:text-base max-w-2xl leading-relaxed">
                     Sarana informasi sekolah untuk masyarakat, wali murid, dan calon siswa. Dapatkan informasi profil, program, dan layanan registrasi daftar ulang secara mudah dan terpercaya.
                 </p>

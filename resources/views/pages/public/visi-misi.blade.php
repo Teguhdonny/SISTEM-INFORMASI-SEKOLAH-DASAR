@@ -10,7 +10,7 @@
                     <span class="text-blue-600">Visi & Misi</span>
                 </div>
                 <h4 class="text-blue-800 font-bold uppercase tracking-widest text-sm mb-2">VISI & MISI</h4>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-red-600 mb-6 leading-tight">SDN Pojok 2 Kota Kediri</h1>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-red-600 mb-6 leading-tight">{{ $profilSekolah?->nama_sekolah ?? 'SDN Pojok 2 Kota Kediri' }}</h1>
                 <p class="text-gray-600 leading-relaxed text-lg md:text-xl">
                     Landasan utama dalam mewujudkan sekolah yang unggul, berkarakter, berprestasi, dan berwawasan masa depan.
                 </p>
@@ -35,7 +35,7 @@
             <div>
                 <h2 class="text-2xl font-extrabold text-blue-900 mb-3 uppercase tracking-wider">VISI</h2>
                 <p class="text-xl md:text-2xl font-bold text-blue-800 leading-snug">
-                    "Mewujudkan Generasi Muda yang Berakhlak Mulia, Mandiri, Kreatif Berwawasan Global dan Peduli Lingkungan."
+                    “{{ $visi }}”
                 </p>
             </div>
         </div>
@@ -55,31 +55,9 @@
             
             <!-- Grid Daftar 5 Misi Resmi (2 Kolom) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 relative z-10">
-                <!-- Misi 1 -->
-                <div class="flex items-start gap-4 group">
-                    <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">1</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Melaksanakan pembelajaran dan bimbingan secara efektif dan efisien, sehingga setiap siswa dapat berkembang secara optimal.</p>
-                </div>
-                <!-- Misi 2 -->
-                <div class="flex items-start gap-4 group">
-                    <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">2</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Menumbuhkan semangat keunggulan secara kompetitif dan interaktif kepada seluruh warga sekolah.</p>
-                </div>
-                <!-- Misi 3 -->
-                <div class="flex items-start gap-4 group">
-                    <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">3</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Mengembangkan potensi berdasarkan minat dan bakat anak.</p>
-                </div>
-                <!-- Misi 4 -->
-                <div class="flex items-start gap-4 group">
-                    <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">4</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Menanamkan perilaku hidup sesuai norma-norma dan ajaran agama.</p>
-                </div>
-                <!-- Misi 5 -->
-                <div class="flex items-start gap-4 group md:col-span-2">
-                    <div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">5</div>
-                    <p class="text-gray-600 leading-relaxed font-medium">Menumbuhkan rasa cinta lingkungan sebagai sumber belajar.</p>
-                </div>
+                @foreach ($misi as $deskripsiMisi)
+                    <div class="flex items-start gap-4 group {{ $loop->last && $loop->iteration % 2 !== 0 ? 'md:col-span-2' : '' }}"><div class="w-8 h-8 shrink-0 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 group-hover:bg-red-600 transition duration-300 mt-1">{{ $loop->iteration }}</div><p class="text-gray-600 leading-relaxed font-medium">{{ $deskripsiMisi }}</p></div>
+                @endforeach
             </div>
 
             <!-- Dekorasi Grafis Lengkungan di Kanan Bawah -->

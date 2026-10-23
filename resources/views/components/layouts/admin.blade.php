@@ -30,5 +30,55 @@
         </div>
     </div>
 
+    <script>
+        const isDigitsOnlyInput = (input) => input instanceof HTMLInputElement && (input.matches('[data-digits-only]') || input.type === 'number');
+        const showDigitsOnlyWarning = (input, visible) => {
+            let warning = input.nextElementSibling;
+            if (!warning?.matches('[data-numeric-warning]')) {
+                warning = document.createElement('p');
+                warning.dataset.numericWarning = '';
+                warning.className = 'mt-1 text-xs text-red-600';
+                warning.setAttribute('role', 'status');
+                warning.textContent = 'Kolom ini hanya boleh diisi angka.';
+                warning.hidden = true;
+                input.insertAdjacentElement('afterend', warning);
+            }
+
+            warning.hidden = !visible;
+        };
+
+        document.addEventListener('beforeinput', (event) => {
+            const input = event.target;
+            const insertedText = event.data ?? event.dataTransfer?.getData('text') ?? '';
+            if (isDigitsOnlyInput(input) && insertedText !== '' && /[^0-9]/.test(insertedText)) {
+                event.preventDefault();
+                showDigitsOnlyWarning(input, true);
+            }
+        });
+
+        document.addEventListener('paste', (event) => {
+            const input = event.target;
+            const pastedText = event.clipboardData?.getData('text') ?? '';
+            if (isDigitsOnlyInput(input) && /[^0-9]/.test(pastedText)) {
+                event.preventDefault();
+                showDigitsOnlyWarning(input, true);
+            }
+        });
+
+        document.addEventListener('input', (event) => {
+            const input = event.target;
+            if (!isDigitsOnlyInput(input)) {
+                return;
+            }
+
+            const digitsOnlyValue = input.value.replace(/[^0-9]/g, '');
+            const containedNonDigits = digitsOnlyValue !== input.value;
+            if (containedNonDigits) {
+                input.value = digitsOnlyValue;
+            }
+
+            showDigitsOnlyWarning(input, containedNonDigits);
+        });
+    </script>
 </body>
 </html>

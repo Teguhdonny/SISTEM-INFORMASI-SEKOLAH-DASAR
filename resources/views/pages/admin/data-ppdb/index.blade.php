@@ -34,12 +34,12 @@
                         <i class="fas fa-bars text-lg"></i>
                     </button>
                     <!-- Kotak Carian Presisi -->
-                    <div class="relative hidden sm:block">
+                    <form method="GET" action="{{ route('admin.search') }}" class="relative hidden sm:block">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input type="text" placeholder="Cari menu atau informasi..." class="w-80 bg-gray-50 border border-gray-200 rounded-full pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                    </div>
+                        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari menu atau informasi..." aria-label="Cari menu atau informasi" class="w-80 bg-gray-50 border border-gray-200 rounded-full pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </form>
                 </div>
 
                 <!-- Bagian Kanan Profil & Notifikasi Interaktif -->

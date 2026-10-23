@@ -50,7 +50,7 @@
                 <h3 class="font-extrabold text-blue-950 text-sm">Visi Sekolah</h3>
             </div>
             <p class="text-gray-600 text-xs italic leading-relaxed">
-                "Mewujudkan generasi muda yang berakhlak mulia, mandiri, kreatif berwawasan global dan peduli lingkungan."
+                “{{ $visi }}”
             </p>
         </div>
 
@@ -59,16 +59,7 @@
                 <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"><i class="fas fa-list-ul"></i></div>
                 <h3 class="font-extrabold text-blue-950 text-sm">Misi Sekolah</h3>
             </div>
-            <ul class="space-y-2.5 text-xs text-gray-600">
-                <li class="flex items-start gap-2.5">
-                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
-                    <span>Melaksanakan pembelajaran dan bimbingan secara efektif...</span>
-                </li>
-                <li class="flex items-start gap-2.5">
-                    <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
-                    <span>Menumbuhkan semangat keunggulan secara kompetitif...</span>
-                </li>
-            </ul>
+            <ul class="space-y-2.5 text-xs text-gray-600">@foreach ($misi as $deskripsiMisi)<li class="flex items-start gap-2.5"><span class="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{{ $loop->iteration }}</span><span>{{ $deskripsiMisi }}</span></li>@endforeach</ul>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

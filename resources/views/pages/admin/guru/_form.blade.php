@@ -11,7 +11,7 @@
     </div>
     <div>
         <label for="nip" class="mb-2 block text-sm font-semibold text-gray-700">NIP</label>
-        <input id="nip" name="nip" value="{{ old('nip', $guru?->nip) }}" maxlength="50" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Nomor Induk Pegawai">
+        <input id="nip" name="nip" type="text" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="50" value="{{ old('nip', $guru?->nip) }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Nomor Induk Pegawai">
         @error('nip') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
     </div>
     <div>
