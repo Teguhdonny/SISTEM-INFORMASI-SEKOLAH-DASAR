@@ -20,7 +20,7 @@
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             @foreach ($programs as $index => $program)
                 @php
-                    $tone = match ($program['warna']) {
+                    $tone = match ($program->warna) {
                         'red', 'rose' => ['bg' => 'bg-red-100', 'text' => 'text-red-600', 'label' => 'bg-red-50 text-red-700'],
                         'green' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'label' => 'bg-green-50 text-green-700'],
                         'purple' => ['bg' => 'bg-purple-100', 'text' => 'text-purple-700', 'label' => 'bg-purple-50 text-purple-700'],
@@ -29,15 +29,15 @@
                 @endphp
                 <article class="group border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md" data-aos="fade-up" data-aos-delay="{{ ($index % 3) * 100 }}">
                     <div class="flex items-start gap-4 border-b border-gray-200 p-5">
-                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl {{ $tone['bg'] }} text-2xl {{ $tone['text'] }}"><i class="fas {{ $program['ikon'] }}"></i></div>
+                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl {{ $tone['bg'] }} text-2xl {{ $tone['text'] }}"><i class="fas {{ $program->ikon }}"></i></div>
                         <div class="min-w-0 flex-1">
-                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold {{ $tone['label'] }}">{{ $program['kategori'] }}</span>
-                            <h3 class="mt-2 text-lg font-bold text-blue-900 group-hover:text-blue-700">{{ $program['judul'] }}</h3>
+                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold {{ $tone['label'] }}">{{ $program->kategori }}</span>
+                            <h3 class="mt-2 text-lg font-bold text-blue-900 group-hover:text-blue-700">{{ $program->nama_program }}</h3>
                         </div>
                     </div>
                     <div class="p-5">
-                        <p class="min-h-20 text-sm leading-6 text-gray-600">{{ $program['deskripsi'] }}</p>
-                        <div class="mt-5 flex items-center gap-2 border-t border-gray-100 pt-4 text-sm text-gray-600"><i class="far fa-clock text-red-500"></i><span class="font-semibold">Jadwal:</span>{{ $program['jadwal'] }}</div>
+                        <p class="min-h-20 text-sm leading-6 text-gray-600">{{ $program->deskripsi }}</p>
+                        <div class="mt-5 flex items-center gap-2 border-t border-gray-100 pt-4 text-sm text-gray-600"><i class="far fa-clock text-red-500"></i><span class="font-semibold">Jadwal:</span>{{ $program->jadwal }}</div>
                     </div>
                 </article>
             @endforeach
@@ -47,6 +47,6 @@
             <div><h3 class="font-bold text-blue-900">Informasi program sekolah</h3><p class="mt-1 text-sm text-gray-600">Hubungi sekolah untuk mengetahui lebih lanjut tentang kegiatan siswa.</p></div>
             <a href="/profil" class="inline-flex shrink-0 items-center gap-2 self-start font-bold text-red-600 transition hover:text-red-700 sm:self-auto">Lihat profil sekolah <i class="fas fa-arrow-right text-sm"></i></a>
         </div>
-        <p class="mt-4 text-center text-xs text-gray-400">Informasi program ditampilkan sebagai contoh data.</p>
+        <p class="mt-4 text-center text-xs text-gray-400">Informasi program diperbarui oleh pihak sekolah.</p>
     </section>
 </x-layouts.app>

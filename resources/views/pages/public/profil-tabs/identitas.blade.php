@@ -3,15 +3,15 @@
     @php
         $identitas = [
             'NPSN' => '20534365',
-            'Nama Sekolah' => 'SD Negeri Pojok 2 Kota Kediri',
+            'Nama Sekolah' => $profilSekolah?->nama_sekolah ?? 'SD Negeri Pojok 2 Kota Kediri',
             'Status' => 'Negeri',
             'Jenjang' => 'Sekolah Dasar (SD)',
-            'Alamat' => 'Jalan Mastrip Nomor 59, Kota Kediri (64115)',
+            'Alamat' => $profilSekolah?->alamat ?? 'Jalan Mastrip Nomor 59, Kota Kediri (64115)',
             'Kelurahan' => 'Pojok',
             'Kecamatan' => 'Mojoroto',
             'Kota' => 'Kota Kediri',
             'Provinsi' => 'Jawa Timur',
-            'Email Resmi' => 'pojok2mojoroto@gmail.com',
+            'Email Resmi' => $profilSekolah?->email_sekolah ?? 'pojok2mojoroto@gmail.com',
             'Akreditasi' => 'B',
         ];
     @endphp

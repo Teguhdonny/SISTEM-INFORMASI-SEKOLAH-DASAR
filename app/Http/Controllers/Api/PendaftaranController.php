@@ -27,13 +27,13 @@ class PendaftaranController extends Controller
         // Validasi data yang dikirim dari Android
         $request->validate([
             'no_pendaftaran' => 'required',
-            'nisn' => 'required',
+            'nisn' => 'required|digits:10',
             'nama_siswa' => 'required|string|max:150',
             'jenjang' => 'required|string',
             'asal_sekolah' => 'required|string',
             'tanggal_lahir' => 'nullable|date',
             'nama_wali' => 'required|string',
-            'no_whatsapp' => 'required|string',
+            'no_whatsapp' => ['required', 'regex:/^[0-9]{8,20}$/'],
             'tanggal_verifikasi' => 'nullable|date',
             'jam_verifikasi' => 'nullable|string',
             'file_akta' => 'nullable',
@@ -105,7 +105,14 @@ class PendaftaranController extends Controller
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan'], 404);
         }
 
-        $siswa->update($request->only(['nama_siswa', 'nisn', 'jenjang', 'asal_sekolah']));
+        $validated = $request->validate([
+            'nama_siswa' => ['sometimes', 'required', 'string', 'max:150'],
+            'nisn' => ['sometimes', 'required', 'digits:10'],
+            'jenjang' => ['sometimes', 'required', 'string'],
+            'asal_sekolah' => ['sometimes', 'required', 'string'],
+        ]);
+
+        $siswa->update($validated);
 
         return response()->json([
             'success' => true,

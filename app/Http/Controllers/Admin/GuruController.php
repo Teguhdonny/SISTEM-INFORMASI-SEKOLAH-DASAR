@@ -42,7 +42,7 @@ class GuruController extends Controller
     {
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
-            'nip' => ['nullable', 'string', 'max:50', Rule::unique('guru', 'nip')],
+            'nip' => ['nullable', 'string', 'regex:/^[0-9]{1,50}$/', Rule::unique('guru', 'nip')],
             'lulusan' => ['nullable', 'string', 'max:5000'],
             'bagian' => ['required', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:150', Rule::unique('guru', 'email')],
@@ -75,7 +75,7 @@ class GuruController extends Controller
     {
         $rules = [
             'nama' => ['required', 'string', 'max:100'],
-            'nip' => ['nullable', 'string', 'max:50'],
+            'nip' => ['nullable', 'string', 'regex:/^[0-9]{1,50}$/'],
             'lulusan' => ['nullable', 'string', 'max:5000'],
             'bagian' => ['required', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:150'],

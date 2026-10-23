@@ -15,8 +15,9 @@
       x-data="{ 
           sidebarOpen: true, 
           activeTab: 'profil',
-          editModal: false,
-          notifSuccess: false
+          editModal: {{ $errors->any() ? 'true' : 'false' }},
+          visiSekolah: @js($visi),
+          notifSuccess: {{ session('success') ? 'true' : 'false' }}
       }">
 
     <div class="flex h-screen overflow-hidden">
@@ -33,12 +34,12 @@
                     <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-blue-900 focus:outline-none transition">
                         <i class="fas fa-bars text-lg"></i>
                     </button>
-                    <div class="relative hidden sm:block">
+                    <form method="GET" action="{{ route('admin.search') }}" class="relative hidden sm:block">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
                             <i class="fas fa-search text-xs"></i>
                         </span>
-                        <input type="text" placeholder="Cari menu atau informasi..." class="w-80 bg-gray-50 border border-gray-200 rounded-full pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                    </div>
+                        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari menu atau informasi..." aria-label="Cari menu atau informasi" class="w-80 bg-gray-50 border border-gray-200 rounded-full pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                    </form>
                 </div>
 
                 <div class="flex items-center gap-5">
@@ -109,18 +110,18 @@
                         <div class="w-24 h-24 bg-blue-50 text-blue-900 rounded-3xl flex items-center justify-center text-4xl shadow-inner border border-blue-100 mb-4">
                             <i class="fas fa-school"></i>
                         </div>
-                        <h3 class="text-lg font-extrabold text-gray-900">SD Negeri Pojok 2</h3>
+                        <h3 class="text-lg font-extrabold text-gray-900">{{ $profilSekolah->nama_sekolah }}</h3>
                         <p class="text-xs text-gray-500 mt-1">Dinas Pendidikan Pemerintah Kota Kediri</p>
                         <span class="mt-3 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[11px] font-bold">Status: Negeri / Aktif</span>
                         
                         <div class="w-full border-t border-gray-100 mt-6 pt-5 text-left space-y-3 text-xs">
                             <div>
                                 <span class="text-gray-400 block">Alamat Lengkap:</span>
-                                <strong class="text-gray-800">Jalan Mastrip Nomor 59, Kota Kediri, 64115, Jawa Timur</strong>
+                                <strong class="text-gray-800">{{ $profilSekolah->alamat }}</strong>
                             </div>
                             <div>
                                 <span class="text-gray-400 block">Email Resmi:</span>
-                                <strong class="text-blue-600">pojok2mojoroto@gmail.com</strong>
+                                <strong class="text-blue-600">{{ $profilSekolah->email_sekolah }}</strong>
                             </div>
                             <div>
                                 <span class="text-gray-400 block">Kecamatan / Kota:</span>
@@ -169,7 +170,7 @@
                         </div>
                         <div>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Visi Sekolah Tahun 2026</span>
-                            <h3 class="text-lg md:text-xl font-extrabold text-blue-900 mt-1 italic">
+                            <h3 class="text-lg md:text-xl font-extrabold text-blue-900 mt-1 italic" x-text="visiSekolah">
                                 “MEWUJUDKAN GENERASI MUDA YANG BERAKHLAK MULIA, MANDIRI, KREATIF BERWAWASAN GLOBAL DAN PEDULI LINGKUNGAN”
                             </h3>
                         </div>
@@ -181,26 +182,9 @@
                             <i class="fas fa-clipboard-list text-blue-600"></i> 5 Misi Utama SD Negeri Pojok 2
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex items-start gap-3.5">
-                                <span class="w-6 h-6 shrink-0 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">1</span>
-                                <p class="text-gray-700 leading-relaxed">Melaksanakan pembelajaran dan bimbingan secara efektif dan efisien, sehingga setiap siswa dapat berkembang secara optimal.</p>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex items-start gap-3.5">
-                                <span class="w-6 h-6 shrink-0 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">2</span>
-                                <p class="text-gray-700 leading-relaxed">Menumbuhkan semangat keunggulan secara kompetitif dan interaktif kepada seluruh warga sekolah.</p>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex items-start gap-3.5">
-                                <span class="w-6 h-6 shrink-0 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">3</span>
-                                <p class="text-gray-700 leading-relaxed">Mengembangkan potensi berdasarkan minat dan bakat anak.</p>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex items-start gap-3.5">
-                                <span class="w-6 h-6 shrink-0 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">4</span>
-                                <p class="text-gray-700 leading-relaxed">Menanamkan perilaku hidup sesuai norma-norma dan ajaran agama.</p>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex items-start gap-3.5 md:col-span-2">
-                                <span class="w-6 h-6 shrink-0 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">5</span>
-                                <p class="text-gray-700 leading-relaxed">Menumbuhkan rasa cinta lingkungan sebagai sumber belajar.</p>
-                            </div>
+                            @foreach ($misi as $deskripsiMisi)
+                                <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 flex items-start gap-3.5 {{ $loop->last && $loop->iteration % 2 !== 0 ? 'md:col-span-2' : '' }}"><span class="w-6 h-6 shrink-0 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">{{ $loop->iteration }}</span><p class="text-gray-700 leading-relaxed">{{ $deskripsiMisi }}</p></div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -256,32 +240,32 @@
                         <h3 class="text-lg font-extrabold text-gray-900 mb-1">Perbarui Profil & Visi Misi Sekolah</h3>
                         <p class="text-xs text-gray-500 mb-6">Ubah informasi profil, alamat, dan rumusan visi misi sekolah di bawah ini.</p>
 
-                        <form @submit.prevent="editModal = false; notifSuccess = true" class="space-y-4 text-xs">
+                        @if ($errors->any())<div class="mb-4 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-700">{{ $errors->first() }}</div>@endif
+
+                        <form action="{{ route('admin.profil.update') }}" method="POST" class="space-y-4 text-xs">
+                            @csrf
+                            @method('PUT')
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="font-bold text-gray-700 block mb-1">Nama Sekolah</label>
-                                    <input type="text" value="SD Negeri Pojok 2 Kota Kediri" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <input type="text" name="nama_sekolah" value="{{ old('nama_sekolah', $profilSekolah->nama_sekolah) }}" required maxlength="150" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
                                 </div>
                                 <div>
                                     <label class="font-bold text-gray-700 block mb-1">Email Resmi</label>
-                                    <input type="email" value="pojok2mojoroto@gmail.com" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <input type="email" name="email_sekolah" value="{{ old('email_sekolah', $profilSekolah->email_sekolah) }}" required maxlength="100" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
                                 </div>
                             </div>
                             <div>
                                 <label class="font-bold text-gray-700 block mb-1">Alamat Sekolah</label>
-                                <input type="text" value="Jalan Mastrip Nomor 59, Kota Kediri, 64115, Jawa Timur" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                <input type="text" name="alamat" value="{{ old('alamat', $profilSekolah->alamat) }}" required maxlength="1000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
                             </div>
                             <div>
                                 <label class="font-bold text-gray-700 block mb-1">Visi Sekolah</label>
-                                <textarea rows="2" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">MEWUJUDKAN GENERASI MUDA YANG BERAKHLAK MULIA, MANDIRI, KREATIF BERWAWASAN GLOBAL DAN PEDULI LINGKUNGAN</textarea>
+                                <textarea name="visi" rows="2" required maxlength="5000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('visi', $visi) }}</textarea>
                             </div>
                             <div>
                                 <label class="font-bold text-gray-700 block mb-1">Daftar Misi Sekolah (Satu per baris)</label>
-                                <textarea rows="5" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">1. Melaksanakan pembelajaran dan bimbingan secara efektif dan efisien, sehingga setiap siswa dapat berkembang secara optimal.
-2. Menumbuhkan semangat keunggulan secara kompetitif dan interaktif kepada seluruh warga sekolah.
-3. Mengembangkan potensi berdasarkan minat dan bakat anak.
-4. Menanamkan perilaku hidup sesuai norma-norma dan ajaran agama.
-5. Menumbuhkan rasa cinta lingkungan sebagai sumber belajar.</textarea>
+                                <textarea name="misi" rows="5" required maxlength="10000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('misi', implode("\n", $misi)) }}</textarea>
                             </div>
                             <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                                 <button type="button" @click="editModal = false" class="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">Batal</button>

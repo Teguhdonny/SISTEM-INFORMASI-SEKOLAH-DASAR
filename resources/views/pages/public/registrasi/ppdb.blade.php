@@ -213,7 +213,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-1">NISN</label>
-                        <input type="text" name="nisn" required placeholder="Nomor Induk Siswa Nasional" value="{{ old('nisn') }}"
+                        <input type="text" name="nisn" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="10" required placeholder="Nomor Induk Siswa Nasional" value="{{ old('nisn') }}"
                             class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                     </div>
                 </div>
@@ -247,7 +247,7 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-gray-700 mb-1">Nomor WhatsApp Aktif</label>
-                    <input type="text" name="no_whatsapp" required placeholder="08xxxxxxxxxx" value="{{ old('no_whatsapp') }}"
+                    <input type="text" name="no_whatsapp" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="20" required placeholder="08xxxxxxxxxx" value="{{ old('no_whatsapp') }}"
                         class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                 </div>
 
@@ -311,5 +311,55 @@
         @endif
     </script>
 
+    <script>
+        const isDigitsOnlyInput = (input) => input instanceof HTMLInputElement && input.matches('[data-digits-only]');
+        const showDigitsOnlyWarning = (input, visible) => {
+            let warning = input.nextElementSibling;
+            if (!warning?.matches('[data-numeric-warning]')) {
+                warning = document.createElement('p');
+                warning.dataset.numericWarning = '';
+                warning.className = 'mt-1 text-xs text-red-600';
+                warning.setAttribute('role', 'status');
+                warning.textContent = 'Kolom ini hanya boleh diisi angka.';
+                warning.hidden = true;
+                input.insertAdjacentElement('afterend', warning);
+            }
+
+            warning.hidden = !visible;
+        };
+
+        document.addEventListener('beforeinput', (event) => {
+            const input = event.target;
+            const insertedText = event.data ?? event.dataTransfer?.getData('text') ?? '';
+            if (isDigitsOnlyInput(input) && insertedText !== '' && /[^0-9]/.test(insertedText)) {
+                event.preventDefault();
+                showDigitsOnlyWarning(input, true);
+            }
+        });
+
+        document.addEventListener('paste', (event) => {
+            const input = event.target;
+            const pastedText = event.clipboardData?.getData('text') ?? '';
+            if (isDigitsOnlyInput(input) && /[^0-9]/.test(pastedText)) {
+                event.preventDefault();
+                showDigitsOnlyWarning(input, true);
+            }
+        });
+
+        document.addEventListener('input', (event) => {
+            const input = event.target;
+            if (!isDigitsOnlyInput(input)) {
+                return;
+            }
+
+            const digitsOnlyValue = input.value.replace(/[^0-9]/g, '');
+            const containedNonDigits = digitsOnlyValue !== input.value;
+            if (containedNonDigits) {
+                input.value = digitsOnlyValue;
+            }
+
+            showDigitsOnlyWarning(input, containedNonDigits);
+        });
+    </script>
 </body>
 </html>

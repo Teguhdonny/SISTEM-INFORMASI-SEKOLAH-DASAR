@@ -17,7 +17,7 @@
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             @foreach ($ekstrakurikuler as $index => $item)
                 @php
-                    $tone = match ($item['warna']) {
+                    $tone = match ($item->warna) {
                         'red' => ['bg' => 'bg-red-100', 'text' => 'text-red-600', 'label' => 'bg-red-50 text-red-700'],
                         'green' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'label' => 'bg-green-50 text-green-700'],
                         'purple' => ['bg' => 'bg-purple-100', 'text' => 'text-purple-700', 'label' => 'bg-purple-50 text-purple-700'],
@@ -26,21 +26,21 @@
                 @endphp
                 <article class="group border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md" data-aos="fade-up" data-aos-delay="{{ ($index % 3) * 100 }}">
                     <div class="flex items-start gap-4 border-b border-gray-200 p-5">
-                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl {{ $tone['bg'] }} text-2xl {{ $tone['text'] }}"><i class="fas {{ $item['ikon'] }}"></i></div>
-                        <div class="min-w-0 flex-1"><span class="inline-flex rounded-full px-3 py-1 text-xs font-bold {{ $tone['label'] }}">{{ $item['kategori'] }}</span><h3 class="mt-2 text-lg font-bold text-blue-900 group-hover:text-blue-700">{{ $item['nama'] }}</h3></div>
+                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl {{ $tone['bg'] }} text-2xl {{ $tone['text'] }}"><i class="fas {{ $item->ikon }}"></i></div>
+                        <div class="min-w-0 flex-1"><span class="inline-flex rounded-full px-3 py-1 text-xs font-bold {{ $tone['label'] }}">{{ $item->kategori }}</span><h3 class="mt-2 text-lg font-bold text-blue-900 group-hover:text-blue-700">{{ $item->nama_ekskul }}</h3></div>
                     </div>
                     <div class="p-5">
-                        <p class="min-h-20 text-sm leading-6 text-gray-600">{{ $item['deskripsi'] }}</p>
+                        <p class="min-h-20 text-sm leading-6 text-gray-600">{{ $item->deskripsi }}</p>
                         <dl class="mt-5 space-y-3 border-t border-gray-100 pt-4 text-sm">
-                            <div class="flex items-center gap-2 text-gray-600"><i class="far fa-clock w-4 text-center text-red-500"></i><dt class="font-semibold text-blue-900">Jadwal</dt><dd>{{ $item['jadwal'] }}</dd></div>
-                            <div class="flex items-center gap-2 text-gray-600"><i class="fas fa-user-tie w-4 text-center text-blue-600"></i><dt class="font-semibold text-blue-900">Pembina</dt><dd>{{ $item['pembina'] }}</dd></div>
+                            <div class="flex items-center gap-2 text-gray-600"><i class="far fa-clock w-4 text-center text-red-500"></i><dt class="font-semibold text-blue-900">Jadwal</dt><dd>{{ $item->jadwal }}</dd></div>
+                            <div class="flex items-center gap-2 text-gray-600"><i class="fas fa-user-tie w-4 text-center text-blue-600"></i><dt class="font-semibold text-blue-900">Pembina</dt><dd>{{ $item->pembina ?: '—' }}</dd></div>
                         </dl>
-                        <div class="mt-4 inline-flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600"><i class="fas fa-user-group text-blue-600"></i>{{ $item['peserta'] }} siswa mengikuti</div>
+                        <div class="mt-4 inline-flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600"><i class="fas fa-user-group text-blue-600"></i>{{ $item->peserta }} siswa mengikuti</div>
                     </div>
                 </article>
             @endforeach
         </div>
         <div class="mt-10 border-l-4 border-red-500 bg-gray-50 p-5 sm:p-6"><h3 class="font-bold text-blue-900">Ayo kembangkan potensimu!</h3><p class="mt-1 text-sm text-gray-600">Hubungi pihak sekolah untuk informasi pendaftaran dan jadwal kegiatan ekstrakurikuler.</p></div>
-        <p class="mt-4 text-center text-xs text-gray-400">Informasi kegiatan ditampilkan sebagai contoh data.</p>
+        <p class="mt-4 text-center text-xs text-gray-400">Informasi kegiatan diperbarui oleh pihak sekolah.</p>
     </section>
 </x-layouts.app>
