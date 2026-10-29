@@ -38,7 +38,7 @@
     <!-- Konten Utama -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
         
-        <!-- Notifikasi Sukses (Tampil di halaman utama jika berhasil dan modal tertutup) -->
+        <!-- Notifikasi Sukses -->
         @if(session('success'))
         <div class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl shadow-sm flex items-center justify-between" role="alert">
             <div class="flex items-center gap-3">
@@ -54,12 +54,13 @@
         </div>
         @endif
 
-        <!-- Notifikasi Error Validasi -->
-        @if($errors->any())
+        <!-- Notifikasi Error Validasi / Proteksi -->
+        @if($errors->any() || session('error'))
         <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-sm relative flex items-center gap-3" role="alert">
             <i class="fas fa-exclamation-circle text-red-600 text-lg"></i>
             <div>
-                <strong class="font-bold">Perhatian!</strong> Terdapat kesalahan pengisian data. Silakan periksa kembali pada form pop-up.
+                <strong class="font-bold">Perhatian!</strong> 
+                {{ session('error') ?? 'Terdapat kesalahan pengisian data. Silakan periksa kembali pada form pop-up.' }}
             </div>
         </div>
         @endif
@@ -81,7 +82,6 @@
                         </div>
                     </div>
                     
-                    <!-- Stepper Visual -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center mt-6">
                         <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100">
                             <div class="w-8 h-8 mx-auto bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm mb-2 shadow-sm">1</div>
@@ -111,7 +111,6 @@
                     </div>
 
                     <div class="space-y-4 mt-6">
-                        <!-- Item Dokumen 1 -->
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
                             <div class="flex items-center gap-4">
                                 <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-lg">
@@ -125,7 +124,6 @@
                             <span class="text-xs font-semibold text-red-600 bg-red-50 border border-red-100 px-3 py-1 rounded-full">Wajib</span>
                         </div>
 
-                        <!-- Item Dokumen 2 -->
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
                             <div class="flex items-center gap-4">
                                 <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-lg">
@@ -143,10 +141,9 @@
 
             </div>
 
-            <!-- Kolom Kanan (Sidebar: Info Penting, Kontak, & Tombol Mulai) -->
+            <!-- Kolom Kanan (Sidebar) -->
             <div class="space-y-6">
                 
-                <!-- Informasi Penting -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                         <i class="fas fa-info-circle text-blue-600"></i> Informasi Penting
@@ -158,7 +155,6 @@
                     </ul>
                 </div>
 
-                <!-- Kontak Admin -->
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h3 class="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                         <i class="fas fa-headset text-blue-600"></i> Kontak Admin
@@ -177,9 +173,19 @@
                     </div>
                     <h3 class="font-bold text-base mb-1">Mulai Daftar Ulang Sekarang</h3>
                     <p class="text-xs text-blue-200 mb-4">Pastikan semua data dan dokumen sudah siap sebelum melanjutkan.</p>
-                    <button id="openModalBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
-                        <span>Lanjutkan</span> <i class="fas fa-arrow-right"></i>
-                    </button>
+                    
+                    <!-- LOGIKA PEMISAHAN TOMBOL BERDASARKAN STATUS DATABASE -->
+                    @if($isOpen)
+                        <!-- Jika Status ON (Buka) -->
+                        <button id="openModalBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
+                            <span>Lanjutkan</span> <i class="fas fa-arrow-right"></i>
+                        </button>
+                    @else
+                        <!-- Jika Status OFF (Tutup) -->
+                        <button id="openClosedModalBtn" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
+                            <span>Lanjutkan</span> <i class="fas fa-lock"></i>
+                        </button>
+                    @endif
                 </div>
 
             </div>
@@ -187,11 +193,10 @@
         </div>
     </main>
 
-    <!-- POPUP MODAL BORANG PENDAFTARAN -->
+    @if($isOpen)
+    <!-- POPUP MODAL BORANG PENDAFTARAN (Hanya Render Jika Buka) -->
     <div id="pendaftaranModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4 hidden overflow-y-auto">
         <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative">
-            
-            <!-- Tombol Tutup (X) -->
             <button id="closeModalBtn" class="absolute top-5 right-5 w-8 h-8 bg-gray-100 text-gray-500 hover:bg-gray-200 rounded-full flex items-center justify-center font-bold transition">
                 <i class="fas fa-times"></i>
             </button>
@@ -204,7 +209,6 @@
             <!-- Form Pendaftaran -->
             <form action="{{ url('/registrasi-daftar-ulang') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-left">
                 @csrf
-
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-1">Nomor Pendaftaran</label>
@@ -275,42 +279,94 @@
                         Kirim Pendaftaran Daftar Ulang
                     </button>
                 </div>
-
             </form>
         </div>
     </div>
+    @else
+    <!-- POPUP MODAL PENDAFTARAN DITUTUP (Desain Biru-Merah) -->
+    <div id="closedModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative text-center">
+            
+            <!-- Header Modal dengan Gradasi Biru (Sama seperti Hero Banner) -->
+            <div class="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 py-6 px-8 relative overflow-hidden">
+                <!-- Efek cahaya tipis -->
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500 rounded-full mix-blend-overlay filter blur-xl opacity-50"></div>
+                
+                <button id="closeClosedModalBtn" class="absolute top-4 right-4 w-8 h-8 bg-white/20 text-white hover:bg-white/40 rounded-full flex items-center justify-center font-bold transition">
+                    <i class="fas fa-times"></i>
+                </button>
+                
+                <div class="w-16 h-16 mx-auto bg-white/20 backdrop-blur-md text-white rounded-full flex items-center justify-center text-3xl mb-2 shadow-inner border border-white/30">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h2 class="text-xl font-extrabold text-white tracking-wide">PENDAFTARAN DITUTUP</h2>
+            </div>
+
+            <!-- Body Modal -->
+            <div class="p-8">
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Mohon Maaf!</h3>
+                <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+                    Registrasi daftar ulang saat ini <strong>belum dibuka</strong> atau <strong>sudah ditutup</strong>.<br><br>
+                    Silakan pantau terus website ini atau hubungi admin sekolah SD Pojok 2 untuk informasi lebih lanjut.
+                </p>
+                
+                <!-- Tombol Tutup (Aksen Merah senada dengan tombol Lanjutkan/Login Admin) -->
+                <button id="closeClosedModalBtn2" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition duration-200 text-sm">
+                    Tutup Pesan Ini
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- Memanggil Komponen Footer Publik yang Sudah Ada -->
     @include('components.public.footer')
 
-    <!-- Skrip JavaScript untuk Modal & Auto Show saat Error Validasi -->
+    <!-- Skrip JavaScript untuk Pengaturan Modal -->
     <script>
+        // Setup Modal Pendaftaran (Jika Buka)
         const modal = document.getElementById('pendaftaranModal');
         const openBtn = document.getElementById('openModalBtn');
         const closeBtn = document.getElementById('closeModalBtn');
 
-        openBtn.addEventListener('click', () => {
-            modal.classList.remove('hidden');
-        });
+        if (openBtn && modal) {
+            openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        }
+        if (closeBtn && modal) {
+            closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        }
 
-        closeBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-        });
+        // Setup Modal Tutup (Jika Tutup)
+        const closedModal = document.getElementById('closedModal');
+        const openClosedBtn = document.getElementById('openClosedModalBtn');
+        const closeClosedBtn = document.getElementById('closeClosedModalBtn');
+        const closeClosedBtn2 = document.getElementById('closeClosedModalBtn2');
 
+        if (openClosedBtn && closedModal) {
+            openClosedBtn.addEventListener('click', () => closedModal.classList.remove('hidden'));
+        }
+        if (closeClosedBtn && closedModal) {
+            closeClosedBtn.addEventListener('click', () => closedModal.classList.add('hidden'));
+        }
+        if (closeClosedBtn2 && closedModal) {
+            closeClosedBtn2.addEventListener('click', () => closedModal.classList.add('hidden'));
+        }
+
+        // Tutup modal jika klik di luar area modal
         window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-            }
+            if (modal && e.target === modal) modal.classList.add('hidden');
+            if (closedModal && e.target === closedModal) closedModal.classList.add('hidden');
         });
 
-        // Buka modal otomatis jika terdapat ralat validasi dari form
-        @if($errors->any())
+        // Buka modal otomatis jika terdapat ralat validasi dari form (Hanya berjalan jika status buka)
+        @if($errors->any() && $isOpen)
             window.addEventListener('DOMContentLoaded', () => {
-                modal.classList.remove('hidden');
+                if(modal) modal.classList.remove('hidden');
             });
         @endif
     </script>
 
+    <!-- Script validasi angka (Tidak diubah) -->
     <script>
         const isDigitsOnlyInput = (input) => input instanceof HTMLInputElement && input.matches('[data-digits-only]');
         const showDigitsOnlyWarning = (input, visible) => {

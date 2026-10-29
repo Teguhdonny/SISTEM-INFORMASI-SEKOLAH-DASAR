@@ -3,17 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\SiswaPpdb;
+use App\Models\Setting; // Tambahkan import Model Setting
 use Illuminate\Http\Request;
 
 class PendaftaranWebController extends Controller
 {
     public function create()
     {
-        return view('pages.public.registrasi.ppdb');
+        // 1. Ambil data pengaturan
+        $setting = Setting::first(); 
+        
+        // 2. Tentukan status Buka/Tutup (default false jika tabel belum ada isinya)
+        $isOpen = $setting ? $setting->is_registration_open : false;
+
+        // 3. Kirim variabel $isOpen ke view
+        return view('pages.public.registrasi.ppdb', compact('isOpen'));
     }
 
     public function store(Request $request)
     {
+        // --- PROTEKSI BACKEND ---
+        // Cek kembali status pendaftaran untuk mencegah submit paksa saat ditutup
+        $setting = Setting::first();
+        if (!$setting || !$setting->is_registration_open) {
+            return redirect()->back()->with('error', 'Mohon maaf, pendaftaran saat ini sedang ditutup.');
+        }
+        // ------------------------
+
         $request->validate([
             'no_pendaftaran' => 'required|unique:siswa_ppdb,no_pendaftaran',
             'nisn' => 'required|digits:10|unique:siswa_ppdb,nisn',

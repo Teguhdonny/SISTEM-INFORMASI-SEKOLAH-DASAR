@@ -103,6 +103,8 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.dashboard');
 Route::get('/admin/pencarian', [SearchController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.search');
 
+Route::post('/admin/pendaftaran/toggle-status', [\App\Http\Controllers\PendaftaranWebController::class, 'toggleStatus'])->name('admin.ppdb.toggle');
+
 // Rute Admin Profil Sekolah & Visi Misi (BARU DITAMBAHKAN)
 Route::get('/admin/profil', [ProfilSekolahController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.profil.index');
 Route::put('/admin/profil', [ProfilSekolahController::class, 'update'])->middleware(['auth', 'admin'])->name('admin.profil.update');
