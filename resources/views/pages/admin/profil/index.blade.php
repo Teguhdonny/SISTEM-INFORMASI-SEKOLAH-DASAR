@@ -62,19 +62,40 @@
                 <div x-show="notifSuccess" x-transition style="display: none;" class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-3.5 rounded-2xl shadow-sm flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-check-circle text-emerald-600 text-base"></i>
-                        <span class="text-xs font-semibold">Perubahan data Profil & Visi Misi sekolah berhasil disimpan!</span>
+                        <span class="text-xs font-semibold">{{ session('success') ?? 'Perubahan data berhasil disimpan!' }}</span>
                     </div>
                     <button @click="notifSuccess = false" class="text-emerald-500 hover:text-emerald-700"><i class="fas fa-times"></i></button>
                 </div>
 
-                <!-- Header Halaman & Tombol Aksi -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <!-- Header Halaman & Tombol Aksi (SUDAH ADA TOGGLE ON/OFF PPDB) -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
                         <span class="text-xs font-bold text-blue-600">Konten Website</span>
                         <h1 class="text-2xl font-extrabold text-gray-900 mt-0.5">Profil Sekolah & Visi Misi</h1>
                         <p class="text-xs text-gray-500 mt-1">Kelola identitas utama, visi, misi, dan tujuan strategis SDN Pojok 2 Kota Kediri.</p>
                     </div>
-                    <div class="flex items-center gap-3">
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        @php
+                            $isPpdbOpen = (bool) optional(\App\Models\Setting::first())->is_registration_open;
+                        @endphp
+
+                        <!-- TOMBOL SAKELAR (TOGGLE ON/OFF) DAFTAR ULANG / PPDB -->
+                        <form action="{{ route('admin.ppdb.toggle') }}" method="POST" class="inline-flex items-center bg-white border border-gray-300 rounded-xl px-3.5 py-2 shadow-sm gap-2.5">
+                            @csrf
+                            <span class="text-xs font-bold text-gray-700">Daftar Ulang:</span>
+                            
+                            <button type="submit" 
+                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ $isPpdbOpen ? 'bg-emerald-500' : 'bg-gray-300' }}"
+                                title="Klik untuk Buka / Tutup Pendaftaran Daftar Ulang">
+                                <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $isPpdbOpen ? 'translate-x-5' : 'translate-x-0' }}"></span>
+                            </button>
+
+                            <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md {{ $isPpdbOpen ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600' }}">
+                                {{ $isPpdbOpen ? 'ON (Buka)' : 'OFF (Tutup)' }}
+                            </span>
+                        </form>
+
                         <a href="{{ url('/visi-misi') }}" target="_blank" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-2">
                             <i class="fas fa-external-link-alt text-blue-600"></i> Lihat Halaman Publik
                         </a>

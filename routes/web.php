@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\ProfilSekolahController;
 use App\Http\Controllers\Admin\ProgramSekolahController;
 use App\Http\Controllers\Admin\SearchController;
+use App\Http\Controllers\Admin\SettingController; // Import SettingController ditambahkan di sini
 use App\Http\Controllers\Api\PendaftaranController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PendaftaranWebController;
@@ -90,6 +91,7 @@ Route::get('/informasi-ppdb', function () {
 
 // Halaman Registrasi Daftar Ulang (PPDB Publik - Tanpa Login)
 Route::get('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'create'])->name('registrasi.public.create');
+Route::get('/registrasi-daftar-ulang/cek-siswa', [PendaftaranWebController::class, 'cekSiswa'])->name('registrasi.public.cek');
 Route::post('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'store'])->name('registrasi.public.store');
 
 // ==============================
@@ -105,7 +107,11 @@ Route::get('/admin/pencarian', [SearchController::class, 'index'])->middleware([
 
 Route::post('/admin/pendaftaran/toggle-status', [\App\Http\Controllers\PendaftaranWebController::class, 'toggleStatus'])->name('admin.ppdb.toggle');
 
-// Rute Admin Profil Sekolah & Visi Misi (BARU DITAMBAHKAN)
+// Rute Pengaturan Pendaftaran (BARU DITAMBAHKAN)
+Route::get('/admin/setting', [SettingController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.setting.index');
+Route::post('/admin/setting/update-pendaftaran', [SettingController::class, 'updatePendaftaran'])->middleware(['auth', 'admin'])->name('admin.setting.update-pendaftaran');
+
+// Rute Admin Profil Sekolah & Visi Misi
 Route::get('/admin/profil', [ProfilSekolahController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.profil.index');
 Route::put('/admin/profil', [ProfilSekolahController::class, 'update'])->middleware(['auth', 'admin'])->name('admin.profil.update');
 
