@@ -8,5 +8,6 @@ class ProfilSekolah extends Model
 {
     protected $table = 'profil_sekolah';
 
-    protected $fillable = ['nama_sekolah', 'sejarah', 'alamat', 'kontak', 'email_sekolah'];
+    // Mengizinkan semua kolom diisi (termasuk sejarah, nama_kepsek, foto_kepsek, dll.)
+    protected $guarded = ['id'];
 }

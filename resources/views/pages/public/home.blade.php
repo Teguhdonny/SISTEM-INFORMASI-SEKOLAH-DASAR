@@ -82,27 +82,34 @@
     <section class="w-full px-6 lg:px-16 xl:px-24 mx-auto py-10 bg-gray-50/50">
         <div class="flex flex-col lg:flex-row gap-8">
             
-            <!-- Sambutan Kepala Sekolah (Sudah Responsif) -->
+            <!-- Sambutan Kepala Sekolah (Dinamis dari Profil Sekolah Admin) -->
             <div class="w-full lg:w-2/5 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row gap-6" data-aos="fade-up">
-                <!-- Foto: Lebar penuh di HP, 1/3 di Desktop -->
+                <!-- Foto Kepala Sekolah -->
                 <div class="w-full md:w-1/3 shrink-0">
-                    <div class="w-full h-48 md:h-full min-h-[160px] bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center text-gray-400 text-xs">
-                        [Foto Kepsek]
-                    </div>
+                    @if(!empty($profilSekolah?->foto_kepsek))
+                        <img src="{{ asset('storage/' . $profilSekolah->foto_kepsek) }}" 
+                             alt="{{ $profilSekolah->nama_kepsek ?? 'Kepala Sekolah' }}" 
+                             class="w-full h-48 md:h-full min-h-[160px] object-cover rounded-xl shadow-sm border border-gray-100">
+                    @else
+                        <div class="w-full h-48 md:h-full min-h-[160px] bg-blue-50 text-blue-300 rounded-xl overflow-hidden flex flex-col items-center justify-center border border-blue-100 text-xs gap-2">
+                            <i class="fas fa-user-tie text-4xl text-blue-400"></i>
+                            <span class="text-[11px] text-blue-700 font-semibold">Foto Kepsek</span>
+                        </div>
+                    @endif
                 </div>
                 
-                <!-- Teks: Lebar penuh di HP, 2/3 di Desktop -->
+                <!-- Teks Sambutan -->
                 <div class="w-full md:w-2/3 flex flex-col justify-center">
                     <h3 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-2 flex items-center gap-2">
                         <i class="fas fa-user-tie"></i> Sambutan Kepala Sekolah
                     </h3>
                     <h4 class="text-lg font-bold text-blue-950 leading-tight mb-2">Assalamu'alaikum Warahmatullahi Wabarakatuh</h4>
                     <p class="text-gray-600 text-sm md:text-xs leading-relaxed mb-4 line-clamp-4">
-                        Kami ucapkan selamat datang di website resmi SDN Pojok 2 Kota Kediri. Semoga kehadiran website ini dapat menjadi jembatan informasi dan komunikasi antara sekolah, siswa, orang tua, dan masyarakat.
+                        {{ $profilSekolah?->sambutan_kepsek ?? 'Kami ucapkan selamat datang di website resmi SDN Pojok 2 Kota Kediri. Semoga kehadiran website ini dapat menjadi jembatan informasi dan komunikasi antara sekolah, siswa, orang tua, dan masyarakat.' }}
                     </p>
                     <div class="mt-auto">
-                        <p class="font-bold text-sm text-blue-900">H. Ahmad Fauzi, S.Pd</p>
-                        <p class="text-xs text-gray-500">Kepala SDN Pojok 2 Kota Kediri</p>
+                        <p class="font-bold text-sm text-blue-900">{{ $profilSekolah?->nama_kepsek ?? 'H. Ahmad Fauzi, S.Pd' }}</p>
+                        <p class="text-xs text-gray-500">Kepala {{ $profilSekolah?->nama_sekolah ?? 'SDN Pojok 2 Kota Kediri' }}</p>
                     </div>
                 </div>
             </div>
@@ -168,123 +175,89 @@
         </div>
     </section>
 
-    <!-- 3. Bahagian Berita & Pengumuman (Dilengkapi Modal Baca Berita) -->
-    <section x-data="{ 
-        modalBerita: false, 
-        beritaAktif: { kategori: '', warna: '', tanggal: '', judul: '', isi: '', link: '' },
-        bukaBerita(item) {
-            this.beritaAktif = item;
-            this.modalBerita = true;
-        }
-    }" class="w-full px-6 lg:px-16 xl:px-24 mx-auto py-12">
-        
+   <!-- 3. Bahagian Berita & Pengumuman Terbaru (Dinamis dari Admin + Modal Detail) -->
+    <section x-data="{ detailModal: false, beritaAktif: null }" class="w-full px-6 lg:px-16 xl:px-24 mx-auto py-12">
         <div class="flex justify-between items-end mb-8 border-b pb-4">
             <h2 class="text-2xl font-bold text-blue-900 flex items-center gap-2">
                 <i class="fas fa-bullhorn text-blue-600"></i> Berita & Pengumuman Terbaru
             </h2>
-            <a href="{{ url('/profil') }}" class="text-sm font-semibold text-blue-600 hover:text-red-600 transition">Lihat Semua &rarr;</a>
+            <a href="{{ route('program.public.index') }}" class="text-sm font-semibold text-blue-600 hover:text-red-600 transition">Lihat Semua &rarr;</a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Item Berita 1 -->
-            <div @click="bukaBerita({
-                    kategori: 'Pengumuman',
-                    tanggal: '20 Agustus 2026',
-                    judul: 'Upacara HUT RI ke-81 di SDN Pojok 2 Kota Kediri',
-                    isi: 'Seluruh warga SDN Pojok 2 Kota Kediri mengikuti upacara peringatan Hari Ulang Tahun Kemerdekaan Republik Indonesia dengan khidmat. Kegiatan dilanjutkan dengan berbagai perlombaan edukatif dan kreatif antar kelas untuk menumbuhkan semangat nasionalisme serta kebersamaan siswa.',
-                    link: '{{ url('/profil') }}'
-                })" 
-                class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition cursor-pointer" data-aos="fade-up" data-aos-delay="100">
-                <div class="h-40 bg-gradient-to-br from-red-50 to-gray-200 overflow-hidden relative flex items-center justify-center">
-                    <img src="{{ asset('images/sekolah.jpg') }}" onerror="this.style.display='none'" alt="Upacara HUT RI" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    <i class="fas fa-flag text-4xl text-red-300 absolute pointer-events-none opacity-40"></i>
-                    <span class="absolute top-2 left-2 bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded z-10">Pengumuman</span>
-                </div>
-                <div class="p-4">
-                    <p class="text-xs text-gray-400 mb-2">20 Agustus 2026</p>
-                    <h3 class="font-bold text-sm text-blue-900 mb-3 group-hover:text-blue-600 transition">Upacara HUT RI ke-81 di SDN Pojok 2 Kota Kediri</h3>
-                    <div class="flex justify-end text-gray-400 group-hover:text-blue-600"><i class="fas fa-arrow-right text-sm"></i></div>
-                </div>
-            </div>
+            @forelse($beritas ?? [] as $berita)
+                @php
+                    $badgeStyle = [
+                        'Pengumuman' => 'bg-red-100 text-red-600',
+                        'Prestasi' => 'bg-blue-100 text-blue-600',
+                        'Kegiatan' => 'bg-green-100 text-green-600',
+                        'Informasi' => 'bg-purple-100 text-purple-600',
+                    ][$berita->kategori] ?? 'bg-blue-100 text-blue-600';
 
-            <!-- Item Berita 2 -->
-            <div @click="bukaBerita({
-                    kategori: 'Prestasi',
-                    tanggal: '15 Agustus 2026',
-                    judul: 'Siswa SDN Pojok 2 Raih Juara 1 Lomba Matematika Tingkat Kota',
-                    isi: 'Kebanggaan bagi SDN Pojok 2 Kota Kediri atas prestasi gemilang siswa dalam ajang Olimpiade Matematika Tingkat Kota Kediri. Prestasi ini merupakan wujud nyata dari program Kelas Numerasi dan pembinaan intensif sesuai minat serta bakat peserta didik.',
-                    link: '{{ route('program.public.index') }}'
-                })" 
-                class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition cursor-pointer" data-aos="fade-up" data-aos-delay="200">
-                <div class="h-40 bg-gradient-to-br from-blue-50 to-gray-200 overflow-hidden relative flex items-center justify-center">
-                    <i class="fas fa-trophy text-5xl text-blue-400/70 group-hover:scale-110 transition duration-500"></i>
-                    <span class="absolute top-2 left-2 bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-1 rounded z-10">Prestasi</span>
-                </div>
-                <div class="p-4">
-                    <p class="text-xs text-gray-400 mb-2">15 Agustus 2026</p>
-                    <h3 class="font-bold text-sm text-blue-900 mb-3 group-hover:text-blue-600 transition">Siswa SDN Pojok 2 Raih Juara 1 Lomba Matematika Tingkat Kota</h3>
-                    <div class="flex justify-end text-gray-400 group-hover:text-blue-600"><i class="fas fa-arrow-right text-sm"></i></div>
-                </div>
-            </div>
+                    $placeholderIcon = [
+                        'Pengumuman' => 'fa-bullhorn text-red-300 bg-red-50',
+                        'Prestasi' => 'fa-trophy text-blue-300 bg-blue-50',
+                        'Kegiatan' => 'fa-users text-emerald-300 bg-emerald-50',
+                        'Informasi' => 'fa-clipboard-check text-purple-300 bg-purple-50',
+                    ][$berita->kategori] ?? 'fa-newspaper text-blue-300 bg-blue-50';
+                @endphp
 
-            <!-- Item Berita 3 -->
-            <div @click="bukaBerita({
-                    kategori: 'Kegiatan',
-                    tanggal: '10 Agustus 2026',
-                    judul: 'MPLS Tahun Ajaran 2026/2027 Berjalan Lancar',
-                    isi: 'Kegiatan Masa Pengenalan Lingkungan Sekolah (MPLS) bagi peserta didik baru kelas 1 berjalan dengan ceria, aman, dan menyenangkan. Siswa diperkenalkan dengan lingkungan sekolah, bapak/ibu guru, fasilitas belajar, serta pembiasaan karakter positif.',
-                    link: '{{ route('ekstrakurikuler.public.index') }}'
-                })" 
-                class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition cursor-pointer" data-aos="fade-up" data-aos-delay="300">
-                <div class="h-40 bg-gradient-to-br from-green-50 to-gray-200 overflow-hidden relative flex items-center justify-center">
-                    <i class="fas fa-users text-5xl text-green-400/70 group-hover:scale-110 transition duration-500"></i>
-                    <span class="absolute top-2 left-2 bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded z-10">Kegiatan</span>
-                </div>
-                <div class="p-4">
-                    <p class="text-xs text-gray-400 mb-2">10 Agustus 2026</p>
-                    <h3 class="font-bold text-sm text-blue-900 mb-3 group-hover:text-blue-600 transition">MPLS Tahun Ajaran 2026/2027 Berjalan Lancar</h3>
-                    <div class="flex justify-end text-gray-400 group-hover:text-blue-600"><i class="fas fa-arrow-right text-sm"></i></div>
-                </div>
-            </div>
+                <div @click="beritaAktif = {
+                        judul: @js($berita->judul),
+                        kategori: '{{ $berita->kategori }}',
+                        tanggal: '{{ $berita->tanggal->translatedFormat('d F Y') }}',
+                        isi: @js($berita->isi),
+                        gambar: '{{ $berita->gambar ? asset('storage/' . $berita->gambar) : '' }}'
+                     }; detailModal = true"
+                     class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition cursor-pointer flex flex-col">
+                    
+                    <div class="h-44 overflow-hidden relative flex items-center justify-center {{ $placeholderIcon }}">
+                        <span class="absolute top-2.5 left-2.5 {{ $badgeStyle }} text-[10px] font-bold px-2.5 py-1 rounded z-10 shadow-sm">
+                            {{ $berita->kategori }}
+                        </span>
+                        @if($berita->gambar)
+                            <img src="{{ asset('storage/' . $berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        @else
+                            <i class="fas {{ explode(' ', $placeholderIcon)[0] }} text-5xl"></i>
+                        @endif
+                    </div>
 
-            <!-- Item Berita 4 -->
-            <div @click="bukaBerita({
-                    kategori: 'Informasi',
-                    tanggal: '5 Agustus 2026',
-                    judul: 'Daftar Ulang dan Pembagian Kelas Tahun Ajaran 2026/2027',
-                    isi: 'Informasi bagi seluruh orang tua/wali calon peserta didik baru bahwa proses registrasi daftar ulang dapat dilakukan secara online melalui menu Registrasi Daftar Ulang dengan mengunggah dokumen Akta Kelahiran dan Kartu Keluarga.',
-                    link: '{{ url('/registrasi-daftar-ulang') }}'
-                })" 
-                class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition cursor-pointer" data-aos="fade-up" data-aos-delay="400">
-                <div class="h-40 bg-gradient-to-br from-purple-50 to-gray-200 overflow-hidden relative flex items-center justify-center">
-                    <i class="fas fa-clipboard-check text-5xl text-purple-400/70 group-hover:scale-110 transition duration-500"></i>
-                    <span class="absolute top-2 left-2 bg-purple-100 text-purple-600 text-[10px] font-bold px-2 py-1 rounded z-10">Informasi</span>
+                    <div class="p-4 flex-1 flex flex-col">
+                        <p class="text-xs text-gray-400 mb-2">{{ $berita->tanggal->translatedFormat('d F Y') }}</p>
+                        <h3 class="font-bold text-sm text-blue-900 mb-3 group-hover:text-blue-600 transition line-clamp-2">{{ $berita->judul }}</h3>
+                        <div class="mt-auto flex justify-end text-gray-400 group-hover:text-blue-600">
+                            <i class="fas fa-arrow-right text-sm"></i>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-4">
-                    <p class="text-xs text-gray-400 mb-2">5 Agustus 2026</p>
-                    <h3 class="font-bold text-sm text-blue-900 mb-3 group-hover:text-blue-600 transition">Daftar Ulang dan Pembagian Kelas Tahun Ajaran 2026/2027</h3>
-                    <div class="flex justify-end text-gray-400 group-hover:text-blue-600"><i class="fas fa-arrow-right text-sm"></i></div>
+            @empty
+                <div class="col-span-4 text-center py-8 text-sm text-gray-500">
+                    Belum ada berita atau pengumuman terbaru.
                 </div>
-            </div>
+            @endforelse
         </div>
 
-        <!-- Modal Pop-up Detail Berita -->
-        <div x-show="modalBerita" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" x-transition.opacity>
-            <div @click.away="modalBerita = false" class="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl relative">
-                <button @click="modalBerita = false" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center">
+        <!-- POPUP MODAL BACA DETAIL BERITA DI BERANDA -->
+        <div x-show="detailModal" style="display: none;" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div @click.away="detailModal = false" class="bg-white rounded-3xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto relative">
+                <button type="button" @click="detailModal = false" class="absolute top-4 right-4 z-10 w-9 h-9 bg-white/90 text-gray-700 hover:bg-white rounded-full flex items-center justify-center shadow">
                     <i class="fas fa-times"></i>
                 </button>
-                <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3" x-text="beritaAktif.kategori"></span>
-                <p class="text-xs text-gray-400 mb-1" x-text="beritaAktif.tanggal"></p>
-                <h3 class="text-xl font-extrabold text-blue-950 mb-4 leading-snug" x-text="beritaAktif.judul"></h3>
-                <p class="text-sm text-gray-600 leading-relaxed mb-6" x-text="beritaAktif.isi"></p>
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button @click="modalBerita = false" class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold">Tutup</button>
-                    <a :href="beritaAktif.link" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold inline-flex items-center gap-2">
-                        <span>Buka Halaman Terkait</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+                <template x-if="beritaAktif">
+                    <div>
+                        <template x-if="beritaAktif.gambar">
+                            <img :src="beritaAktif.gambar" :alt="beritaAktif.judul" class="w-full h-64 object-cover">
+                        </template>
+                        <div class="p-6 sm:p-8 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 bg-blue-50 text-blue-700 font-bold text-xs rounded-lg" x-text="beritaAktif.kategori"></span>
+                                <span class="text-xs text-gray-400" x-text="beritaAktif.tanggal"></span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-blue-950 leading-snug" x-text="beritaAktif.judul"></h3>
+                            <p class="text-sm text-gray-600 leading-relaxed whitespace-pre-line pt-2" x-text="beritaAktif.isi"></p>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     </section>

@@ -20,7 +20,6 @@
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Dashboard</span>
         </a>
         
-        <!-- Menu Profil Sekolah (Telah Dibenahi) -->
         <a href="{{ url('/admin/profil') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/profil*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-building w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Profil Sekolah</span>
@@ -30,38 +29,47 @@
             <i class="fas fa-users w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Guru & Staff</span>
         </a>
+        
         <a href="{{ route('admin.program.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/program-sekolah*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-clipboard-list w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Program Sekolah</span>
         </a>
+        
         <a href="{{ route('admin.ekstrakurikuler.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/ekstrakurikuler*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-running w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Ekstrakurikuler</span>
         </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+        
+        <a href="{{ route('admin.berita.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.berita*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-newspaper w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Berita / Artikel</span>
         </a>
+        
         <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-images w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Galeri Foto</span>
         </a>
+        
         <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-object-group w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Slider / Banner</span>
         </a>
+        
         <a href="/admin/pendaftaran" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/pendaftaran*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-user-plus w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">PPDB / Registrasi</span>
         </a>
+        
         <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-envelope w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Kontak Masuk</span>
         </a>
+        
         <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-user-shield w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Pengguna Admin</span>
         </a>
+        
         <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-cog w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Pengaturan Website</span>
