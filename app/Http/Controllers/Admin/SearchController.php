@@ -26,7 +26,9 @@ class SearchController extends Controller
             ['judul' => 'Guru & Staf', 'deskripsi' => 'Kelola data guru dan staf', 'url' => route('admin.guru.index'), 'kata_kunci' => 'pendidik pegawai guru'],
             ['judul' => 'Program Sekolah', 'deskripsi' => 'Kelola program sekolah', 'url' => route('admin.program.index'), 'kata_kunci' => 'program kegiatan'],
             ['judul' => 'Ekstrakurikuler', 'deskripsi' => 'Kelola kegiatan ekstrakurikuler', 'url' => route('admin.ekstrakurikuler.index'), 'kata_kunci' => 'ekskul kegiatan siswa'],
-            ['judul' => 'PPDB & Daftar Ulang', 'deskripsi' => 'Lihat data pendaftaran dan daftar ulang', 'url' => route('admin.pendaftaran.index'), 'kata_kunci' => 'siswa ppdb pendaftar registrasi daftar ulang'],
+            ['judul' => 'PPDB', 'deskripsi' => 'Kelola siswa yang diterima PPDB', 'url' => route('admin.ppdb.index'), 'kata_kunci' => 'siswa diterima ppdb'],
+            ['judul' => 'Registrasi Daftar Ulang', 'deskripsi' => 'Verifikasi data dan dokumen daftar ulang', 'url' => route('admin.pendaftaran.index'), 'kata_kunci' => 'registrasi pendaftar daftar ulang'],
+            ['judul' => 'Jadwal Registrasi', 'deskripsi' => 'Atur periode buka dan tutup registrasi daftar ulang', 'url' => route('admin.registration-period.edit'), 'kata_kunci' => 'jadwal periode buka tutup registrasi'],
             ['judul' => 'Galeri Foto', 'deskripsi' => 'Lihat galeri foto sekolah', 'url' => route('admin.galeri.index'), 'kata_kunci' => 'foto dokumentasi gambar'],
         ])->filter(fn (array $item): bool => $query !== '' && str_contains(mb_strtolower($item['judul'].' '.$item['deskripsi'].' '.$item['kata_kunci']), mb_strtolower($query)))
             ->values();
@@ -60,13 +62,15 @@ class SearchController extends Controller
                 ->each(fn (Ekstrakurikuler $item) => $informasi->push($this->hasil('Ekstrakurikuler', $item->nama_ekskul, $item->jadwal, route('admin.ekstrakurikuler.index'))));
 
             SiswaPpdb::query()
+                ->where('dicatat_admin', true)
                 ->where(fn ($builder) => $builder->where('nama_siswa', 'like', $term)->orWhere('no_pendaftaran', 'like', $term)->orWhere('nisn', 'like', $term)->orWhere('asal_sekolah', 'like', $term))
                 ->orderBy('nama_siswa')->limit(8)->get()
-                ->each(fn (SiswaPpdb $siswa) => $informasi->push($this->hasil('PPDB', $siswa->nama_siswa, 'No. pendaftaran: '.$siswa->no_pendaftaran, route('admin.pendaftaran.index'))));
+                ->each(fn (SiswaPpdb $siswa) => $informasi->push($this->hasil('PPDB', $siswa->nama_siswa, 'No. pendaftaran: '.$siswa->no_pendaftaran, route('admin.ppdb.index'))));
 
-            DaftarUlang::query()->with('siswaPpdb')
-                ->where('status', 'like', $term)
-                ->orWhereHas('siswaPpdb', fn ($builder) => $builder->where('nama_siswa', 'like', $term))
+            DaftarUlang::query()->whereHas('siswaPpdb', fn ($builder) => $builder->where('dicatat_admin', true))
+                ->with('siswaPpdb')
+                ->where(fn ($builder) => $builder->where('status', 'like', $term)
+                    ->orWhereHas('siswaPpdb', fn ($studentQuery) => $studentQuery->where('nama_siswa', 'like', $term)))
                 ->latest()->limit(8)->get()
                 ->each(fn (DaftarUlang $item) => $informasi->push($this->hasil('Daftar Ulang', $item->siswaPpdb?->nama_siswa ?? 'Data siswa', 'Status: '.$item->status, route('admin.pendaftaran.index'))));
         }

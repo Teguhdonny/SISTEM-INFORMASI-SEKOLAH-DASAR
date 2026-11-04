@@ -50,9 +50,17 @@
             <i class="fas fa-object-group w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Slider / Banner</span>
         </a>
-        <a href="/admin/pendaftaran" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/pendaftaran*') ? 'bg-blue-600 shadow-sm' : '' }}">
+        <a href="{{ route('admin.ppdb.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/data-ppdb*') ? 'bg-blue-600 shadow-sm' : '' }}">
+            <i class="fas fa-user-graduate w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">PPDB</span>
+        </a>
+        <a href="{{ route('admin.pendaftaran.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/pendaftaran*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-user-plus w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">PPDB / Registrasi</span>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Registrasi Daftar Ulang</span>
+        </a>
+        <a href="{{ route('admin.registration-period.edit') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/jadwal-registrasi*') ? 'bg-blue-600 shadow-sm' : '' }}">
+            <i class="fas fa-calendar-days w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Jadwal Registrasi</span>
         </a>
         <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-envelope w-5 text-center shrink-0"></i>
