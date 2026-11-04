@@ -1,22 +1,26 @@
 <?php
 
+use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EkstrakurikulerController;
 use App\Http\Controllers\Admin\GuruController;
 use App\Http\Controllers\Admin\ProfilSekolahController;
 use App\Http\Controllers\Admin\ProgramSekolahController;
+use App\Http\Controllers\Admin\RegistrationPeriodController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\Admin\BeritaController;
+use App\Http\Controllers\Admin\SiswaPpdbController;
 use App\Http\Controllers\Api\PendaftaranController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PendaftaranWebController;
+use App\Models\Berita;
 use App\Models\Ekstrakurikuler;
 use App\Models\Guru;
 use App\Models\ProfilSekolah;
 use App\Models\ProgramSekolah;
+use App\Models\RegistrationPeriod;
+use App\Models\SiswaPpdb;
 use App\Models\VisiMisi;
-use App\Models\Berita;
 use Illuminate\Support\Facades\Route;
 
 // ==============================
@@ -89,7 +93,20 @@ Route::get('/jadwal-pelajaran', function () {
 })->name('jadwal.public.index');
 
 Route::get('/informasi-ppdb', function () {
-    return view('pages.public.registrasi.ppdb');
+    $registrationPeriod = RegistrationPeriod::query()->first();
+    $ppdbOpen = $registrationPeriod?->isPpdbOpenAt(now('Asia/Jakarta')) ?? false;
+    $siswaLulus = collect();
+
+    if ($ppdbOpen && $registrationPeriod?->tahun_ajaran) {
+        $siswaLulus = SiswaPpdb::query()
+            ->where('dicatat_admin', true)
+            ->where('status_diterima', true)
+            ->where('tahun_ajaran', $registrationPeriod->tahun_ajaran)
+            ->orderBy('nama_siswa')
+            ->get();
+    }
+
+    return view('pages.public.ppdb', compact('registrationPeriod', 'ppdbOpen', 'siswaLulus'));
 })->name('ppdb.public.index');
 
 // Halaman Registrasi Daftar Ulang (PPDB Publik - Tanpa Login)
@@ -105,15 +122,14 @@ Route::get('/login', [LoginController::class, 'create'])->middleware('guest')->n
 Route::post('/login', [LoginController::class, 'store'])->middleware(['guest', 'throttle:5,1'])->name('login.store');
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
-// Rute Admin Berita & Artikel
-Route::resource('/admin/berita', BeritaController::class)->only(['index', 'store', 'update', 'destroy'])->names('admin.berita')->middleware(['auth', 'admin']);
-
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.dashboard');
 Route::get('/admin/pencarian', [SearchController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.search');
 
-Route::post('/admin/pendaftaran/toggle-status', [\App\Http\Controllers\PendaftaranWebController::class, 'toggleStatus'])->name('admin.ppdb.toggle');
+// Rute Admin Berita & Pengumuman
+Route::resource('/admin/berita', BeritaController::class)->only(['index', 'store', 'update', 'destroy'])->names('admin.berita')->middleware(['auth', 'admin']);
 
-// Rute Pengaturan Pendaftaran
+// Rute Toggle & Pengaturan Pendaftaran
+Route::post('/admin/pendaftaran/toggle-status', [PendaftaranWebController::class, 'toggleStatus'])->middleware(['auth', 'admin'])->name('admin.ppdb.toggle');
 Route::get('/admin/setting', [SettingController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.setting.index');
 Route::post('/admin/setting/update-pendaftaran', [SettingController::class, 'updatePendaftaran'])->middleware(['auth', 'admin'])->name('admin.setting.update-pendaftaran');
 
@@ -125,7 +141,20 @@ Route::resource('/admin/guru', GuruController::class)->names('admin.guru')->midd
 
 Route::resource('/admin/program-sekolah', ProgramSekolahController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['program-sekolah' => 'programSekolah'])->names('admin.program')->middleware(['auth', 'admin']);
 
-// Panel Admin PPDB & Menu Lainnya
+// Panel Admin PPDB, Daftar Ulang & Jadwal Registrasi
+Route::resource('/admin/data-ppdb', SiswaPpdbController::class)
+    ->only(['index', 'store', 'update', 'destroy'])
+    ->parameters(['data-ppdb' => 'siswaPpdb'])
+    ->names('admin.ppdb')
+    ->middleware(['auth', 'admin']);
+
+Route::get('/admin/jadwal-registrasi', [RegistrationPeriodController::class, 'edit'])
+    ->middleware(['auth', 'admin'])
+    ->name('admin.registration-period.edit');
+Route::put('/admin/jadwal-registrasi', [RegistrationPeriodController::class, 'update'])
+    ->middleware(['auth', 'admin'])
+    ->name('admin.registration-period.update');
+
 Route::get('/admin/pendaftaran', [PendaftaranWebController::class, 'adminIndex'])->middleware(['auth', 'admin'])->name('admin.pendaftaran.index');
 Route::post('/admin/pendaftaran/{id}/status', [PendaftaranWebController::class, 'updateStatus'])->middleware(['auth', 'admin'])->name('admin.pendaftaran.status');
 
@@ -137,4 +166,4 @@ Route::resource('/admin/ekstrakurikuler', EkstrakurikulerController::class)->onl
 
 Route::get('/pendaftaran', [PendaftaranController::class, 'index']);
 Route::post('/pendaftaran', [PendaftaranController::class, 'store']);
-Route::post('/pendaftaran/{id}/validasi', [PendaftaranController::class, 'validasiStatus']);
+Route::post('/pendaftaran/{id}/validasi', [PendaftaranController::class, 'validasi'])->middleware(['auth', 'admin']);

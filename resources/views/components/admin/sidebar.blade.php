@@ -1,98 +1,90 @@
-<!-- Sidebar Kiri -->
-<aside class="bg-[#1e3a8a] text-white flex flex-col transition-all duration-300 relative overflow-hidden" 
-       :class="sidebarOpen ? 'w-64' : 'w-20'">
-    
-    <!-- Logo Area -->
-    <div class="h-16 flex items-center px-4 bg-[#172554] shrink-0 border-b border-blue-800 relative z-10">
-        <div class="w-8 h-8 bg-white text-blue-900 rounded flex items-center justify-center shrink-0">
-            <i class="fas fa-book-open"></i>
+<aside :class="sidebarOpen ? 'w-64' : 'w-20'" class="bg-blue-950 text-white min-h-screen transition-all duration-300 flex flex-col shrink-0 shadow-xl z-30">
+    <!-- Logo & Nama Sekolah -->
+    <div class="h-16 flex items-center px-4 border-b border-blue-900/60">
+        <div class="w-10 h-10 bg-white text-blue-950 rounded-xl flex items-center justify-center font-extrabold text-sm shrink-0 shadow">
+            <i class="fas fa-school text-blue-900 text-lg"></i>
         </div>
-        <div class="ml-3 font-bold truncate transition-opacity duration-300" x-show="sidebarOpen">
-            <p class="text-sm leading-tight">SDN POJOK 2</p>
-            <p class="text-[10px] text-blue-300 font-normal">Kota Kediri</p>
+        <div class="ml-3 overflow-hidden" x-show="sidebarOpen" x-transition>
+            <h1 class="font-extrabold text-sm tracking-wide leading-tight truncate">SDN POJOK 2</h1>
+            <p class="text-[11px] text-blue-300 truncate">Kota Kediri</p>
         </div>
     </div>
 
-    <!-- Menu Navigasi -->
-    <nav class="flex-1 overflow-y-auto py-4 space-y-1 custom-scrollbar relative z-10">
-        <a href="/admin/dashboard" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/dashboard') ? 'bg-blue-600 shadow-sm' : '' }}">
+    <!-- Daftar Menu Navigasi -->
+    <nav class="flex-1 py-4 space-y-1 overflow-y-auto text-blue-100">
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
             <i class="fas fa-home w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Dashboard</span>
         </a>
-        
-        <a href="{{ url('/admin/profil') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/profil*') ? 'bg-blue-600 shadow-sm' : '' }}">
+
+        <a href="{{ route('admin.profil.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.profil*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
             <i class="fas fa-building w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Profil Sekolah</span>
         </a>
-        
-        <a href="{{ route('admin.guru.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/guru*') ? 'bg-blue-600 shadow-sm' : '' }}">
-            <i class="fas fa-users w-5 text-center shrink-0"></i>
+
+        <a href="{{ route('admin.guru.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.guru*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
+            <i class="fas fa-chalkboard-teacher w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Guru & Staff</span>
         </a>
-        
-        <a href="{{ route('admin.program.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/program-sekolah*') ? 'bg-blue-600 shadow-sm' : '' }}">
-            <i class="fas fa-clipboard-list w-5 text-center shrink-0"></i>
+
+        <a href="{{ route('admin.program.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.program*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
+            <i class="fas fa-book-open w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Program Sekolah</span>
         </a>
-        
-        <a href="{{ route('admin.ekstrakurikuler.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/ekstrakurikuler*') ? 'bg-blue-600 shadow-sm' : '' }}">
+
+        <a href="{{ route('admin.ekstrakurikuler.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.ekstrakurikuler*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
             <i class="fas fa-running w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Ekstrakurikuler</span>
         </a>
-        
-        <a href="{{ route('admin.berita.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.berita*') ? 'bg-blue-600 shadow-sm' : '' }}">
+
+        <a href="{{ route('admin.berita.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.berita*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
             <i class="fas fa-newspaper w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Berita / Artikel</span>
         </a>
-        
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+
+        <a href="{{ route('admin.galeri.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.galeri*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
             <i class="fas fa-images w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Galeri Foto</span>
         </a>
-        
+
         <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-object-group w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Slider / Banner</span>
         </a>
-        
-        <a href="/admin/pendaftaran" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/pendaftaran*') ? 'bg-blue-600 shadow-sm' : '' }}">
-            <i class="fas fa-user-plus w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">PPDB / Registrasi</span>
+
+        <a href="{{ route('admin.ppdb.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/data-ppdb*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
+            <i class="fas fa-user-graduate w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">PPDB</span>
         </a>
-        
+
+        <a href="{{ route('admin.pendaftaran.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/pendaftaran*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
+            <i class="fas fa-user-plus w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Registrasi Daftar Ulang</span>
+        </a>
+
+        <a href="{{ route('admin.registration-period.edit') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/jadwal-registrasi*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
+            <i class="fas fa-calendar-days w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Jadwal Registrasi</span>
+        </a>
+
         <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-envelope w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Kontak Masuk</span>
         </a>
-        
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
-            <i class="fas fa-user-shield w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Pengguna Admin</span>
-        </a>
-        
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+
+        <a href="{{ route('admin.setting.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.setting*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
             <i class="fas fa-cog w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Pengaturan Website</span>
         </a>
     </nav>
 
-    <!-- Dekorasi Grafis Merah Putih -->
-    <div class="absolute bottom-0 left-0 w-full h-32 pointer-events-none z-0 opacity-90">
-        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="w-full h-full">
-            <!-- Bentuk Merah -->
-            <polygon points="0,100 100,100 0,30" fill="#dc2626" />
-            <!-- Bentuk Putih -->
-            <polygon points="0,100 60,100 0,55" fill="#ffffff" />
-        </svg>
-    </div>
-
-    <!-- Logout Bottom -->
-    <div class="p-4 border-t border-blue-800/50 relative z-10">
-        <form method="POST" action="{{ route('logout') }}">
+    <!-- Tombol Logout -->
+    <div class="p-4 border-t border-blue-900/60">
+        <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="flex w-full items-center rounded px-4 py-2 text-left font-bold text-white transition hover:bg-black/20">
+            <button type="submit" class="w-full flex items-center px-3 py-2 rounded-xl text-red-300 hover:bg-red-600 hover:text-white transition">
                 <i class="fas fa-sign-out-alt w-5 text-center shrink-0"></i>
-                <span class="ml-3 text-sm" x-show="sidebarOpen">Logout</span>
+                <span class="ml-3 text-sm font-bold" x-show="sidebarOpen">Logout</span>
             </button>
         </form>
     </div>
