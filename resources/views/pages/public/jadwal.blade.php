@@ -28,35 +28,39 @@
             </div>
 
             <!-- Grid Jadwal Senin - Sabtu -->
-            @php
-                $jadwalHarian = [
-                    'Senin' => ['07.00 - 07.35' => 'Upacara Bendera', '07.35 - 08.45' => 'Pendidikan Pancasila', '08.45 - 09.55' => 'Bahasa Indonesia', '10.15 - 11.25' => 'Matematika'],
-                    'Selasa' => ['07.00 - 07.15' => 'Literasi Pagi', '07.15 - 08.25' => 'Matematika / Numerasi', '08.25 - 09.35' => 'IPAS / Tematik', '09.55 - 11.05' => 'Seni dan Budaya'],
-                    'Rabu' => ['07.00 - 07.15' => 'Literasi Pagi', '07.15 - 08.25' => 'Bahasa Indonesia', '08.25 - 09.35' => 'Pendidikan Agama & Budi Pekerti', '09.55 - 11.05' => 'PJOK (Olahraga)'],
-                    'Kamis' => ['07.00 - 07.15' => 'Literasi Pagi', '07.15 - 08.25' => 'Matematika / Numerasi', '08.25 - 09.35' => 'Bahasa Jawa (Muatan Lokal)', '09.55 - 11.05' => 'Bahasa Inggris'],
-                    'Jumat' => ['07.00 - 07.45' => 'Jumat Berkarakter / Jumat Sehat', '07.45 - 09.00' => 'Projek Penguatan Profil Pelajar (P5)', '09.15 - 10.30' => 'Bahasa Indonesia', '13.00 - 15.00' => 'Ekstrakurikuler Pramuka'],
-                    'Sabtu' => ['07.00 - 07.30' => 'Gerakan Lingkungan BERSEHAT', '07.30 - 08.45' => 'Pengembangan Diri / CERMAT', '09.00 - 10.30' => 'Ekstrakurikuler Pilihan'],
-                ];
-            @endphp
+            @foreach (\App\Models\JadwalPelajaran::DAFTAR_KELAS as $namaKelas)
+                @php
+                    $jadwalHarian = $jadwalPerKelas->get($namaKelas, collect());
+                @endphp
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach ($jadwalHarian as $hari => $mapelList)
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="bg-blue-900 text-white px-5 py-3.5 flex items-center justify-between">
-                            <span class="font-extrabold text-sm"><i class="far fa-calendar-check mr-2"></i> {{ $hari }}</span>
-                            <span class="text-[11px] bg-white/20 px-2.5 py-0.5 rounded-full font-bold" x-text="kelasAktif"></span>
+                <div x-show="kelasAktif === '{{ $namaKelas }}'" @if (! $loop->first) x-cloak style="display: none;" @endif>
+                    @if ($jadwalHarian->isEmpty())
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center text-sm text-gray-500">
+                            Jadwal pelajaran {{ $namaKelas }} belum tersedia.
                         </div>
-                        <div class="p-5 divide-y divide-gray-100 space-y-3">
-                            @foreach ($mapelList as $jam => $mapel)
-                                <div class="pt-3 first:pt-0 flex items-start justify-between gap-3 text-xs">
-                                    <span class="text-gray-400 font-semibold shrink-0">{{ $jam }}</span>
-                                    <span class="font-bold text-gray-800 text-right">{{ $mapel }}</span>
+                    @else
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach (\App\Models\JadwalPelajaran::DAFTAR_HARI as $hari)
+                                @continue(! $jadwalHarian->has($hari))
+                                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                                    <div class="bg-blue-900 text-white px-5 py-3.5 flex items-center justify-between">
+                                        <span class="font-extrabold text-sm"><i class="far fa-calendar-check mr-2"></i> {{ $hari }}</span>
+                                        <span class="text-[11px] bg-white/20 px-2.5 py-0.5 rounded-full font-bold" x-text="kelasAktif"></span>
+                                    </div>
+                                    <div class="p-5 divide-y divide-gray-100 space-y-3">
+                                        @foreach ($jadwalHarian->get($hari) as $pelajaran)
+                                            <div class="pt-3 first:pt-0 flex items-start justify-between gap-3 text-xs">
+                                                <span class="text-gray-400 font-semibold shrink-0">{{ $pelajaran->jam_label }}</span>
+                                                <span class="font-bold text-gray-800 text-right">{{ $pelajaran->mata_pelajaran }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
-                    </div>
-                @endforeach
-            </div>
+                    @endif
+                </div>
+            @endforeach
         </section>
     </div>
 </x-layouts.app>

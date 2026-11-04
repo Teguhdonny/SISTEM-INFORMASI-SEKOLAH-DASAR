@@ -26,6 +26,7 @@ class SearchController extends Controller
             ['judul' => 'Guru & Staf', 'deskripsi' => 'Kelola data guru dan staf', 'url' => route('admin.guru.index'), 'kata_kunci' => 'pendidik pegawai guru'],
             ['judul' => 'Program Sekolah', 'deskripsi' => 'Kelola program sekolah', 'url' => route('admin.program.index'), 'kata_kunci' => 'program kegiatan'],
             ['judul' => 'Ekstrakurikuler', 'deskripsi' => 'Kelola kegiatan ekstrakurikuler', 'url' => route('admin.ekstrakurikuler.index'), 'kata_kunci' => 'ekskul kegiatan siswa'],
+            ['judul' => 'Jadwal Pelajaran', 'deskripsi' => 'Kelola jadwal pelajaran tiap kelas', 'url' => route('admin.jadwal.index'), 'kata_kunci' => 'jadwal pelajaran mapel kelas hari jam'],
             ['judul' => 'PPDB & Daftar Ulang', 'deskripsi' => 'Lihat data pendaftaran dan daftar ulang', 'url' => route('admin.pendaftaran.index'), 'kata_kunci' => 'siswa ppdb pendaftar registrasi daftar ulang'],
             ['judul' => 'Galeri Foto', 'deskripsi' => 'Lihat galeri foto sekolah', 'url' => route('admin.galeri.index'), 'kata_kunci' => 'foto dokumentasi gambar'],
         ])->filter(fn (array $item): bool => $query !== '' && str_contains(mb_strtolower($item['judul'].' '.$item['deskripsi'].' '.$item['kata_kunci']), mb_strtolower($query)))
