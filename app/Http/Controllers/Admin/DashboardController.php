@@ -21,13 +21,14 @@ class DashboardController extends Controller
     public function index(): View
     {
         $totalGuru = Guru::query()->count();
-        $totalSiswa = SiswaPpdb::query()->count();
+        $totalSiswa = SiswaPpdb::query()->where('dicatat_admin', true)->count();
         $totalBerita = self::TOTAL_BERITA_BERANDA;
-        $totalDaftarUlang = DaftarUlang::query()->count();
+        $totalDaftarUlang = DaftarUlang::query()->whereHas('siswaPpdb', fn ($query) => $query->where('dicatat_admin', true))->count();
         $tahunSekarang = CarbonImmutable::now('Asia/Jakarta')->year;
         $awalRentang = CarbonImmutable::create($tahunSekarang - 4, 1, 1, 0, 0, 0, 'Asia/Jakarta');
         $akhirRentang = CarbonImmutable::create($tahunSekarang, 12, 31, 23, 59, 59, 'Asia/Jakarta');
         $ppdbPerTahun = SiswaPpdb::query()
+            ->where('dicatat_admin', true)
             ->whereBetween('created_at', [$awalRentang, $akhirRentang])
             ->get(['created_at'])
             ->groupBy(fn (SiswaPpdb $pendaftar): int => $pendaftar->created_at->timezone('Asia/Jakarta')->year);
@@ -61,13 +62,13 @@ class DashboardController extends Controller
             ));
         }
 
-        foreach (SiswaPpdb::query()->latest('updated_at')->limit(5)->get() as $siswa) {
+        foreach (SiswaPpdb::query()->where('dicatat_admin', true)->latest('updated_at')->limit(5)->get() as $siswa) {
             $aktivitas->push($this->buatAktivitas(
                 'PPDB', $siswa->nama_siswa, $siswa->created_at, $siswa->updated_at, 'fa-user-plus', 'blue'
             ));
         }
 
-        foreach (DaftarUlang::query()->with('siswaPpdb')->latest('updated_at')->limit(5)->get() as $daftarUlang) {
+        foreach (DaftarUlang::query()->whereHas('siswaPpdb', fn ($query) => $query->where('dicatat_admin', true))->with('siswaPpdb')->latest('updated_at')->limit(5)->get() as $daftarUlang) {
             $aktivitas->push($this->buatAktivitas(
                 'Daftar ulang', $daftarUlang->siswaPpdb?->nama_siswa ?? 'Data siswa', $daftarUlang->created_at, $daftarUlang->updated_at, 'fa-user-graduate', 'green'
             ));

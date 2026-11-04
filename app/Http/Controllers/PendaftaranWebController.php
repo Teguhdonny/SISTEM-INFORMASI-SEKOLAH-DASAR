@@ -2,45 +2,67 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RegistrationPeriod;
 use App\Models\SiswaPpdb;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PendaftaranWebController extends Controller
 {
-    public function create()
+    public function create(): View
     {
-        return view('pages.public.registrasi.ppdb');
+        $registrationPeriod = RegistrationPeriod::query()->first();
+        $registrationOpen = $registrationPeriod?->acceptsRegistrationsAt(now('Asia/Jakarta')) ?? false;
+
+        return view('pages.public.registrasi.ppdb', compact('registrationPeriod', 'registrationOpen'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'no_pendaftaran' => 'required|unique:siswa_ppdb,no_pendaftaran',
-            'nisn' => 'required|digits:10|unique:siswa_ppdb,nisn',
-            'nama_siswa' => 'required|string|max:150',
-            'jenjang' => 'required|string',
-            'asal_sekolah' => 'nullable|string',
-            'nama_wali' => 'required|string|max:100',
+        $registrationPeriod = RegistrationPeriod::query()->first();
+        if (! $registrationPeriod?->acceptsRegistrationsAt(now('Asia/Jakarta'))) {
+            return redirect()->route('registrasi.public.create')->with('registration_closed', true);
+        }
+
+        $validated = $request->validate([
+            'nisn' => ['required', 'digits:10'],
+            'nama_siswa' => ['required', 'string', 'max:150'],
+            'nama_wali' => ['required', 'string', 'max:100'],
             'no_whatsapp' => ['required', 'regex:/^[0-9]{8,20}$/'],
-            'file_akta' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'file_kk' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'file_akta' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'file_kk' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+        ], [
+            'file_akta.required' => 'Akta Kelahiran wajib diunggah.',
+            'file_kk.required' => 'Kartu Keluarga wajib diunggah.',
         ]);
 
-        $siswa = SiswaPpdb::create([
-            'no_pendaftaran' => $request->no_pendaftaran,
-            'nisn' => $request->nisn,
-            'nama_siswa' => $request->nama_siswa,
-            'jenjang' => $request->jenjang,
-            'asal_sekolah' => $request->asal_sekolah ?? '-',
-            'status_diterima' => true,
-        ]);
+        $siswa = SiswaPpdb::query()
+            ->where('dicatat_admin', true)
+            ->where('tahun_ajaran', $registrationPeriod->tahun_ajaran)
+            ->where('nisn', $validated['nisn'])
+            ->where('nama_siswa', $validated['nama_siswa'])
+            ->where('status_diterima', true)
+            ->first();
+
+        if (! $siswa) {
+            return back()
+                ->withErrors(['nisn' => 'Data nama dan NISN tidak cocok dengan daftar siswa yang diterima PPDB.'])
+                ->withInput();
+        }
+
+        if ($siswa->daftarUlang()->exists()) {
+            return back()
+                ->withErrors(['nisn' => 'Siswa ini sudah mengirim registrasi daftar ulang.'])
+                ->withInput();
+        }
 
         $aktaPath = $request->hasFile('file_akta') ? $request->file('file_akta')->store('dokumen_ppdb', 'public') : null;
         $kkPath = $request->hasFile('file_kk') ? $request->file('file_kk')->store('dokumen_ppdb', 'public') : null;
 
         $siswa->daftarUlang()->create([
-            'nama_wali' => $request->nama_wali,
-            'no_whatsapp' => $request->no_whatsapp,
+            'nama_wali' => $validated['nama_wali'],
+            'no_whatsapp' => $validated['no_whatsapp'],
             'file_akta' => $aktaPath,
             'file_kk' => $kkPath,
             'status' => 'Menunggu Verifikasi',
@@ -49,10 +71,10 @@ class PendaftaranWebController extends Controller
         return redirect()->back()->with('success', 'Pendaftaran berhasil dikirim! Data Anda sudah masuk ke sistem.');
     }
 
-    // Menampilkan data dan statistik di Panel Admin
-    public function adminIndex()
+    // Menampilkan data dan statistik registrasi daftar ulang di Panel Admin
+    public function adminIndex(): View
     {
-        $pendaftars = SiswaPpdb::with('daftarUlang')->latest()->get();
+        $pendaftars = SiswaPpdb::query()->where('dicatat_admin', true)->whereHas('daftarUlang')->with('daftarUlang')->latest()->get();
 
         // Hitung statistik untuk 4 kartu ringkasan
         $totalPendaftar = $pendaftars->count();
@@ -72,23 +94,14 @@ class PendaftaranWebController extends Controller
     }
 
     // Mengubah status verifikasi pendaftar oleh admin
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request, int $id): RedirectResponse
     {
         $request->validate([
             'status' => 'required|in:Menunggu Verifikasi,Diterima,Ditolak',
         ]);
 
-        $siswa = SiswaPpdb::findOrFail($id);
-
-        if ($siswa->daftarUlang) {
-            $siswa->daftarUlang->update(['status' => $request->status]);
-        } else {
-            $siswa->daftarUlang()->create([
-                'nama_wali' => '-',
-                'no_whatsapp' => '-',
-                'status' => $request->status,
-            ]);
-        }
+        $siswa = SiswaPpdb::query()->where('dicatat_admin', true)->whereHas('daftarUlang')->findOrFail($id);
+        $siswa->daftarUlang->update(['status' => $request->status]);
 
         return redirect()->back()->with('success', 'Status verifikasi siswa berhasil diperbarui!');
     }

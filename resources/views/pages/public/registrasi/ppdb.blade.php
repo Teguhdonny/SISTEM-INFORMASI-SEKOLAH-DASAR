@@ -30,7 +30,11 @@
                 Registrasi <span class="text-blue-300">Daftar Ulang</span>
             </h1>
             <p class="mt-3 text-sm sm:text-base text-blue-100 max-w-2xl leading-relaxed">
-                Lengkapi data dan unggah dokumen yang diperlukan untuk proses daftar ulang peserta didik baru. Pastikan semua berkas sesuai dengan ketentuan yang berlaku.
+                @if ($registrationPeriod?->tahun_ajaran)
+                    Periode daftar ulang tahun ajaran {{ $registrationPeriod->tahun_ajaran }}. Lengkapi data dan unggah dokumen yang diperlukan selama jadwal registrasi masih dibuka.
+                @else
+                    Lengkapi data dan unggah dokumen yang diperlukan untuk proses daftar ulang peserta didik baru selama jadwal registrasi masih dibuka.
+                @endif
             </p>
         </div>
     </section>
@@ -48,14 +52,32 @@
                     <span class="block sm:inline">{{ session('success') }}</span>
                 </div>
             </div>
-            <a href="/admin/pendaftaran" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">
-                Cek Data di Admin &rarr;
+            <a href="{{ route('ppdb.public.index') }}" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">
+                Lihat Informasi PPDB &rarr;
             </a>
         </div>
         @endif
 
+        @unless($registrationOpen)
+        <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-5 text-amber-900" role="status">
+            <div class="flex items-start gap-3">
+                <i class="fas fa-calendar-xmark mt-0.5 text-lg"></i>
+                <div>
+                    <p class="font-bold">Registrasi daftar ulang sedang ditutup</p>
+                    @if ($registrationPeriod?->is_open && $registrationPeriod->opens_at && now('Asia/Jakarta')->toDateString() < $registrationPeriod->opens_at->copy()->timezone('Asia/Jakarta')->toDateString())
+                        <p class="mt-1 text-sm">Registrasi akan dibuka pada {{ $registrationPeriod->opens_at->copy()->timezone('Asia/Jakarta')->translatedFormat('d F Y') }}.</p>
+                    @elseif ($registrationPeriod?->is_open && $registrationPeriod->closes_at && now('Asia/Jakarta')->toDateString() > $registrationPeriod->closes_at->copy()->timezone('Asia/Jakarta')->toDateString())
+                        <p class="mt-1 text-sm">Periode registrasi berakhir pada {{ $registrationPeriod->closes_at->copy()->timezone('Asia/Jakarta')->translatedFormat('d F Y') }}.</p>
+                    @else
+                        <p class="mt-1 text-sm">Silakan kembali saat sekolah membuka periode registrasi.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+        @endunless
+
         <!-- Notifikasi Error Validasi -->
-        @if($errors->any())
+        @if($errors->any() && $registrationOpen)
         <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-sm relative flex items-center gap-3" role="alert">
             <i class="fas fa-exclamation-circle text-red-600 text-lg"></i>
             <div>
@@ -170,16 +192,21 @@
                     </div>
                 </div>
 
-                <!-- Box Call to Action (Mulai Daftar Ulang) -->
+                <!-- Box Call to Action / Status Registrasi -->
                 <div class="bg-gradient-to-br from-blue-900 to-blue-800 rounded-2xl shadow-md p-6 text-white text-center">
                     <div class="w-12 h-12 mx-auto bg-blue-700 rounded-full flex items-center justify-center text-xl mb-3 shadow">
-                        <i class="fas fa-user-plus"></i>
+                        <i class="fas {{ $registrationOpen ? 'fa-user-plus' : 'fa-calendar-xmark' }}"></i>
                     </div>
-                    <h3 class="font-bold text-base mb-1">Mulai Daftar Ulang Sekarang</h3>
-                    <p class="text-xs text-blue-200 mb-4">Pastikan semua data dan dokumen sudah siap sebelum melanjutkan.</p>
-                    <button id="openModalBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
-                        <span>Lanjutkan</span> <i class="fas fa-arrow-right"></i>
-                    </button>
+                    @if ($registrationOpen)
+                        <h3 class="font-bold text-base mb-1">Mulai Daftar Ulang Sekarang</h3>
+                        <p class="text-xs text-blue-200 mb-4">Pastikan semua data dan dokumen sudah siap sebelum melanjutkan.</p>
+                        <button id="openModalBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition duration-200 text-sm flex items-center justify-center gap-2">
+                            <span>Lanjutkan</span> <i class="fas fa-arrow-right"></i>
+                        </button>
+                    @else
+                        <h3 class="font-bold text-base mb-1">Registrasi Belum Dibuka</h3>
+                        <p class="text-xs text-blue-200">Formulir akan tersedia selama periode yang ditentukan sekolah.</p>
+                    @endif
                 </div>
 
             </div>
@@ -187,6 +214,7 @@
         </div>
     </main>
 
+    @if ($registrationOpen)
     <!-- POPUP MODAL BORANG PENDAFTARAN -->
     <div id="pendaftaranModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4 hidden overflow-y-auto">
         <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 relative">
@@ -198,7 +226,7 @@
 
             <div class="mb-6 pr-8">
                 <h2 class="text-2xl font-bold text-gray-900">Formulir Pendaftaran</h2>
-                <p class="text-xs text-gray-500 mt-1">Silakan lengkapi data diri dan unggah berkas dengan benar.</p>
+                <p class="text-xs text-gray-500 mt-1">Registrasi hanya dapat dilakukan oleh siswa yang namanya tercantum pada daftar siswa diterima PPDB.</p>
             </div>
 
             <!-- Form Pendaftaran -->
@@ -207,42 +235,22 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Nomor Pendaftaran</label>
-                        <input type="text" name="no_pendaftaran" required placeholder="Contoh: PPDB-2026-001" value="{{ old('no_pendaftaran') }}"
-                            class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">NISN</label>
-                        <input type="text" name="nisn" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="10" required placeholder="Nomor Induk Siswa Nasional" value="{{ old('nisn') }}"
-                            class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Lengkap Siswa</label>
                         <input type="text" name="nama_siswa" required placeholder="Sesuai Akta Kelahiran" value="{{ old('nama_siswa') }}"
                             class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Jenjang / Kelas</label>
-                        <select name="jenjang" class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
-                            <option value="Kelas 1">Kelas 1</option>
-                        </select>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">NISN</label>
+                        <input type="text" name="nisn" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="10" required placeholder="10 digit NISN" value="{{ old('nisn') }}"
+                            class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        @error('nisn') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Asal Sekolah (TK/RA)</label>
-                        <input type="text" name="asal_sekolah" placeholder="Nama TK asal" value="{{ old('asal_sekolah') }}"
-                            class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Orang Tua / Wali</label>
-                        <input type="text" name="nama_wali" required placeholder="Nama Ayah/Ibu/Wali" value="{{ old('nama_wali') }}"
-                            class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Orang Tua / Wali</label>
+                    <input type="text" name="nama_wali" required placeholder="Nama Ayah/Ibu/Wali" value="{{ old('nama_wali') }}"
+                        class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                 </div>
 
                 <div>
@@ -259,14 +267,16 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="border border-gray-200 p-3.5 rounded-xl bg-gray-50">
                         <label class="block text-xs font-semibold text-gray-700 mb-1.5">Akta Kelahiran</label>
-                        <input type="file" name="file_akta" accept=".jpg,.jpeg,.png,.pdf" 
+                        <input type="file" name="file_akta" accept=".jpg,.jpeg,.png,.pdf" required
                             class="block w-full text-xs text-gray-500 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                        @error('file_akta') <p class="mt-2 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="border border-gray-200 p-3.5 rounded-xl bg-gray-50">
                         <label class="block text-xs font-semibold text-gray-700 mb-1.5">Kartu Keluarga (KK)</label>
-                        <input type="file" name="file_kk" accept=".jpg,.jpeg,.png,.pdf" 
+                        <input type="file" name="file_kk" accept=".jpg,.jpeg,.png,.pdf" required
                             class="block w-full text-xs text-gray-500 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                        @error('file_kk') <p class="mt-2 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
@@ -279,6 +289,7 @@
             </form>
         </div>
     </div>
+    @endif
 
     <!-- Memanggil Komponen Footer Publik yang Sudah Ada -->
     @include('components.public.footer')
@@ -289,26 +300,27 @@
         const openBtn = document.getElementById('openModalBtn');
         const closeBtn = document.getElementById('closeModalBtn');
 
-        openBtn.addEventListener('click', () => {
-            modal.classList.remove('hidden');
-        });
-
-        closeBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-            }
-        });
-
-        // Buka modal otomatis jika terdapat ralat validasi dari form
-        @if($errors->any())
-            window.addEventListener('DOMContentLoaded', () => {
+        if (modal && openBtn && closeBtn) {
+            openBtn.addEventListener('click', () => {
                 modal.classList.remove('hidden');
             });
-        @endif
+
+            closeBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+
+            @if($errors->any() && $registrationOpen)
+                window.addEventListener('DOMContentLoaded', () => {
+                    modal.classList.remove('hidden');
+                });
+            @endif
+        }
     </script>
 
     <script>

@@ -21,7 +21,8 @@
                 <a href="/daftar-guru" class="{{ request()->is('daftar-guru') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Daftar Guru</a>
                 <a href="/ekstrakurikuler" class="{{ request()->is('ekstrakurikuler') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Ekstrakurikuler</a>
                 <a href="/program-sekolah" class="{{ request()->is('program-sekolah') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Program Sekolah</a>
-                <a href="/registrasi-daftar-ulang" class="{{ request()->is('registrasi-daftar-ulang') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Registrasi Daftar Ulang</a>
+                <a href="{{ route('ppdb.public.index') }}" class="{{ request()->is('informasi-ppdb') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">PPDB</a>
+                <a href="{{ route('registrasi.public.create') }}" class="{{ request()->is('registrasi-daftar-ulang') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Registrasi Daftar Ulang</a>
             </div>
 
             <!-- Bagian Kanan: Pencarian & Tombol Log Masuk -->
