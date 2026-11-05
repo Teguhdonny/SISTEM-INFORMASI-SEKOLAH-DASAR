@@ -35,15 +35,15 @@
                     <p class="mt-1 text-xs text-gray-500">{{ $guru->total() }} data tenaga pendidik</p>
                 </div>
                 <form method="GET" action="{{ route('admin.guru.index') }}" class="flex gap-2">
-                    <input type="search" name="search" value="{{ $search }}" placeholder="Cari nama, NIP, bagian, email" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none sm:w-72">
+                    <input type="search" name="search" value="{{ $search }}" placeholder="Cari nama, NIP, bagian, jenjang" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none sm:w-72">
                     <button class="rounded-xl bg-blue-700 px-4 text-white transition hover:bg-blue-800" aria-label="Cari"><i class="fas fa-search"></i></button>
                 </form>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[900px] text-left text-sm">
+                <table class="w-full min-w-[760px] text-left text-sm">
                     <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
-                        <tr><th class="px-5 py-4 font-semibold">Nama</th><th class="px-5 py-4 font-semibold">NIP</th><th class="px-5 py-4 font-semibold">Status & Tugas</th><th class="px-5 py-4 font-semibold">Email</th><th class="px-5 py-4 text-right font-semibold">Aksi</th></tr>
+                        <tr><th class="px-5 py-4 font-semibold">Nama</th><th class="px-5 py-4 font-semibold">NIP</th><th class="px-5 py-4 font-semibold">Status & Tugas</th><th class="px-5 py-4 font-semibold">Jenjang Pendidikan</th><th class="px-5 py-4 text-right font-semibold">Aksi</th></tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($guru as $item)
@@ -58,7 +58,8 @@
                                 </div></td>
                                 <td class="px-5 py-4 text-gray-600">{{ $item->nip ?: '—' }}</td>
                                 <td class="px-5 py-4 text-gray-600">{{ $item->bagian }}</td>
-                                <td class="px-5 py-4 text-gray-600">{{ $item->email ?: '—' }}</td>
+                                @php($pendidikan = collect(preg_split('/\\R/', (string) $item->lulusan, -1, PREG_SPLIT_NO_EMPTY))->map(fn (string $jenjang): string => trim($jenjang))->filter())
+                                <td class="px-5 py-4 text-gray-600">@if ($pendidikan->isNotEmpty())<ul class="list-disc space-y-0.5 pl-4">@foreach ($pendidikan as $jenjang)<li>{{ $jenjang }}</li>@endforeach</ul>@else—@endif</td>
                                 <td class="px-5 py-4"><div class="flex justify-end gap-2">
                                     <a href="{{ route('admin.guru.edit', $item) }}" class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700 transition hover:bg-blue-100" aria-label="Ubah {{ $item->nama }}"><i class="fas fa-pen"></i></a>
                                     <form method="POST" action="{{ route('admin.guru.destroy', $item) }}" onsubmit="return confirm('Hapus data {{ $item->nama }}?')">

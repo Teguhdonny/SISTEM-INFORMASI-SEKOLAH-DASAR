@@ -1,6 +1,6 @@
 <x-layouts.app>
     <div x-data="{ 
-        activeTab: 'profil',
+        activeTab: @js(request('tab', 'profil')),
         searchGaleri: '',
         kategoriGaleri: 'Semua Kategori',
         titles: {

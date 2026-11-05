@@ -14,21 +14,36 @@
         <input id="nip" name="nip" type="text" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="50" value="{{ old('nip', $guru?->nip) }}" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Nomor Induk Pegawai">
         @error('nip') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
     </div>
-    <div>
-        <label for="lulusan" class="mb-2 block text-sm font-semibold text-gray-700">Riwayat Pendidikan</label>
-        <textarea id="lulusan" name="lulusan" rows="3" maxlength="5000" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Isi satu pendidikan per baris, contoh:&#10;S1: PGSD — Universitas ...&#10;S2: Manajemen Pendidikan — Universitas ...">{{ old('lulusan', $guru?->lulusan) }}</textarea>
-        <p class="mt-1 text-xs text-gray-500">Bisa mengisi lebih dari satu jenjang, satu pendidikan per baris.</p>
+    @php
+        $pendidikanAwal = old('lulusan', $guru?->lulusan ? preg_split('/\R/', $guru->lulusan, -1, PREG_SPLIT_NO_EMPTY) : []);
+        $pendidikanAwal = is_array($pendidikanAwal) ? array_values($pendidikanAwal) : [];
+        if ($pendidikanAwal === []) {
+            $pendidikanAwal = [''];
+        }
+    @endphp
+    <div x-data="{ pendidikan: @js($pendidikanAwal), tambah() { this.pendidikan.push('') }, hapus(index) { if (this.pendidikan.length > 1) this.pendidikan.splice(index, 1) } }">
+        <div class="mb-2 flex items-center justify-between gap-3">
+            <label class="block text-sm font-semibold text-gray-700">Jenjang Pendidikan</label>
+            <button type="button" @click="tambah" class="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100"><i class="fas fa-plus"></i>Tambah Jenjang</button>
+        </div>
+        <div class="space-y-3">
+            <template x-for="(item, index) in pendidikan" :key="index">
+                <div class="flex items-start gap-2">
+                    <div class="flex-1">
+                        <label :for="`lulusan-${index}`" class="sr-only">Jenjang pendidikan</label>
+                        <input :id="`lulusan-${index}`" name="lulusan[]" x-model="pendidikan[index]" maxlength="200" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Contoh: S1 PGSD — Universitas ...">
+                    </div>
+                    <button type="button" @click="hapus(index)" class="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100" aria-label="Hapus jenjang pendidikan"><i class="fas fa-trash"></i></button>
+                </div>
+            </template>
+        </div>
         @error('lulusan') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+        @error('lulusan.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
     </div>
     <div>
         <label for="bagian" class="mb-2 block text-sm font-semibold text-gray-700">Bagian / Tugas <span class="text-red-600">*</span></label>
         <input id="bagian" name="bagian" value="{{ old('bagian', $guru?->bagian) }}" required maxlength="100" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Contoh: Guru Kelas VI">
         @error('bagian') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-    </div>
-    <div>
-        <label for="email" class="mb-2 block text-sm font-semibold text-gray-700">Email</label>
-        <input id="email" name="email" type="email" value="{{ old('email', $guru?->email) }}" maxlength="150" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="nama@sekolah.sch.id">
-        @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
     </div>
     <div>
         <label for="foto" class="mb-2 block text-sm font-semibold text-gray-700">Foto profil <span class="font-normal text-gray-400">(JPG, PNG, WEBP maks. 2 MB)</span></label>
