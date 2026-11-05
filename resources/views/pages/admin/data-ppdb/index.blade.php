@@ -37,13 +37,6 @@
                     <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 hover:text-blue-900 focus:outline-none transition">
                         <i class="fas fa-bars text-lg"></i>
                     </button>
-                    <!-- Kotak Carian Presisi -->
-                    <form method="GET" action="{{ route('admin.search') }}" class="relative hidden sm:block">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-400">
-                            <i class="fas fa-search text-xs"></i>
-                        </span>
-                        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari menu atau informasi..." aria-label="Cari menu atau informasi" class="w-80 bg-gray-50 border border-gray-200 rounded-full pl-10 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                    </form>
                 </div>
 
                 <!-- Bagian Kanan Profil & Notifikasi Interaktif -->
@@ -119,6 +112,12 @@
                     <span class="text-xs font-semibold">{{ session('success') }}</span>
                 </div>
                 @endif
+                @if(session()->has('whatsapp_notification_sent') && ! session('whatsapp_notification_sent'))
+                <div class="mt-3 bg-amber-50 border border-amber-200 text-amber-800 px-5 py-3.5 rounded-2xl shadow-sm flex items-center gap-3" role="alert">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span class="text-xs font-semibold">Status tersimpan, tetapi notifikasi WhatsApp belum terkirim. Periksa koneksi perangkat Fonnte.</span>
+                </div>
+                @endif
 
                 <!-- Hero Banner PPDB Presisi -->
                 <div class="relative bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 rounded-3xl text-white p-8 shadow-md overflow-hidden flex flex-col md:flex-row justify-between items-center">
@@ -192,19 +191,22 @@
                 <!-- KOTAK UTAMA: JADUAL PENDAFTAR -->
                 <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
                     
-                    <!-- Header Penapis Jadual -->
+                    <!-- Header Pencarian dan Penapis Jadual -->
                     <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50">
-                        <div class="w-full sm:w-80">
-                            <input type="text" placeholder="Cari nama, NISN, atau no pendaftaran..." class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none transition">
-                        </div>
-                        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-                            <select class="bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-700 outline-none transition">
-                                <option>Semua Status</option>
-                                <option>Menunggu Verifikasi</option>
-                                <option>Diterima</option>
-                                <option>Ditolak</option>
+                        <form method="GET" action="{{ route('admin.pendaftaran.index') }}" class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                            <label class="relative w-full sm:w-80">
+                                <span class="sr-only">Cari pendaftar</span>
+                                <i class="fas fa-search pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-gray-400"></i>
+                                <input type="search" name="search" value="{{ $search }}" placeholder="Cari" aria-label="Cari data pendaftar" class="w-full rounded-xl border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-xs outline-none transition focus:ring-2 focus:ring-blue-500">
+                            </label>
+                            <select name="status" aria-label="Filter status verifikasi" class="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 outline-none transition">
+                                <option value="">Semua Status</option>
+                                @foreach (['Menunggu Verifikasi', 'Diterima', 'Ditolak'] as $statusOption)
+                                    <option value="{{ $statusOption }}" @selected($status === $statusOption)>{{ $statusOption }}</option>
+                                @endforeach
                             </select>
-                        </div>
+                            <button type="submit" class="rounded-xl bg-blue-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-800">Cari</button>
+                        </form>
                     </div>
 
                     <!-- Tabel Data Pendaftar (Presisi Tinggi) -->
@@ -216,7 +218,7 @@
                                     <th class="px-6 py-4">Nama Siswa</th>
                                     <th class="px-6 py-4">NISN</th>
                                     <th class="px-6 py-4">Tanggal Daftar</th>
-                                    <th class="px-6 py-4">Jenjang</th>
+                                    <th class="px-6 py-4">Jenis Kelamin</th>
                                     <th class="px-6 py-4">Status Verifikasi</th>
                                     <th class="px-6 py-4 text-center">Aksi & Verifikasi</th>
                                 </tr>
@@ -230,7 +232,7 @@
                                     <td class="px-6 py-4 text-gray-500">{{ $item->created_at->format('d M Y, H:i') }}</td>
                                     <td class="px-6 py-4">
                                         <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-[11px] font-semibold border border-blue-100">
-                                            {{ $item->jenjang }}
+                                            {{ $item->jenis_kelamin ?: '-' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
@@ -272,7 +274,7 @@
                                             </div>
                                             <div class="grid grid-cols-2 gap-3">
                                                 <div><span class="text-gray-400 block mb-0.5">Nama Lengkap:</span> <strong class="text-gray-800 text-sm">{{ $item->nama_siswa }}</strong></div>
-                                                <div><span class="text-gray-400 block mb-0.5">Jenjang:</span> <strong class="text-gray-800 text-sm">{{ $item->jenjang }}</strong></div>
+                                                <div><span class="text-gray-400 block mb-0.5">Jenis Kelamin:</span> <strong class="text-gray-800 text-sm">{{ $item->jenis_kelamin ?: '-' }}</strong></div>
                                             </div>
                                             <div class="grid grid-cols-2 gap-3">
                                                 <div><span class="text-gray-400 block mb-0.5">Asal Sekolah:</span> <strong class="text-gray-800 text-sm">{{ $item->asal_sekolah }}</strong></div>

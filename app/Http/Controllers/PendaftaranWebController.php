@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RegistrationPeriod;
 use App\Models\SiswaPpdb;
+use App\Services\FonnteWhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,7 +19,7 @@ class PendaftaranWebController extends Controller
         return view('pages.public.registrasi.ppdb', compact('registrationPeriod', 'registrationOpen'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, FonnteWhatsAppService $whatsapp): RedirectResponse
     {
         $registrationPeriod = RegistrationPeriod::query()->first();
         if (! $registrationPeriod?->acceptsRegistrationsAt(now('Asia/Jakarta'))) {
@@ -60,7 +61,7 @@ class PendaftaranWebController extends Controller
         $aktaPath = $request->hasFile('file_akta') ? $request->file('file_akta')->store('dokumen_ppdb', 'public') : null;
         $kkPath = $request->hasFile('file_kk') ? $request->file('file_kk')->store('dokumen_ppdb', 'public') : null;
 
-        $siswa->daftarUlang()->create([
+        $daftarUlang = $siswa->daftarUlang()->create([
             'nama_wali' => $validated['nama_wali'],
             'no_whatsapp' => $validated['no_whatsapp'],
             'file_akta' => $aktaPath,
@@ -68,13 +69,38 @@ class PendaftaranWebController extends Controller
             'status' => 'Menunggu Verifikasi',
         ]);
 
+        $whatsapp->sendDaftarUlangSubmitted($daftarUlang);
+
         return redirect()->back()->with('success', 'Pendaftaran berhasil dikirim! Data Anda sudah masuk ke sistem.');
     }
 
     // Menampilkan data dan statistik registrasi daftar ulang di Panel Admin
-    public function adminIndex(): View
+    public function adminIndex(Request $request): View
     {
-        $pendaftars = SiswaPpdb::query()->where('dicatat_admin', true)->whereHas('daftarUlang')->with('daftarUlang')->latest()->get();
+        $search = $request->string('search')->trim()->toString();
+        $status = $request->string('status')->toString();
+        $pendaftars = SiswaPpdb::query()
+            ->where('dicatat_admin', true)
+            ->whereHas('daftarUlang')
+            ->with('daftarUlang')
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('nama_siswa', 'like', "%{$search}%")
+                        ->orWhere('nisn', 'like', "%{$search}%")
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
+                });
+            })
+            ->when(in_array($status, ['Menunggu Verifikasi', 'Diterima', 'Ditolak'], true), function ($query) use ($status): void {
+                $query->whereHas('daftarUlang', function ($daftarUlangQuery) use ($status): void {
+                    $daftarUlangQuery->where('status', $status);
+
+                    if ($status === 'Menunggu Verifikasi') {
+                        $daftarUlangQuery->orWhereNull('status');
+                    }
+                });
+            })
+            ->latest()
+            ->get();
 
         // Hitung statistik untuk 4 kartu ringkasan
         $totalPendaftar = $pendaftars->count();
@@ -89,20 +115,24 @@ class PendaftaranWebController extends Controller
         })->count();
 
         return view('pages.admin.data-ppdb.index', compact(
-            'pendaftars', 'totalPendaftar', 'menungguVerifikasi', 'diterima', 'ditolak'
+            'pendaftars', 'totalPendaftar', 'menungguVerifikasi', 'diterima', 'ditolak', 'search', 'status'
         ));
     }
 
     // Mengubah status verifikasi pendaftar oleh admin
-    public function updateStatus(Request $request, int $id): RedirectResponse
+    public function updateStatus(Request $request, int $id, FonnteWhatsAppService $whatsapp): RedirectResponse
     {
         $request->validate([
             'status' => 'required|in:Menunggu Verifikasi,Diterima,Ditolak',
         ]);
 
         $siswa = SiswaPpdb::query()->where('dicatat_admin', true)->whereHas('daftarUlang')->findOrFail($id);
-        $siswa->daftarUlang->update(['status' => $request->status]);
+        $daftarUlang = $siswa->daftarUlang;
+        $daftarUlang->update(['status' => $request->status]);
+        $notificationSent = $whatsapp->sendStatusUpdate($daftarUlang);
 
-        return redirect()->back()->with('success', 'Status verifikasi siswa berhasil diperbarui!');
+        return redirect()->back()
+            ->with('success', 'Status verifikasi siswa berhasil diperbarui!')
+            ->with('whatsapp_notification_sent', $notificationSent);
     }
 }

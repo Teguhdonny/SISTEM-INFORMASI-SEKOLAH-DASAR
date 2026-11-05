@@ -17,18 +17,18 @@
             <div class="flex flex-col gap-3 border-b border-gray-100 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <p class="text-sm text-gray-500">{{ $siswa->total() }} siswa tercatat</p>
                 <form method="GET" action="{{ route('admin.ppdb.index') }}" class="flex gap-2">
-                    <input type="search" name="search" value="{{ $search }}" placeholder="Cari nama, NIK, NISN, tahun ajaran" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm sm:w-72">
+                    <input type="search" name="search" value="{{ $search }}" placeholder="Cari" aria-label="Cari data PPDB" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm sm:w-72">
                     <button class="rounded-lg bg-gray-800 px-4 py-2 text-sm font-semibold text-white">Cari</button>
                 </form>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[850px] text-left text-sm">
-                    <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500"><tr><th class="px-5 py-3">No.</th><th class="px-5 py-3">Nama Siswa</th><th class="px-5 py-3">NIK</th><th class="px-5 py-3">NISN</th><th class="px-5 py-3">Tahun Ajaran</th><th class="px-5 py-3 text-right">Aksi</th></tr></thead>
+                    <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500"><tr><th class="px-5 py-3">No.</th><th class="px-5 py-3">Nama Siswa</th><th class="px-5 py-3">Jenis Kelamin</th><th class="px-5 py-3">NIK</th><th class="px-5 py-3">NISN</th><th class="px-5 py-3">Tahun Ajaran</th><th class="px-5 py-3 text-right">Aksi</th></tr></thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($siswa as $index => $item)
-                            <tr class="hover:bg-gray-50"><td class="px-5 py-4 text-gray-500">{{ $siswa->firstItem() + $index }}</td><td class="px-5 py-4 font-semibold text-gray-800">{{ $item->nama_siswa }}</td><td class="px-5 py-4 font-mono text-gray-600">{{ $item->nik ?: '—' }}</td><td class="px-5 py-4 font-mono text-gray-600">{{ $item->nisn ?: '—' }}</td><td class="px-5 py-4 font-semibold text-gray-700">{{ $item->tahun_ajaran ?: 'Belum diatur' }}</td><td class="px-5 py-4"><div class="flex justify-end gap-2"><a href="{{ route('admin.ppdb.edit', $item) }}" class="rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50">Ubah</a><form action="{{ route('admin.ppdb.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus data siswa {{ addslashes($item->nama_siswa) }}?')">@csrf @method('DELETE')<button class="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-50">Hapus</button></form></div></td></tr>
+                            <tr class="hover:bg-gray-50"><td class="px-5 py-4 text-gray-500">{{ $siswa->firstItem() + $index }}</td><td class="px-5 py-4 font-semibold text-gray-800">{{ $item->nama_siswa }}</td><td class="px-5 py-4 text-sm text-gray-600">{{ $item->jenis_kelamin ?: '—' }}</td><td class="px-5 py-4 font-mono text-gray-600">{{ $item->nik ?: '—' }}</td><td class="px-5 py-4 font-mono text-gray-600">{{ $item->nisn ?: '—' }}</td><td class="px-5 py-4 font-semibold text-gray-700">{{ $item->tahun_ajaran ?: 'Belum diatur' }}</td><td class="px-5 py-4"><div class="flex justify-end gap-2"><a href="{{ route('admin.ppdb.edit', $item) }}" class="rounded-lg border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50">Ubah</a><form action="{{ route('admin.ppdb.destroy', $item) }}" method="POST" onsubmit="return confirm('Hapus data siswa {{ addslashes($item->nama_siswa) }}?')">@csrf @method('DELETE')<button class="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-50">Hapus</button></form></div></td></tr>
                         @empty
-                            <tr><td colspan="6" class="px-5 py-12 text-center text-gray-500">Belum ada data siswa PPDB.</td></tr>
+                            <tr><td colspan="7" class="px-5 py-12 text-center text-gray-500">Belum ada data siswa PPDB.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

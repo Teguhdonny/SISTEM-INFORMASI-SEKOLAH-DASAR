@@ -30,20 +30,28 @@
                     </div>
                 </div>
                 @if ($siswaDiterima->count())
-                    <ol class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                        @foreach ($siswaDiterima as $index => $siswa)
-                            <li class="flex min-h-24 items-center gap-4 rounded-2xl border border-gray-100 bg-gray-50/70 p-4 transition hover:border-blue-200 hover:bg-blue-50/50">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sm font-bold text-blue-700 shadow-sm">{{ $siswaDiterima->firstItem() + $index }}</span>
-                                <div class="min-w-0 flex-1">
-                                    <p class="break-words font-semibold leading-snug text-gray-900">{{ $siswa->nama_siswa }}</p>
-                                    @if ($siswa->jenjang)
-                                        <p class="mt-1 text-xs text-gray-500">{{ $siswa->jenjang }}</p>
-                                    @endif
-                                </div>
-                                <span class="shrink-0 rounded-full bg-green-100 px-2.5 py-1 text-[11px] font-semibold text-green-800">Diterima</span>
-                            </li>
-                        @endforeach
-                    </ol>
+                    <div class="overflow-x-auto rounded-2xl border border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200 text-left">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="w-20 px-4 py-3 text-xs font-bold uppercase tracking-wide text-gray-500 sm:px-5">No</th>
+                                    <th scope="col" class="px-4 py-3 text-xs font-bold uppercase tracking-wide text-gray-500 sm:px-5">Nama Siswa</th>
+                                    <th scope="col" class="px-4 py-3 text-xs font-bold uppercase tracking-wide text-gray-500 sm:px-5">Jenis Kelamin</th>
+                                    <th scope="col" class="w-36 px-4 py-3 text-xs font-bold uppercase tracking-wide text-gray-500 sm:px-5">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 bg-white">
+                                @foreach ($siswaDiterima as $index => $siswa)
+                                    <tr class="transition hover:bg-blue-50/50">
+                                        <td class="whitespace-nowrap px-4 py-4 text-sm font-semibold text-blue-700 sm:px-5">{{ $siswaDiterima->firstItem() + $index }}</td>
+                                        <td class="break-words px-4 py-4 text-sm font-semibold text-gray-900 sm:px-5">{{ $siswa->nama_siswa }}</td>
+                                        <td class="px-4 py-4 text-sm text-gray-600 sm:px-5">{{ $siswa->jenis_kelamin ?: '-' }}</td>
+                                        <td class="px-4 py-4 sm:px-5"><span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">Diterima</span></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 @else
                     <div class="rounded-2xl border border-dashed border-gray-300 px-5 py-10 text-center">
                         <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-lg text-gray-400"><i class="fas fa-clipboard-list"></i></div>
@@ -72,7 +80,7 @@
                     <li class="rounded-2xl bg-gray-50 p-4"><span class="text-xs font-bold text-blue-700">LANGKAH 2</span><p class="mt-2 text-sm font-semibold leading-snug text-gray-800">Cek nama pada daftar siswa diterima di atas</p></li>
                     <li class="rounded-2xl bg-gray-50 p-4"><span class="text-xs font-bold text-blue-700">LANGKAH 3</span><p class="mt-2 text-sm font-semibold leading-snug text-gray-800">Lengkapi registrasi daftar ulang</p></li>
                 </ol>
-                <p class="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><i class="fas fa-lock mr-1.5"></i>Daftar publik hanya memuat nama dan jenjang. NIK dan NISN tidak ditampilkan.</p>
+                <p class="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><i class="fas fa-lock mr-1.5"></i>Daftar publik hanya memuat nama dan jenis kelamin. NIK dan NISN tidak ditampilkan.</p>
             </section>
 
             <aside class="flex flex-col justify-between rounded-3xl bg-blue-950 p-6 text-white shadow-sm sm:p-8">
