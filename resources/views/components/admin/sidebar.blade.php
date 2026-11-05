@@ -37,6 +37,11 @@
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Ekstrakurikuler</span>
         </a>
 
+        <a href="{{ route('admin.jadwal.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/jadwal-pelajaran*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
+            <i class="fas fa-calendar-alt w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Jadwal Pelajaran</span>
+        </a>
+
         <a href="{{ route('admin.berita.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.berita*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
             <i class="fas fa-newspaper w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Berita / Artikel</span>

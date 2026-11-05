@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EkstrakurikulerController;
 use App\Http\Controllers\Admin\GaleriController;
 use App\Http\Controllers\Admin\GuruController;
+use App\Http\Controllers\Admin\JadwalPelajaranController;
 use App\Http\Controllers\Admin\ProfilSekolahController;
 use App\Http\Controllers\Admin\ProgramSekolahController;
 use App\Http\Controllers\Admin\RegistrationPeriodController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\PendaftaranWebController;
 use App\Models\Berita;
 use App\Models\Ekstrakurikuler;
 use App\Models\Guru;
+use App\Models\JadwalPelajaran;
 use App\Models\ProfilSekolah;
 use App\Models\ProgramSekolah;
 use App\Models\RegistrationPeriod;
@@ -89,7 +91,11 @@ Route::get('/program-sekolah', function () {
 })->name('program.public.index');
 
 Route::get('/jadwal-pelajaran', function () {
-    return view('pages.public.jadwal');
+    $jadwalPerKelas = JadwalPelajaran::query()->urut()->get()
+        ->groupBy('kelas')
+        ->map(fn ($perKelas) => $perKelas->groupBy('hari'));
+
+    return view('pages.public.jadwal', compact('jadwalPerKelas'));
 })->name('jadwal.public.index');
 
 Route::get('/informasi-ppdb', function () {
@@ -140,6 +146,8 @@ Route::post('/admin/pendaftaran/{id}/status', [PendaftaranWebController::class, 
 Route::get('/admin/jadwal-registrasi', [RegistrationPeriodController::class, 'edit'])->middleware(['auth', 'admin'])->name('admin.registration-period.edit');
 Route::put('/admin/jadwal-registrasi', [RegistrationPeriodController::class, 'update'])->middleware(['auth', 'admin'])->name('admin.registration-period.update');
 Route::resource('/admin/data-ppdb', SiswaPpdbController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['data-ppdb' => 'siswaPpdb'])->names('admin.ppdb')->middleware(['auth', 'admin']);
+
+Route::resource('/admin/jadwal-pelajaran', JadwalPelajaranController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['jadwal-pelajaran' => 'jadwal'])->names('admin.jadwal')->middleware(['auth', 'admin']);
 
 Route::resource('/admin/ekstrakurikuler', EkstrakurikulerController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->names('admin.ekstrakurikuler')->middleware(['auth', 'admin']);
 

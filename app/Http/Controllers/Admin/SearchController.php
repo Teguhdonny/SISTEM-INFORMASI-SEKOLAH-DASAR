@@ -24,12 +24,10 @@ class SearchController extends Controller
             ['judul' => 'Dashboard', 'deskripsi' => 'Ringkasan dan statistik sekolah', 'url' => route('admin.dashboard'), 'kata_kunci' => 'beranda utama statistik aktivitas'],
             ['judul' => 'Profil Sekolah', 'deskripsi' => 'Identitas, sejarah, visi, dan misi sekolah', 'url' => route('admin.profil.index'), 'kata_kunci' => 'identitas sejarah visi misi'],
             ['judul' => 'Guru & Staf', 'deskripsi' => 'Kelola data guru dan staf', 'url' => route('admin.guru.index'), 'kata_kunci' => 'pendidik pegawai guru'],
-            ['judul' => 'Berita & Artikel', 'deskripsi' => 'Kelola berita dan pengumuman beranda', 'url' => route('admin.berita.index'), 'kata_kunci' => 'berita artikel pengumuman konten beranda'],
             ['judul' => 'Program Sekolah', 'deskripsi' => 'Kelola program sekolah', 'url' => route('admin.program.index'), 'kata_kunci' => 'program kegiatan'],
             ['judul' => 'Ekstrakurikuler', 'deskripsi' => 'Kelola kegiatan ekstrakurikuler', 'url' => route('admin.ekstrakurikuler.index'), 'kata_kunci' => 'ekskul kegiatan siswa'],
-            ['judul' => 'PPDB', 'deskripsi' => 'Kelola siswa yang diterima PPDB', 'url' => route('admin.ppdb.index'), 'kata_kunci' => 'siswa diterima ppdb'],
-            ['judul' => 'Registrasi Daftar Ulang', 'deskripsi' => 'Verifikasi data dan dokumen daftar ulang', 'url' => route('admin.pendaftaran.index'), 'kata_kunci' => 'registrasi pendaftar daftar ulang'],
-            ['judul' => 'Jadwal Registrasi', 'deskripsi' => 'Atur periode buka dan tutup registrasi daftar ulang', 'url' => route('admin.registration-period.edit'), 'kata_kunci' => 'jadwal periode buka tutup registrasi'],
+            ['judul' => 'Jadwal Pelajaran', 'deskripsi' => 'Kelola jadwal pelajaran tiap kelas', 'url' => route('admin.jadwal.index'), 'kata_kunci' => 'jadwal pelajaran mapel kelas hari jam'],
+            ['judul' => 'PPDB & Daftar Ulang', 'deskripsi' => 'Lihat data pendaftaran dan daftar ulang', 'url' => route('admin.pendaftaran.index'), 'kata_kunci' => 'siswa ppdb pendaftar registrasi daftar ulang'],
             ['judul' => 'Galeri Foto', 'deskripsi' => 'Lihat galeri foto sekolah', 'url' => route('admin.galeri.index'), 'kata_kunci' => 'foto dokumentasi gambar'],
         ])->filter(fn (array $item): bool => $query !== '' && str_contains(mb_strtolower($item['judul'].' '.$item['deskripsi'].' '.$item['kata_kunci']), mb_strtolower($query)))
             ->values();
@@ -48,7 +46,7 @@ class SearchController extends Controller
                 ->each(fn (VisiMisi $item) => $informasi->push($this->hasil('Visi & Misi', $item->kategori, $item->deskripsi, route('admin.profil.index'))));
 
             Guru::query()
-                ->where(fn ($builder) => $builder->where('nama', 'like', $term)->orWhere('nip', 'like', $term)->orWhere('bagian', 'like', $term)->orWhere('lulusan', 'like', $term))
+                ->where(fn ($builder) => $builder->where('nama', 'like', $term)->orWhere('nip', 'like', $term)->orWhere('bagian', 'like', $term)->orWhere('email', 'like', $term))
                 ->orderBy('nama')->limit(8)->get()
                 ->each(fn (Guru $guru) => $informasi->push($this->hasil('Guru & Staf', $guru->nama, trim(($guru->bagian ?? '').' '.($guru->nip ?? '')), route('admin.guru.index', ['search' => $query]))));
 
@@ -63,15 +61,13 @@ class SearchController extends Controller
                 ->each(fn (Ekstrakurikuler $item) => $informasi->push($this->hasil('Ekstrakurikuler', $item->nama_ekskul, $item->jadwal, route('admin.ekstrakurikuler.index'))));
 
             SiswaPpdb::query()
-                ->where('dicatat_admin', true)
                 ->where(fn ($builder) => $builder->where('nama_siswa', 'like', $term)->orWhere('no_pendaftaran', 'like', $term)->orWhere('nisn', 'like', $term)->orWhere('asal_sekolah', 'like', $term))
                 ->orderBy('nama_siswa')->limit(8)->get()
-                ->each(fn (SiswaPpdb $siswa) => $informasi->push($this->hasil('PPDB', $siswa->nama_siswa, 'No. pendaftaran: '.$siswa->no_pendaftaran, route('admin.ppdb.index'))));
+                ->each(fn (SiswaPpdb $siswa) => $informasi->push($this->hasil('PPDB', $siswa->nama_siswa, 'No. pendaftaran: '.$siswa->no_pendaftaran, route('admin.pendaftaran.index'))));
 
-            DaftarUlang::query()->whereHas('siswaPpdb', fn ($builder) => $builder->where('dicatat_admin', true))
-                ->with('siswaPpdb')
-                ->where(fn ($builder) => $builder->where('status', 'like', $term)
-                    ->orWhereHas('siswaPpdb', fn ($studentQuery) => $studentQuery->where('nama_siswa', 'like', $term)))
+            DaftarUlang::query()->with('siswaPpdb')
+                ->where('status', 'like', $term)
+                ->orWhereHas('siswaPpdb', fn ($builder) => $builder->where('nama_siswa', 'like', $term))
                 ->latest()->limit(8)->get()
                 ->each(fn (DaftarUlang $item) => $informasi->push($this->hasil('Daftar Ulang', $item->siswaPpdb?->nama_siswa ?? 'Data siswa', 'Status: '.$item->status, route('admin.pendaftaran.index'))));
         }
