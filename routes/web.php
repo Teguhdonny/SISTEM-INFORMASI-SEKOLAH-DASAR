@@ -9,7 +9,6 @@ use App\Http\Controllers\Admin\JadwalPelajaranController;
 use App\Http\Controllers\Admin\ProfilSekolahController;
 use App\Http\Controllers\Admin\ProgramSekolahController;
 use App\Http\Controllers\Admin\RegistrationPeriodController;
-use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SiswaPpdbController;
 use App\Http\Controllers\Api\PendaftaranController;
 use App\Http\Controllers\Auth\LoginController;
@@ -106,7 +105,7 @@ Route::get('/informasi-ppdb', function () {
         ->whereNotNull('tahun_ajaran')
         ->where('tahun_ajaran', $tahunAjaran)
         ->orderBy('nama_siswa')
-        ->paginate(12, ['id', 'nama_siswa', 'jenjang']);
+        ->paginate(12, ['id', 'nama_siswa', 'jenis_kelamin']);
 
     return view('pages.public.ppdb', compact('siswaDiterima', 'tahunAjaran'));
 })->name('ppdb.public.index');
@@ -124,7 +123,6 @@ Route::post('/login', [LoginController::class, 'store'])->middleware(['guest', '
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.dashboard');
-Route::get('/admin/pencarian', [SearchController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.search');
 
 // Rute Admin Profil Sekolah & Visi Misi
 Route::get('/admin/profil', [ProfilSekolahController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.profil.index');

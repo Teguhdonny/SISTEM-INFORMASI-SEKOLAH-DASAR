@@ -6,6 +6,15 @@
         @error('nama_siswa') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
     </div>
     <div>
+        <label for="jenis_kelamin" class="mb-2 block text-sm font-semibold text-gray-700">Jenis kelamin <span class="text-red-600">*</span></label>
+        <select id="jenis_kelamin" name="jenis_kelamin" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
+            <option value="">Pilih jenis kelamin</option>
+            <option value="Laki-laki" @selected(old('jenis_kelamin', $siswaPpdb?->jenis_kelamin) === 'Laki-laki')>Laki-laki</option>
+            <option value="Perempuan" @selected(old('jenis_kelamin', $siswaPpdb?->jenis_kelamin) === 'Perempuan')>Perempuan</option>
+        </select>
+        @error('jenis_kelamin') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+    </div>
+    <div>
         <label for="nik" class="mb-2 block text-sm font-semibold text-gray-700">NIK <span class="text-red-600">*</span></label>
         <input id="nik" name="nik" inputmode="numeric" data-digits-only maxlength="16" value="{{ old('nik', $siswaPpdb?->nik) }}" required class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="16 digit NIK">
         @error('nik') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror

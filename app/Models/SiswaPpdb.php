@@ -17,6 +17,7 @@ class SiswaPpdb extends Model
         'nik',
         'nisn',
         'nama_siswa',
+        'jenis_kelamin',
         'jenjang',
         'tahun_ajaran',
         'asal_sekolah',

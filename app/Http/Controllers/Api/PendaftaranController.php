@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\RegistrationPeriod;
 use App\Models\SiswaPpdb;
+use App\Services\FonnteWhatsAppService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -30,7 +31,7 @@ class PendaftaranController extends Controller
     }
 
     // Menambah pendaftaran baru dari aplikasi Android
-    public function store(Request $request)
+    public function store(Request $request, FonnteWhatsAppService $whatsapp): JsonResponse
     {
         $registrationPeriod = RegistrationPeriod::query()->first();
         if (! $registrationPeriod?->acceptsRegistrationsAt(now('Asia/Jakarta'))) {
@@ -89,13 +90,15 @@ class PendaftaranController extends Controller
         }
 
         // Simpan data relasi daftar ulang / berkas
-        $siswa->daftarUlang()->create([
+        $daftarUlang = $siswa->daftarUlang()->create([
             'nama_wali' => $validated['nama_wali'],
             'no_whatsapp' => $validated['no_whatsapp'],
             'file_akta' => $fileAktaPath,
             'file_kk' => $fileKkPath,
             'status' => 'Menunggu Verifikasi',
         ]);
+
+        $whatsapp->sendDaftarUlangSubmitted($daftarUlang);
 
         return response()->json([
             'success' => true,
@@ -161,8 +164,12 @@ class PendaftaranController extends Controller
         ], 200);
     }
 
-    public function validasi(Request $request, $id)
+    public function validasi(Request $request, int $id, FonnteWhatsAppService $whatsapp): JsonResponse
     {
+        $validated = $request->validate([
+            'status' => ['required', 'in:Menunggu Verifikasi,Diterima,Ditolak'],
+        ]);
+
         try {
             // 1. GUNAKAN SiswaPpdb (sesuai nama model Anda) dan relasi daftarUlang
             $siswa = SiswaPpdb::query()->where('dicatat_admin', true)->with('daftarUlang')->findOrFail($id);
@@ -170,8 +177,9 @@ class PendaftaranController extends Controller
             // 2. Pastikan relasi daftarUlang ada
             if ($siswa->daftarUlang) {
                 $siswa->daftarUlang->update([
-                    'status' => $request->status,
+                    'status' => $validated['status'],
                 ]);
+                $whatsapp->sendStatusUpdate($siswa->daftarUlang);
 
                 return response()->json([
                     'success' => true,

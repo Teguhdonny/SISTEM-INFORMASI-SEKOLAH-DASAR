@@ -44,6 +44,7 @@ class SiswaPpdbController extends Controller
     {
         $validated = $request->validate([
             'nama_siswa' => ['required', 'string', 'max:150'],
+            'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
             'nik' => ['required', 'digits:16', Rule::unique('siswa_ppdb', 'nik')],
             'nisn' => ['required', 'digits:10', Rule::unique('siswa_ppdb', 'nisn')],
         ], [
@@ -77,6 +78,7 @@ class SiswaPpdbController extends Controller
     {
         $validated = $request->validate([
             'nama_siswa' => ['required', 'string', 'max:150'],
+            'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
             'nik' => ['required', 'digits:16', Rule::unique('siswa_ppdb', 'nik')->ignore($siswaPpdb->id)],
             'nisn' => ['required', 'digits:10', Rule::unique('siswa_ppdb', 'nisn')->ignore($siswaPpdb->id)],
         ], [

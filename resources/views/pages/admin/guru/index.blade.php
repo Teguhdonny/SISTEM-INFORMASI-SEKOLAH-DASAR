@@ -35,7 +35,7 @@
                     <p class="mt-1 text-xs text-gray-500">{{ $guru->total() }} data tenaga pendidik</p>
                 </div>
                 <form method="GET" action="{{ route('admin.guru.index') }}" class="flex gap-2">
-                    <input type="search" name="search" value="{{ $search }}" placeholder="Cari nama, NIP, bagian, jenjang" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none sm:w-72">
+                    <input type="search" name="search" value="{{ $search }}" placeholder="Cari" aria-label="Cari data guru" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none sm:w-72">
                     <button class="rounded-xl bg-blue-700 px-4 text-white transition hover:bg-blue-800" aria-label="Cari"><i class="fas fa-search"></i></button>
                 </form>
             </div>
