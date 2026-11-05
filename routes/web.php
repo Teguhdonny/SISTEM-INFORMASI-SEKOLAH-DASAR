@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EkstrakurikulerController;
 use App\Http\Controllers\Admin\GuruController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Api\PendaftaranController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\JadwalPelajaranController;
 use App\Http\Controllers\PendaftaranWebController;
+use App\Models\Berita;
 use App\Models\Ekstrakurikuler;
 use App\Models\Guru;
 use App\Models\ProfilSekolah;
@@ -27,7 +29,14 @@ use Illuminate\Support\Facades\Route;
 // ==============================
 
 Route::get('/', function () {
-    return view('pages.public.home');
+    $beritaAktif = Berita::query()
+        ->where('status', 'Aktif')
+        ->latest('tanggal_kegiatan')
+        ->latest('id')
+        ->limit(4)
+        ->get();
+
+    return view('pages.public.home', compact('beritaAktif'));
 })->name('home');
 
 Route::get('/profil', function () {
@@ -124,6 +133,8 @@ Route::resource('/admin/guru', GuruController::class)->names('admin.guru')->midd
 Route::resource('/admin/jadwal-pelajaran', AdminJadwalPelajaranController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['jadwal-pelajaran' => 'jadwalPelajaran'])->names('admin.jadwal')->middleware(['auth', 'admin']);
 
 Route::resource('/admin/program-sekolah', ProgramSekolahController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['program-sekolah' => 'programSekolah'])->names('admin.program')->middleware(['auth', 'admin']);
+
+Route::resource('/admin/berita', BeritaController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['berita' => 'berita'])->names('admin.berita')->middleware(['auth', 'admin']);
 
 // Panel Admin PPDB & Menu Lainnya
 Route::get('/admin/pendaftaran', [PendaftaranWebController::class, 'adminIndex'])->middleware(['auth', 'admin'])->name('admin.pendaftaran.index');

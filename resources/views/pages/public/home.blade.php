@@ -169,9 +169,9 @@
     </section>
 
     <!-- 3. Bahagian Berita & Pengumuman (Dilengkapi Modal Baca Berita) -->
-    <section x-data="{ 
+    <section id="berita" x-data="{
         modalBerita: false, 
-        beritaAktif: { kategori: '', warna: '', tanggal: '', judul: '', isi: '', link: '' },
+        beritaAktif: { kategori: '', warna: '', tanggal: '', judul: '', isi: '', link: '', foto: '' },
         bukaBerita(item) {
             this.beritaAktif = item;
             this.modalBerita = true;
@@ -186,6 +186,25 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            @if ($beritaAktif->isNotEmpty())
+                @foreach ($beritaAktif as $item)
+                    <div @click="bukaBerita(@js(['kategori' => $item->kategori, 'tanggal' => $item->tanggal_kegiatan->translatedFormat('d F Y'), 'judul' => $item->judul, 'isi' => $item->isi, 'link' => url('/#berita'), 'foto' => $item->foto ? asset('storage/'.$item->foto) : asset('images/sekolah.jpg')]))" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition cursor-pointer" data-aos="fade-up">
+                        <div class="h-40 overflow-hidden relative flex items-center justify-center bg-gray-100">
+                            @if ($item->foto)
+                                <img src="{{ asset('storage/'.$item->foto) }}" alt="{{ $item->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @else
+                                <i class="fas fa-newspaper text-5xl text-blue-300/70 group-hover:scale-110 transition duration-500"></i>
+                            @endif
+                            <span class="absolute top-2 left-2 bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-1 rounded z-10">{{ $item->kategori }}</span>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-xs text-gray-400 mb-2">{{ $item->tanggal_kegiatan->translatedFormat('d F Y') }}</p>
+                            <h3 class="font-bold text-sm text-blue-900 mb-3 group-hover:text-blue-600 transition">{{ $item->judul }}</h3>
+                            <div class="flex justify-end text-gray-400 group-hover:text-blue-600"><i class="fas fa-arrow-right text-sm"></i></div>
+                        </div>
+                    </div>
+                @endforeach
+            @else
             <!-- Item Berita 1 -->
             <div @click="bukaBerita({
                     kategori: 'Pengumuman',
@@ -266,24 +285,28 @@
                     <div class="flex justify-end text-gray-400 group-hover:text-blue-600"><i class="fas fa-arrow-right text-sm"></i></div>
                 </div>
             </div>
+            @endif
         </div>
 
         <!-- Modal Pop-up Detail Berita -->
-        <div x-show="modalBerita" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" x-transition.opacity>
-            <div @click.away="modalBerita = false" class="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl relative">
-                <button @click="modalBerita = false" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center">
-                    <i class="fas fa-times"></i>
-                </button>
-                <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3" x-text="beritaAktif.kategori"></span>
-                <p class="text-xs text-gray-400 mb-1" x-text="beritaAktif.tanggal"></p>
-                <h3 class="text-xl font-extrabold text-blue-950 mb-4 leading-snug" x-text="beritaAktif.judul"></h3>
-                <p class="text-sm text-gray-600 leading-relaxed mb-6" x-text="beritaAktif.isi"></p>
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button @click="modalBerita = false" class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold">Tutup</button>
-                    <a :href="beritaAktif.link" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold inline-flex items-center gap-2">
-                        <span>Buka Halaman Terkait</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+        <div x-show="modalBerita" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/65 p-4 backdrop-blur-sm" x-transition.opacity>
+            <div @click.away="modalBerita = false" class="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto overflow-x-hidden rounded-3xl bg-white shadow-2xl">
+                <div class="relative h-64 overflow-hidden bg-gray-100 sm:h-80">
+                    <img :src="beritaAktif.foto || '{{ asset('images/sekolah.jpg') }}'" :alt="beritaAktif.judul" class="h-full w-full object-cover">
+                    <button @click="modalBerita = false" class="absolute right-5 top-5 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-sm transition hover:bg-white" aria-label="Tutup berita">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+                <div class="p-6 sm:p-10">
+                    <div class="mb-5 flex flex-wrap items-center gap-3">
+                        <span class="rounded-full bg-blue-100 px-4 py-2 text-xs font-bold text-blue-700" x-text="beritaAktif.kategori"></span>
+                        <p class="text-sm text-gray-400" x-text="beritaAktif.tanggal"></p>
+                    </div>
+                    <h3 class="mb-5 text-2xl font-extrabold leading-snug text-blue-950 sm:text-3xl" x-text="beritaAktif.judul"></h3>
+                    <p class="break-words text-base leading-relaxed text-gray-600 [overflow-wrap:anywhere]" x-text="beritaAktif.isi"></p>
+                    <div class="mt-8 flex justify-end border-t border-gray-100 pt-5">
+                        <button @click="modalBerita = false" class="rounded-xl bg-gray-100 px-5 py-2.5 text-sm font-bold text-gray-700 transition hover:bg-gray-200">Tutup</button>
+                    </div>
                 </div>
             </div>
         </div>

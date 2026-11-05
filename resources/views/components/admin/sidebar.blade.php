@@ -42,11 +42,11 @@
             <i class="fas fa-running w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Ekstrakurikuler</span>
         </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+        <a href="{{ route('admin.berita.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/berita*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-newspaper w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Berita / Artikel</span>
         </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+        <a href="{{ route('profil.public.index') }}?tab=galeri" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
             <i class="fas fa-images w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Galeri Foto</span>
         </a>
@@ -74,14 +74,4 @@
         </svg>
     </div>
 
-    <!-- Logout Bottom -->
-    <div class="p-4 border-t border-blue-800/50 relative z-10">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="flex w-full items-center rounded px-4 py-2 text-left font-bold text-white transition hover:bg-black/20">
-                <i class="fas fa-sign-out-alt w-5 text-center shrink-0"></i>
-                <span class="ml-3 text-sm" x-show="sidebarOpen">Logout</span>
-            </button>
-        </form>
-    </div>
 </aside>

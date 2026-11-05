@@ -19,6 +19,10 @@
           visiSekolah: @js($visi),
           notifSuccess: {{ session('success') ? 'true' : 'false' }}
       }">
+    @php
+        $adminUser = auth()->user();
+        $adminName = $adminUser?->name ?: ($adminUser?->username ?: 'Admin');
+    @endphp
 
     <div class="flex h-screen overflow-hidden">
         
@@ -43,13 +47,27 @@
                 </div>
 
                 <div class="flex items-center gap-5">
-                    <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
-                        <div class="w-9 h-9 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xs shadow-sm">
-                            AF
-                        </div>
-                        <div class="hidden sm:block">
-                            <p class="text-xs font-bold text-gray-800 leading-tight">Ahmad Fauzi</p>
-                            <p class="text-[10px] text-gray-500 mt-0.5">Administrator</p>
+                    <div class="relative border-l border-gray-200 pl-5" x-data="{ profileOpen: false }" @click.away="profileOpen = false">
+                        <button type="button" @click="profileOpen = !profileOpen" :aria-expanded="profileOpen.toString()" aria-haspopup="true" class="flex items-center gap-3 rounded-xl p-1.5 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                            <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                                <span class="sr-only">{{ $adminName }}</span>
+                            </div>
+                            <div class="hidden text-left sm:block">
+                                <p class="text-xs font-bold text-gray-800 leading-tight">{{ $adminName }}</p>
+                                <p class="text-[10px] text-gray-500 mt-0.5">{{ ucfirst($adminUser?->role ?? 'Admin') }}</p>
+                            </div>
+                            <i class="fas fa-chevron-down ml-1 text-xs text-gray-400 transition-transform" :class="{ 'rotate-180': profileOpen }"></i>
+                        </button>
+                        <div x-show="profileOpen" x-transition @keydown.escape.window="profileOpen = false" class="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-gray-100 bg-white p-2 shadow-lg" style="display: none;">
+                            <div class="border-b border-gray-100 px-3 py-2">
+                                <p class="text-sm font-semibold text-gray-800">{{ $adminName }}</p>
+                                <p class="text-xs text-gray-500">{{ $adminUser?->username ?? 'Akun admin' }}</p>
+                            </div>
+                            <form method="POST" action="{{ route('logout') }}" class="mt-1">
+                                @csrf
+                                <button type="submit" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"><i class="fas fa-right-from-bracket w-4"></i>Keluar</button>
+                            </form>
                         </div>
                     </div>
                 </div>

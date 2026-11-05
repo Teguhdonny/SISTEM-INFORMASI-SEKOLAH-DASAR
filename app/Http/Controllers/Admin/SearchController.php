@@ -24,6 +24,7 @@ class SearchController extends Controller
             ['judul' => 'Dashboard', 'deskripsi' => 'Ringkasan dan statistik sekolah', 'url' => route('admin.dashboard'), 'kata_kunci' => 'beranda utama statistik aktivitas'],
             ['judul' => 'Profil Sekolah', 'deskripsi' => 'Identitas, sejarah, visi, dan misi sekolah', 'url' => route('admin.profil.index'), 'kata_kunci' => 'identitas sejarah visi misi'],
             ['judul' => 'Guru & Staf', 'deskripsi' => 'Kelola data guru dan staf', 'url' => route('admin.guru.index'), 'kata_kunci' => 'pendidik pegawai guru'],
+            ['judul' => 'Berita & Artikel', 'deskripsi' => 'Kelola berita dan pengumuman beranda', 'url' => route('admin.berita.index'), 'kata_kunci' => 'berita artikel pengumuman konten beranda'],
             ['judul' => 'Program Sekolah', 'deskripsi' => 'Kelola program sekolah', 'url' => route('admin.program.index'), 'kata_kunci' => 'program kegiatan'],
             ['judul' => 'Ekstrakurikuler', 'deskripsi' => 'Kelola kegiatan ekstrakurikuler', 'url' => route('admin.ekstrakurikuler.index'), 'kata_kunci' => 'ekskul kegiatan siswa'],
             ['judul' => 'PPDB', 'deskripsi' => 'Kelola siswa yang diterima PPDB', 'url' => route('admin.ppdb.index'), 'kata_kunci' => 'siswa diterima ppdb'],
@@ -47,7 +48,7 @@ class SearchController extends Controller
                 ->each(fn (VisiMisi $item) => $informasi->push($this->hasil('Visi & Misi', $item->kategori, $item->deskripsi, route('admin.profil.index'))));
 
             Guru::query()
-                ->where(fn ($builder) => $builder->where('nama', 'like', $term)->orWhere('nip', 'like', $term)->orWhere('bagian', 'like', $term)->orWhere('email', 'like', $term))
+                ->where(fn ($builder) => $builder->where('nama', 'like', $term)->orWhere('nip', 'like', $term)->orWhere('bagian', 'like', $term)->orWhere('lulusan', 'like', $term))
                 ->orderBy('nama')->limit(8)->get()
                 ->each(fn (Guru $guru) => $informasi->push($this->hasil('Guru & Staf', $guru->nama, trim(($guru->bagian ?? '').' '.($guru->nip ?? '')), route('admin.guru.index', ['search' => $query]))));
 

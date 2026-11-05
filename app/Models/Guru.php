@@ -16,7 +16,6 @@ class Guru extends Model
         'nama',
         'lulusan',
         'bagian',
-        'email',
         'foto',
     ];
 }

@@ -40,16 +40,17 @@
                                         <dt class="font-bold text-blue-900">Status & Tugas</dt>
                                         <dd class="break-words text-gray-700">{{ $item->bagian }}</dd>
                                     </div>
+                                    <div>
+                                        <dt class="font-bold text-blue-900">Jenjang Pendidikan</dt>
+                                        @php($pendidikan = collect(preg_split('/\R/', (string) $item->lulusan, -1, PREG_SPLIT_NO_EMPTY))->map(fn (string $jenjang): string => trim($jenjang))->filter())
+                                        @if ($pendidikan->isNotEmpty())
+                                            <dd class="text-gray-700"><ul class="list-disc space-y-0.5 pl-4">@foreach ($pendidikan as $jenjang)<li>{{ $jenjang }}</li>@endforeach</ul></dd>
+                                        @else
+                                            <dd class="text-gray-700">—</dd>
+                                        @endif
+                                    </div>
                                 </dl>
                             </div>
-                        </div>
-                        <div class="border-t border-gray-200 px-3 py-1.5 text-center text-xs text-gray-600 sm:text-sm">
-                            <span class="font-semibold">Email:</span>
-                            @if ($item->email)
-                                <a href="mailto:{{ $item->email }}" class="break-all hover:text-red-600">{{ $item->email }}</a>
-                            @else
-                                —
-                            @endif
                         </div>
                     </article>
                 @endforeach

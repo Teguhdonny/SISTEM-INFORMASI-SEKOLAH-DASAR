@@ -25,9 +25,8 @@
                 <a href="{{ route('registrasi.public.create') }}" class="{{ request()->is('registrasi-daftar-ulang') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Registrasi Daftar Ulang</a>
             </div>
 
-            <!-- Bagian Kanan: Pencarian & Tombol Log Masuk -->
+            <!-- Bagian Kanan: Tombol Log Masuk -->
             <div class="flex items-center gap-4">
-                <button class="text-gray-500 hover:text-blue-600"><i class="fas fa-search"></i></button>
                 <a href="/login" class="bg-red-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow hover:bg-red-700 transition shrink-0">
                     <i class="fas fa-user mr-1"></i> Login Admin
                 </a>

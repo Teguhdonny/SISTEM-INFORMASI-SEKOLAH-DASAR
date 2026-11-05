@@ -21,8 +21,7 @@ class GuruController extends Controller
                     $query->where('nama', 'like', "%{$search}%")
                         ->orWhere('nip', 'like', "%{$search}%")
                         ->orWhere('bagian', 'like', "%{$search}%")
-                        ->orWhere('lulusan', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('lulusan', 'like', "%{$search}%");
                 });
             })
             ->orderBy('nama')
@@ -43,14 +42,15 @@ class GuruController extends Controller
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
             'nip' => ['nullable', 'string', 'regex:/^[0-9]{1,50}$/', Rule::unique('guru', 'nip')],
-            'lulusan' => ['nullable', 'string', 'max:5000'],
+            'lulusan' => ['nullable', 'array', 'max:10'],
+            'lulusan.*' => ['nullable', 'string', 'max:200'],
             'bagian' => ['required', 'string', 'max:100'],
-            'email' => ['nullable', 'email', 'max:150', Rule::unique('guru', 'email')],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ], [
             'nip.unique' => 'NIP ini sudah terdaftar.',
-            'email.unique' => 'Email ini sudah digunakan oleh guru lain.',
         ]);
+
+        $validated['lulusan'] = $this->normalizeEducation($validated['lulusan'] ?? []);
 
         if ($request->hasFile('foto')) {
             $validated['foto'] = $request->file('foto')->store('guru', 'public');
@@ -76,23 +76,20 @@ class GuruController extends Controller
         $rules = [
             'nama' => ['required', 'string', 'max:100'],
             'nip' => ['nullable', 'string', 'regex:/^[0-9]{1,50}$/'],
-            'lulusan' => ['nullable', 'string', 'max:5000'],
+            'lulusan' => ['nullable', 'array', 'max:10'],
+            'lulusan.*' => ['nullable', 'string', 'max:200'],
             'bagian' => ['required', 'string', 'max:100'],
-            'email' => ['nullable', 'email', 'max:150'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
 
         if ($request->input('nip') !== $guru->nip) {
             $rules['nip'][] = Rule::unique('guru', 'nip')->ignore($guru->id);
         }
-        if ($request->input('email') !== $guru->email) {
-            $rules['email'][] = Rule::unique('guru', 'email')->ignore($guru->id);
-        }
-
         $validated = $request->validate($rules, [
             'nip.unique' => 'NIP ini sudah terdaftar.',
-            'email.unique' => 'Email ini sudah digunakan oleh guru lain.',
         ]);
+
+        $validated['lulusan'] = $this->normalizeEducation($validated['lulusan'] ?? []);
 
         $oldPhoto = $guru->foto;
         if ($request->hasFile('foto')) {
@@ -117,5 +114,15 @@ class GuruController extends Controller
         }
 
         return redirect()->route('admin.guru.index')->with('success', 'Data guru berhasil dihapus.');
+    }
+
+    /** @param array<int, string|null> $educations */
+    private function normalizeEducation(array $educations): string
+    {
+        return collect($educations)
+            ->map(fn (?string $education): string => trim((string) $education))
+            ->filter()
+            ->values()
+            ->implode("\n");
     }
 }
