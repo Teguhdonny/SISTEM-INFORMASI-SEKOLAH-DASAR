@@ -1,62 +1,7 @@
 <x-layouts.app>
-    <div x-data="{ kelasAktif: 'Kelas 1' }" class="bg-gray-50/50 min-h-screen pb-20">
-        <!-- Header -->
-        <section class="w-full px-6 lg:px-16 xl:px-24 py-10 bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-white border-b border-gray-100">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex items-center gap-2 text-xs text-gray-500 mb-3 font-medium">
-                    <a href="/" class="hover:text-blue-600 transition"><i class="fas fa-home"></i> Beranda</a>
-                    <span>&gt;</span>
-                    <span class="text-blue-600 font-semibold">Jadwal Pelajaran</span>
-                </div>
-                <h4 class="text-blue-800 font-extrabold uppercase tracking-wider text-xs mb-1">AKADEMIK SEKOLAH</h4>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-red-600 mb-3">Jadwal Pelajaran SDN Pojok 2</h1>
-                <p class="text-gray-600 text-sm md:text-base max-w-2xl">
-                    Pilih jenjang kelas di bawah ini untuk melihat jadwal kegiatan belajar mengajar harian siswa.
-                </p>
-            </div>
-        </section>
-
-        <!-- Pilihan Tab Kelas 1 - 6 -->
-        <section class="max-w-7xl mx-auto px-6 lg:px-16 pt-8">
-            <div class="flex flex-wrap gap-2 mb-8">
-                <template x-for="kls in ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6']" :key="kls">
-                    <button @click="kelasAktif = kls"
-                            :class="kelasAktif === kls ? 'bg-blue-800 text-white shadow-sm' : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200'"
-                            class="px-5 py-2.5 rounded-xl text-xs font-extrabold transition"
-                            x-text="kls"></button>
-                </template>
-            </div>
-
-            <!-- Grid Jadwal Senin - Sabtu -->
-            @php
-                $jadwalHarian = [
-                    'Senin' => ['07.00 - 07.35' => 'Upacara Bendera', '07.35 - 08.45' => 'Pendidikan Pancasila', '08.45 - 09.55' => 'Bahasa Indonesia', '10.15 - 11.25' => 'Matematika'],
-                    'Selasa' => ['07.00 - 07.15' => 'Literasi Pagi', '07.15 - 08.25' => 'Matematika / Numerasi', '08.25 - 09.35' => 'IPAS / Tematik', '09.55 - 11.05' => 'Seni dan Budaya'],
-                    'Rabu' => ['07.00 - 07.15' => 'Literasi Pagi', '07.15 - 08.25' => 'Bahasa Indonesia', '08.25 - 09.35' => 'Pendidikan Agama & Budi Pekerti', '09.55 - 11.05' => 'PJOK (Olahraga)'],
-                    'Kamis' => ['07.00 - 07.15' => 'Literasi Pagi', '07.15 - 08.25' => 'Matematika / Numerasi', '08.25 - 09.35' => 'Bahasa Jawa (Muatan Lokal)', '09.55 - 11.05' => 'Bahasa Inggris'],
-                    'Jumat' => ['07.00 - 07.45' => 'Jumat Berkarakter / Jumat Sehat', '07.45 - 09.00' => 'Projek Penguatan Profil Pelajar (P5)', '09.15 - 10.30' => 'Bahasa Indonesia', '13.00 - 15.00' => 'Ekstrakurikuler Pramuka'],
-                    'Sabtu' => ['07.00 - 07.30' => 'Gerakan Lingkungan BERSEHAT', '07.30 - 08.45' => 'Pengembangan Diri / CERMAT', '09.00 - 10.30' => 'Ekstrakurikuler Pilihan'],
-                ];
-            @endphp
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach ($jadwalHarian as $hari => $mapelList)
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="bg-blue-900 text-white px-5 py-3.5 flex items-center justify-between">
-                            <span class="font-extrabold text-sm"><i class="far fa-calendar-check mr-2"></i> {{ $hari }}</span>
-                            <span class="text-[11px] bg-white/20 px-2.5 py-0.5 rounded-full font-bold" x-text="kelasAktif"></span>
-                        </div>
-                        <div class="p-5 divide-y divide-gray-100 space-y-3">
-                            @foreach ($mapelList as $jam => $mapel)
-                                <div class="pt-3 first:pt-0 flex items-start justify-between gap-3 text-xs">
-                                    <span class="text-gray-400 font-semibold shrink-0">{{ $jam }}</span>
-                                    <span class="font-bold text-gray-800 text-right">{{ $mapel }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+    <div class="min-h-screen bg-gray-50/50 pb-20"><section class="border-b border-gray-100 bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-white px-6 py-10 lg:px-16 xl:px-24"><div class="mx-auto max-w-7xl"><div class="mb-3 flex items-center gap-2 text-xs font-medium text-gray-500"><a href="{{ route('home') }}" class="transition hover:text-blue-600"><i class="fas fa-home"></i> Beranda</a><span>&gt;</span><span class="font-semibold text-blue-600">Jadwal Pelajaran</span></div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-blue-800">Akademik Sekolah</p><h1 class="mb-3 text-3xl font-extrabold text-red-600 md:text-4xl">Jadwal Pelajaran SDN Pojok 2</h1><p class="max-w-2xl text-sm text-gray-600 md:text-base">Pilih kelas dan hari untuk melihat jadwal kegiatan belajar mengajar siswa.</p></div></section>
+        <section class="mx-auto max-w-7xl px-6 pt-8 lg:px-16"><form method="GET" class="mb-8 grid gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:grid-cols-[1fr_1fr_auto] sm:items-end"><div><label for="kelas" class="mb-2 block text-sm font-semibold text-gray-700">Pilih kelas</label><select id="kelas" name="kelas" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm">@foreach (['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6'] as $namaKelas)<option value="{{ $namaKelas }}" @selected($kelas === $namaKelas)>{{ $namaKelas }}</option>@endforeach</select></div><div><label for="hari" class="mb-2 block text-sm font-semibold text-gray-700">Pilih hari</label><select id="hari" name="hari" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm"><option value="">Semua hari</option>@foreach ($hari as $namaHari)<option value="{{ $namaHari }}" @selected(request('hari') === $namaHari)>{{ $namaHari }}</option>@endforeach</select></div><button type="submit" class="rounded-xl bg-blue-800 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-900"><i class="fas fa-search mr-2"></i>Lihat Jadwal</button></form>
+            @if ($jadwal->isEmpty())<div class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center text-sm text-gray-500">Belum ada jadwal untuk {{ $kelas }}.</div>@else<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">@foreach ($hari as $namaHari) @if ($jadwal->has($namaHari))<div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm"><div class="flex items-center justify-between bg-blue-900 px-5 py-3.5 text-white"><span class="text-sm font-extrabold"><i class="far fa-calendar-check mr-2"></i>{{ $namaHari }}</span><span class="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold">{{ $kelas }}</span></div><div class="divide-y divide-gray-100 p-5">@foreach ($jadwal[$namaHari] as $item)<div class="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0"><div><p class="text-xs font-semibold text-gray-400">{{ substr($item->jam_mulai, 0, 5) }}–{{ substr($item->jam_selesai, 0, 5) }}</p><p class="mt-1 text-sm font-bold text-gray-800">{{ $item->mata_pelajaran }}</p></div><span class="text-right text-xs text-gray-500">{{ $item->guru->nama }}</span></div>@endforeach</div></div>@endif @endforeach</div>@endif
         </section>
     </div>
 </x-layouts.app>

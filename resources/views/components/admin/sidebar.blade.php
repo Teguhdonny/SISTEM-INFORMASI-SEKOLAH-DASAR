@@ -30,6 +30,10 @@
             <i class="fas fa-users w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Guru & Staff</span>
         </a>
+        <a href="{{ route('admin.jadwal.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/jadwal-pelajaran*') ? 'bg-blue-600 shadow-sm' : '' }}">
+            <i class="fas fa-calendar-days w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Jadwal Pelajaran</span>
+        </a>
         <a href="{{ route('admin.program.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/program-sekolah*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-clipboard-list w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Program Sekolah</span>
@@ -46,10 +50,6 @@
             <i class="fas fa-images w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Galeri Foto</span>
         </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
-            <i class="fas fa-object-group w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Slider / Banner</span>
-        </a>
         <a href="{{ route('admin.ppdb.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/data-ppdb*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-user-graduate w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">PPDB</span>
@@ -61,18 +61,6 @@
         <a href="{{ route('admin.registration-period.edit') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/jadwal-registrasi*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-calendar-days w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Jadwal Registrasi</span>
-        </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
-            <i class="fas fa-envelope w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Kontak Masuk</span>
-        </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
-            <i class="fas fa-user-shield w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Pengguna Admin</span>
-        </a>
-        <a href="#" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
-            <i class="fas fa-cog w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Pengaturan Website</span>
         </a>
     </nav>
 

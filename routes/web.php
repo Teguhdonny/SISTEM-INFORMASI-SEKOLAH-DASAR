@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EkstrakurikulerController;
 use App\Http\Controllers\Admin\GuruController;
+use App\Http\Controllers\Admin\JadwalPelajaranController as AdminJadwalPelajaranController;
 use App\Http\Controllers\Admin\ProfilSekolahController;
 use App\Http\Controllers\Admin\ProgramSekolahController;
 use App\Http\Controllers\Admin\RegistrationPeriodController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\SiswaPpdbController;
 use App\Http\Controllers\Api\PendaftaranController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\JadwalPelajaranController;
 use App\Http\Controllers\PendaftaranWebController;
 use App\Models\Ekstrakurikuler;
 use App\Models\Guru;
@@ -84,9 +86,7 @@ Route::get('/program-sekolah', function () {
 
 // Tambahkan 2 rute ini di bagian RUTE PUBLIK pada routes/web.php:
 
-Route::get('/jadwal-pelajaran', function () {
-    return view('pages.public.jadwal');
-})->name('jadwal.public.index');
+Route::get('/jadwal-pelajaran', [JadwalPelajaranController::class, 'index'])->name('jadwal.public.index');
 
 Route::get('/informasi-ppdb', function () {
     $tahunAjaran = RegistrationPeriod::query()->value('tahun_ajaran');
@@ -121,6 +121,7 @@ Route::get('/admin/profil', [ProfilSekolahController::class, 'index'])->middlewa
 Route::put('/admin/profil', [ProfilSekolahController::class, 'update'])->middleware(['auth', 'admin'])->name('admin.profil.update');
 
 Route::resource('/admin/guru', GuruController::class)->names('admin.guru')->middleware(['auth', 'admin']);
+Route::resource('/admin/jadwal-pelajaran', AdminJadwalPelajaranController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['jadwal-pelajaran' => 'jadwalPelajaran'])->names('admin.jadwal')->middleware(['auth', 'admin']);
 
 Route::resource('/admin/program-sekolah', ProgramSekolahController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['program-sekolah' => 'programSekolah'])->names('admin.program')->middleware(['auth', 'admin']);
 
