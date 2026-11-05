@@ -71,11 +71,6 @@
             <i class="fas fa-envelope w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Kontak Masuk</span>
         </a>
-
-        <a href="{{ route('admin.setting.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->routeIs('admin.setting*') ? 'bg-blue-600 text-white shadow-sm' : '' }}">
-            <i class="fas fa-cog w-5 text-center shrink-0"></i>
-            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Pengaturan Website</span>
-        </a>
     </nav>
 
     <!-- Tombol Logout -->

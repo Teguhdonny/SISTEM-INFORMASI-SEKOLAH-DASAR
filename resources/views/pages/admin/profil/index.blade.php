@@ -22,13 +22,13 @@
       }">
 
     <div class="flex h-screen overflow-hidden">
-        
+
         <!-- SIDEBAR KIRI -->
         @include('components.admin.sidebar')
 
         <!-- KONTEN UTAMA SEBELAH KANAN -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            
+
             <!-- Navbar Atas -->
             <header class="bg-white shadow-sm h-16 flex items-center justify-between px-4 sm:px-8 z-20 shrink-0 border-b border-gray-200">
                 <div class="flex items-center gap-4">
@@ -77,27 +77,7 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                        @php
-                            $isPpdbOpen = (bool) optional(\App\Models\Setting::first())->is_registration_open;
-                        @endphp
-
-                        <!-- TOMBOL SAKELAR (TOGGLE ON/OFF) DAFTAR ULANG / PPDB -->
-                        <form action="{{ route('admin.ppdb.toggle') }}" method="POST" class="inline-flex items-center bg-white border border-gray-300 rounded-xl px-3.5 py-2 shadow-sm gap-2.5">
-                            @csrf
-                            <span class="text-xs font-bold text-gray-700">Daftar Ulang:</span>
-                            
-                            <button type="submit" 
-                                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none {{ $isPpdbOpen ? 'bg-emerald-500' : 'bg-gray-300' }}"
-                                title="Klik untuk Buka / Tutup Pendaftaran Daftar Ulang">
-                                <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {{ $isPpdbOpen ? 'translate-x-5' : 'translate-x-0' }}"></span>
-                            </button>
-
-                            <span class="text-[11px] font-extrabold px-2 py-0.5 rounded-md {{ $isPpdbOpen ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600' }}">
-                                {{ $isPpdbOpen ? 'ON (Buka)' : 'OFF (Tutup)' }}
-                            </span>
-                        </form>
-
-                        <a href="{{ url('/') }}" target="_blank" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-2">
+                        <a href="{{ url('/profil') }}" target="_blank" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-2">
                             <i class="fas fa-external-link-alt text-blue-600"></i> Lihat Halaman Publik
                         </a>
                         <button @click="editModal = true; modalTab = 'identitas'" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-2">
@@ -135,7 +115,7 @@
                         <h3 class="text-lg font-extrabold text-gray-900">{{ $profilSekolah->nama_sekolah }}</h3>
                         <p class="text-xs text-gray-500 mt-1">Dinas Pendidikan Pemerintah Kota Kediri</p>
                         <span class="mt-3 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[11px] font-bold">Status: Negeri / Aktif</span>
-                        
+
                         <div class="w-full border-t border-gray-100 mt-6 pt-5 text-left space-y-3 text-xs">
                             <div>
                                 <span class="text-gray-400 block">Alamat Lengkap:</span>
@@ -215,20 +195,16 @@
 
                 <!-- TAB 2: VISI & MISI RESMI 2026 -->
                 <div x-show="activeTab === 'visimisi'" style="display: none;" class="space-y-6">
-                    <!-- Kartu Visi -->
                     <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6">
                         <div class="w-16 h-16 shrink-0 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl border border-blue-100">
                             <i class="fas fa-bullseye"></i>
                         </div>
                         <div>
                             <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Visi Sekolah Tahun 2026</span>
-                            <h3 class="text-lg md:text-xl font-extrabold text-blue-900 mt-1 italic" x-text="visiSekolah">
-                                “MEWUJUDKAN GENERASI MUDA YANG BERAKHLAK MULIA, MANDIRI, KREATIF BERWAWASAN GLOBAL DAN PEDULI LINGKUNGAN”
-                            </h3>
+                            <h3 class="text-lg md:text-xl font-extrabold text-blue-900 mt-1 italic" x-text="visiSekolah"></h3>
                         </div>
                     </div>
 
-                    <!-- Kartu 5 Misi -->
                     <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
                         <h3 class="text-base font-bold text-gray-900 mb-6 flex items-center gap-2.5">
                             <i class="fas fa-clipboard-list text-blue-600"></i> 5 Misi Utama SD Negeri Pojok 2
@@ -246,7 +222,6 @@
 
                 <!-- TAB 3: TUJUAN SEKOLAH -->
                 <div x-show="activeTab === 'tujuan'" style="display: none;" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Jangka Pendek -->
                     <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                         <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-[11px] font-bold">1 Tahun ke Depan</span>
                         <h3 class="text-base font-extrabold text-gray-900 mt-3 mb-4">Tujuan Jangka Pendek</h3>
@@ -260,7 +235,6 @@
                         </ul>
                     </div>
 
-                    <!-- Jangka Menengah -->
                     <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                         <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-lg text-[11px] font-bold">2 - 3 Tahun ke Depan</span>
                         <h3 class="text-base font-extrabold text-gray-900 mt-3 mb-4">Tujuan Jangka Menengah</h3>
@@ -273,7 +247,6 @@
                         </ul>
                     </div>
 
-                    <!-- Jangka Panjang -->
                     <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                         <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[11px] font-bold">4 Tahun ke Depan</span>
                         <h3 class="text-base font-extrabold text-gray-900 mt-3 mb-4">Tujuan Jangka Panjang</h3>
@@ -286,10 +259,10 @@
                     </div>
                 </div>
 
-                <!-- POPUP MODAL EDIT PROFIL, KEPSEK & VISI MISI (RAPI DENGAN TAB & RESPONSIF) -->
+                <!-- POPUP MODAL EDIT PROFIL, KEPSEK & VISI MISI -->
                 <div x-show="editModal" style="display: none;" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div @click.away="editModal = false" class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden relative">
-                        
+
                         <!-- Header Modal -->
                         <div class="px-6 sm:px-8 pt-6 pb-4 border-b border-gray-100 flex items-center justify-between shrink-0">
                             <div>
@@ -320,7 +293,7 @@
                             </button>
                         </div>
 
-                        <!-- Isi Form (Bisa Di-scroll dengan Rapi) -->
+                        <!-- Isi Form -->
                         <form action="{{ route('admin.profil.update') }}" method="POST" enctype="multipart/form-data" class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-4 text-xs">
                             @csrf
                             @method('PUT')

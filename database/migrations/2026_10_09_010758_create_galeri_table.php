@@ -6,24 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('galeri', function (Blueprint $table) {
             $table->id();
-            $table->string('judul');
-            $table->string('kategori', 100); // Contoh: 'Fasilitas', 'Kegiatan Siswa'
-            $table->string('foto'); // Untuk menyimpan nama fail/path gambar
-            $table->text('deskripsi')->nullable(); // Boleh dibiarkan kosong
-            $table->timestamps(); // Menghasilkan created_at dan updated_at
+            $table->string('judul', 150);
+            $table->enum('kategori', ['Kegiatan', 'Fasilitas', 'Prestasi'])->default('Kegiatan');
+            $table->date('tanggal');
+            $table->string('foto')->nullable();
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('galeri');
