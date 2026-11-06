@@ -32,12 +32,13 @@
             <div class="flex flex-col gap-4 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 class="flex items-center gap-2 font-bold text-gray-800"><span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><i class="fas fa-user-group"></i></span>Semua Guru</h2>
-                    <p class="mt-1 text-xs text-gray-500">{{ $guru->total() }} data tenaga pendidik</p>
+                    <p class="mt-1 text-xs text-gray-500"><span id="guru-result-count">{{ $guru->total() }}</span> data tenaga pendidik</p>
                 </div>
-                <form method="GET" action="{{ route('admin.guru.index') }}" class="flex gap-2">
-                    <input type="search" name="search" value="{{ $search }}" placeholder="Cari" aria-label="Cari data guru" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none sm:w-72">
-                    <button class="rounded-xl bg-blue-700 px-4 text-white transition hover:bg-blue-800" aria-label="Cari"><i class="fas fa-search"></i></button>
+                <form id="guru-search-form" method="GET" action="{{ route('admin.guru.index') }}" class="flex gap-2">
+                    <input id="guru-search" type="search" name="search" value="{{ $search }}" placeholder="Cari" aria-label="Cari data guru" aria-describedby="guru-search-status" class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none sm:w-72">
+                    <button type="submit" class="rounded-xl bg-blue-700 px-4 text-white transition hover:bg-blue-800" aria-label="Cari"><i class="fas fa-search"></i></button>
                 </form>
+                <span id="guru-search-status" class="sr-only" aria-live="polite"></span>
             </div>
 
             <div class="overflow-x-auto">
@@ -45,42 +46,91 @@
                     <thead class="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
                         <tr><th class="px-5 py-4 font-semibold">Nama</th><th class="px-5 py-4 font-semibold">NIP</th><th class="px-5 py-4 font-semibold">Status & Tugas</th><th class="px-5 py-4 font-semibold">Jenjang Pendidikan</th><th class="px-5 py-4 text-right font-semibold">Aksi</th></tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
-                        @forelse ($guru as $item)
-                            <tr class="transition hover:bg-gray-50/70">
-                                <td class="px-5 py-4"><div class="flex items-center gap-3">
-                                    @if ($item->foto)
-                                        <img src="{{ asset('storage/'.$item->foto) }}" alt="Foto {{ $item->nama }}" class="h-11 w-11 rounded-xl object-cover">
-                                    @else
-                                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600"><i class="fas fa-user-tie"></i></div>
-                                    @endif
-                                    <span class="font-semibold text-gray-800">{{ $item->nama }}</span>
-                                </div></td>
-                                <td class="px-5 py-4 text-gray-600">{{ $item->nip ?: '—' }}</td>
-                                <td class="px-5 py-4 text-gray-600">{{ $item->bagian }}</td>
-                                @php($pendidikan = collect(preg_split('/\\R/', (string) $item->lulusan, -1, PREG_SPLIT_NO_EMPTY))->map(fn (string $jenjang): string => trim($jenjang))->filter())
-                                <td class="px-5 py-4 text-gray-600">@if ($pendidikan->isNotEmpty())<ul class="list-disc space-y-0.5 pl-4">@foreach ($pendidikan as $jenjang)<li>{{ $jenjang }}</li>@endforeach</ul>@else—@endif</td>
-                                <td class="px-5 py-4"><div class="flex justify-end gap-2">
-                                    <a href="{{ route('admin.guru.edit', $item) }}" class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700 transition hover:bg-blue-100" aria-label="Ubah {{ $item->nama }}"><i class="fas fa-pen"></i></a>
-                                    <form method="POST" action="{{ route('admin.guru.destroy', $item) }}" onsubmit="return confirm('Hapus data {{ $item->nama }}?')">
-                                        @csrf @method('DELETE')
-                                        <button class="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 transition hover:bg-red-100" aria-label="Hapus {{ $item->nama }}"><i class="fas fa-trash"></i></button>
-                                    </form>
-                                </div></td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="px-5 py-14 text-center">
-                                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-xl text-blue-600"><i class="fas fa-user-friends"></i></div>
-                                <p class="mt-4 font-semibold text-gray-800">{{ $search ? 'Guru tidak ditemukan' : 'Belum ada data guru' }}</p>
-                                <p class="mt-1 text-sm text-gray-500">{{ $search ? 'Coba gunakan kata pencarian lain.' : 'Tambahkan data guru untuk mulai mengisi daftar.' }}</p>
-                            </td></tr>
-                        @endforelse
+                    <tbody id="guru-results" class="divide-y divide-gray-100">
+                        @include('pages.admin.guru.rows')
                     </tbody>
                 </table>
             </div>
-            @if ($guru->hasPages())
-                <div class="border-t border-gray-100 px-5 py-4">{{ $guru->links() }}</div>
-            @endif
+            <div id="guru-pagination" class="border-t border-gray-100 px-5 py-4 @unless ($guru->hasPages()) hidden @endunless">{{ $guru->links() }}</div>
         </section>
     </div>
+
+    <script>
+        (() => {
+            const form = document.getElementById('guru-search-form');
+            const input = document.getElementById('guru-search');
+            const results = document.getElementById('guru-results');
+            const resultCount = document.getElementById('guru-result-count');
+            const pagination = document.getElementById('guru-pagination');
+            const status = document.getElementById('guru-search-status');
+
+            let debounceTimer;
+            let activeRequest;
+            let requestNumber = 0;
+
+            if (!form || !input || !results || !resultCount || !pagination || !status) {
+                return;
+            }
+
+            const updateResults = async () => {
+                const currentRequest = ++requestNumber;
+                const searchTerm = input.value.trim();
+                const url = new URL(form.action);
+
+                url.search = '';
+                if (searchTerm !== '') {
+                    url.searchParams.set('search', searchTerm);
+                }
+
+                activeRequest?.abort();
+                activeRequest = new AbortController();
+                status.textContent = 'Mencari data guru…';
+
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            Accept: 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        signal: activeRequest.signal,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Pencarian gagal. Silakan coba lagi.');
+                    }
+
+                    const data = await response.json();
+                    if (currentRequest !== requestNumber) {
+                        return;
+                    }
+
+                    results.innerHTML = data.rows;
+                    resultCount.textContent = Number(data.count).toLocaleString('id-ID');
+                    pagination.innerHTML = data.pagination;
+                    pagination.classList.toggle('hidden', data.pagination === '');
+                    status.textContent = data.count === 0
+                        ? 'Tidak ada data guru yang sesuai.'
+                        : `${data.count} data guru ditemukan.`;
+                    window.history.replaceState({}, '', url);
+                } catch (error) {
+                    if (error.name !== 'AbortError' && currentRequest === requestNumber) {
+                        status.textContent = error.message;
+                    }
+                }
+            };
+
+            input.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                activeRequest?.abort();
+                requestNumber++;
+                debounceTimer = window.setTimeout(updateResults, 250);
+            });
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                clearTimeout(debounceTimer);
+                updateResults();
+            });
+        })();
+    </script>
 </x-layouts.admin>

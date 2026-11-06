@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Berita;
 use App\Models\DaftarUlang;
 use App\Models\Ekstrakurikuler;
 use App\Models\Guru;
@@ -16,13 +17,11 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    private const TOTAL_BERITA_BERANDA = 4;
-
     public function index(): View
     {
         $totalGuru = Guru::query()->count();
         $totalSiswa = SiswaPpdb::query()->where('dicatat_admin', true)->count();
-        $totalBerita = self::TOTAL_BERITA_BERANDA;
+        $totalBerita = Berita::query()->where('status', 'Aktif')->count();
         $totalDaftarUlang = DaftarUlang::query()->whereHas('siswaPpdb', fn ($query) => $query->where('dicatat_admin', true))->count();
         $tahunSekarang = CarbonImmutable::now('Asia/Jakarta')->year;
         $awalRentang = CarbonImmutable::create($tahunSekarang - 4, 1, 1, 0, 0, 0, 'Asia/Jakarta');
