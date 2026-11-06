@@ -27,9 +27,11 @@
 
             <!-- Bagian Kanan: Tombol Log Masuk -->
             <div class="flex items-center gap-4">
-                <a href="/login" class="bg-red-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow hover:bg-red-700 transition shrink-0">
-                    <i class="fas fa-user mr-1"></i> Login Admin
-                </a>
+                @unless ((request()->routeIs('profil.public.index') && request()->query('tab') === 'galeri') || (request()->routeIs('home') && request()->query('preview') === 'admin'))
+                    <a href="/login" class="bg-red-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow hover:bg-red-700 transition shrink-0">
+                        <i class="fas fa-user mr-1"></i> Login Admin
+                    </a>
+                @endunless
             </div>
             
         </div>

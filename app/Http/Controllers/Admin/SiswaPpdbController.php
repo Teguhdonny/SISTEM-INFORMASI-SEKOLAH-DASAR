@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\RegistrationPeriod;
 use App\Models\SiswaPpdb;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -13,7 +14,7 @@ use Illuminate\View\View;
 
 class SiswaPpdbController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $search = $request->string('search')->trim()->toString();
         $siswa = SiswaPpdb::query()
@@ -29,6 +30,14 @@ class SiswaPpdbController extends Controller
             ->latest()
             ->paginate(10)
             ->withQueryString();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'rows' => view('pages.admin.ppdb.rows', compact('siswa', 'search'))->render(),
+                'count' => $siswa->total(),
+                'pagination' => $siswa->hasPages() ? (string) $siswa->links() : '',
+            ]);
+        }
 
         return view('pages.admin.ppdb.index', compact('siswa', 'search'));
     }

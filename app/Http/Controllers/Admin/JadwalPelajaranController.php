@@ -7,23 +7,31 @@ use App\Models\Guru;
 use App\Models\JadwalPelajaran;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class JadwalPelajaranController extends Controller
 {
     public function index(Request $request): View
     {
+        $kelas = $this->classes();
+        $hari = $this->days();
+        $filters = $request->validate([
+            'kelas' => ['nullable', Rule::in($kelas)],
+            'hari' => ['nullable', Rule::in($hari)],
+        ]);
+
         $jadwal = JadwalPelajaran::query()
             ->with('guru')
-            ->when($request->filled('kelas'), fn ($query) => $query->where('kelas', $request->string('kelas')->toString()))
-            ->when($request->filled('hari'), fn ($query) => $query->where('hari', $request->string('hari')->toString()))
+            ->when($filters['kelas'] ?? null, fn ($query, string $kelas) => $query->where('kelas', $kelas))
+            ->when($filters['hari'] ?? null, fn ($query, string $hari) => $query->where('hari', $hari))
             ->orderBy('kelas')
             ->orderBy('hari')
             ->orderBy('jam_mulai')
             ->paginate(15)
             ->withQueryString();
 
-        return view('pages.admin.jadwal.index', ['jadwal' => $jadwal, 'kelas' => $this->classes(), 'hari' => $this->days()]);
+        return view('pages.admin.jadwal.index', compact('jadwal', 'kelas', 'hari', 'filters'));
     }
 
     public function create(): View

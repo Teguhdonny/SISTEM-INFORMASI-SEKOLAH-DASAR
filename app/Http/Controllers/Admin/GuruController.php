@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Guru;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +13,7 @@ use Illuminate\View\View;
 
 class GuruController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|JsonResponse
     {
         $search = $request->string('search')->trim()->toString();
         $guru = Guru::query()
@@ -27,6 +28,14 @@ class GuruController extends Controller
             ->orderBy('nama')
             ->paginate(10)
             ->withQueryString();
+        if ($request->expectsJson()) {
+            return response()->json([
+                'rows' => view('pages.admin.guru.rows', compact('guru', 'search'))->render(),
+                'count' => $guru->total(),
+                'pagination' => $guru->hasPages() ? (string) $guru->links() : '',
+            ]);
+        }
+
         $totalGuru = Guru::count();
 
         return view('pages.admin.guru.index', compact('guru', 'search', 'totalGuru'));

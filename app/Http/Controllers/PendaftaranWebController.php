@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RegistrationPeriod;
 use App\Models\SiswaPpdb;
 use App\Services\FonnteWhatsAppService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -75,7 +76,7 @@ class PendaftaranWebController extends Controller
     }
 
     // Menampilkan data dan statistik registrasi daftar ulang di Panel Admin
-    public function adminIndex(Request $request): View
+    public function adminIndex(Request $request): View|JsonResponse
     {
         $search = $request->string('search')->trim()->toString();
         $status = $request->string('status')->toString();
@@ -113,6 +114,17 @@ class PendaftaranWebController extends Controller
         $ditolak = $pendaftars->filter(function ($item) {
             return optional($item->daftarUlang)->status == 'Ditolak';
         })->count();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'rows' => view('pages.admin.data-ppdb.rows', compact('pendaftars', 'search', 'status'))->render(),
+                'modals' => view('pages.admin.data-ppdb.modals', compact('pendaftars'))->render(),
+                'total' => $totalPendaftar,
+                'waiting' => $menungguVerifikasi,
+                'accepted' => $diterima,
+                'rejected' => $ditolak,
+            ]);
+        }
 
         return view('pages.admin.data-ppdb.index', compact(
             'pendaftars', 'totalPendaftar', 'menungguVerifikasi', 'diterima', 'ditolak', 'search', 'status'

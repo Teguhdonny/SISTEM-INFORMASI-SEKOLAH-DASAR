@@ -10,7 +10,7 @@
                 <p class="mt-1 text-sm text-gray-500">Berita berstatus Aktif akan ditampilkan di halaman beranda publik.</p>
             </div>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('home') }}#berita" target="_blank" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 shadow-sm transition hover:bg-gray-50">
+                <a href="{{ route('home', ['preview' => 'admin']) }}#berita" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 shadow-sm transition hover:bg-gray-50">
                     <i class="fas fa-external-link-alt text-blue-700"></i>Lihat di Beranda
                 </a>
                 <button type="button" @click="modalOpen = true" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800">
@@ -43,11 +43,11 @@
                         <p class="text-xs text-gray-400"><i class="fas fa-calendar-days mr-1"></i>{{ $item->tanggal_kegiatan->translatedFormat('d F Y') }}</p>
                         <h2 class="mt-2 line-clamp-2 font-bold text-gray-800">{{ $item->judul }}</h2>
                         <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-gray-500">{{ $item->isi }}</p>
-                        <div class="mt-auto flex gap-2 pt-4">
-                            <a href="{{ route('admin.berita.index', ['edit' => $item->id]) }}" class="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700 transition hover:bg-amber-100"><i class="fas fa-pen"></i>Edit / Foto</a>
+                        <div class="mt-auto flex justify-end gap-2 pt-4">
+                            <a href="{{ route('admin.berita.index', ['edit' => $item->id]) }}" class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition hover:bg-blue-100" aria-label="Edit berita {{ $item->judul }}"><i class="fas fa-pen"></i></a>
                             <form method="POST" action="{{ route('admin.berita.destroy', $item) }}" onsubmit="return confirm('Hapus berita {{ addslashes($item->judul) }}?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100" aria-label="Hapus berita"><i class="fas fa-trash"></i></button>
+                                <button type="submit" class="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100" aria-label="Hapus berita {{ $item->judul }}"><i class="fas fa-trash"></i></button>
                             </form>
                         </div>
                     </div>
