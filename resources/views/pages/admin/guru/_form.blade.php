@@ -45,6 +45,46 @@
         <input id="bagian" name="bagian" value="{{ old('bagian', $guru?->bagian) }}" required maxlength="100" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Contoh: Guru Kelas VI">
         @error('bagian') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
     </div>
+    @php
+        $kompetensiAwal = old('kompetensi', $guru?->kompetensi ? preg_split('/\R/', $guru->kompetensi, -1, PREG_SPLIT_NO_EMPTY) : []);
+        $kompetensiAwal = is_array($kompetensiAwal) ? array_values($kompetensiAwal) : [];
+        if ($kompetensiAwal === []) {
+            $kompetensiAwal = [''];
+        }
+    @endphp
+    <div x-data="{ kompetensi: @js($kompetensiAwal), tambah() { this.kompetensi.push('') }, hapus(index) { if (this.kompetensi.length > 1) this.kompetensi.splice(index, 1) } }" class="md:col-span-2">
+        <div class="mb-2 flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700">Kompetensi Mata Pelajaran</label>
+                <p class="mt-1 text-xs text-gray-500">Isi satu mata pelajaran per baris. Jadwal hanya menampilkan guru yang sesuai.</p>
+            </div>
+            <button type="button" @click="tambah" class="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100"><i class="fas fa-plus"></i>Tambah Kompetensi</button>
+        </div>
+        <div class="space-y-3">
+            <template x-for="(item, index) in kompetensi" :key="index">
+                <div class="flex items-start gap-2">
+                    <div class="flex-1">
+                        <label :for="`kompetensi-${index}`" class="sr-only">Kompetensi mata pelajaran</label>
+                        <input :id="`kompetensi-${index}`" name="kompetensi[]" x-model="kompetensi[index]" list="daftar-kompetensi" maxlength="100" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder="Contoh: Matematika">
+                    </div>
+                    <button type="button" @click="hapus(index)" class="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-100" aria-label="Hapus kompetensi"><i class="fas fa-trash"></i></button>
+                </div>
+            </template>
+        </div>
+        <datalist id="daftar-kompetensi">
+            <option value="Pendidikan Agama Islam"></option>
+            <option value="Pendidikan Pancasila"></option>
+            <option value="Bahasa Indonesia"></option>
+            <option value="Matematika"></option>
+            <option value="IPAS"></option>
+            <option value="PJOK"></option>
+            <option value="Seni Budaya"></option>
+            <option value="Bahasa Inggris"></option>
+            <option value="Bahasa Jawa"></option>
+        </datalist>
+        @error('kompetensi') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+        @error('kompetensi.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+    </div>
     <div>
         <label for="foto" class="mb-2 block text-sm font-semibold text-gray-700">Foto profil <span class="font-normal text-gray-400">(JPG, PNG, WEBP maks. 2 MB)</span></label>
         <input id="foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-blue-700">

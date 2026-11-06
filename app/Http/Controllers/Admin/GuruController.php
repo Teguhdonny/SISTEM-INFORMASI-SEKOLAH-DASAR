@@ -54,12 +54,15 @@ class GuruController extends Controller
             'lulusan' => ['nullable', 'array', 'max:10'],
             'lulusan.*' => ['nullable', 'string', 'max:200'],
             'bagian' => ['required', 'string', 'max:100'],
+            'kompetensi' => ['nullable', 'array', 'max:20'],
+            'kompetensi.*' => ['nullable', 'string', 'max:100'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ], [
             'nip.unique' => 'NIP ini sudah terdaftar.',
         ]);
 
         $validated['lulusan'] = $this->normalizeEducation($validated['lulusan'] ?? []);
+        $validated['kompetensi'] = $this->normalizeCompetencies($validated['kompetensi'] ?? []);
 
         if ($request->hasFile('foto')) {
             $validated['foto'] = $request->file('foto')->store('guru', 'public');
@@ -88,6 +91,8 @@ class GuruController extends Controller
             'lulusan' => ['nullable', 'array', 'max:10'],
             'lulusan.*' => ['nullable', 'string', 'max:200'],
             'bagian' => ['required', 'string', 'max:100'],
+            'kompetensi' => ['nullable', 'array', 'max:20'],
+            'kompetensi.*' => ['nullable', 'string', 'max:100'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
 
@@ -99,6 +104,7 @@ class GuruController extends Controller
         ]);
 
         $validated['lulusan'] = $this->normalizeEducation($validated['lulusan'] ?? []);
+        $validated['kompetensi'] = $this->normalizeCompetencies($validated['kompetensi'] ?? []);
 
         $oldPhoto = $guru->foto;
         if ($request->hasFile('foto')) {
@@ -130,6 +136,16 @@ class GuruController extends Controller
     {
         return collect($educations)
             ->map(fn (?string $education): string => trim((string) $education))
+            ->filter()
+            ->values()
+            ->implode("\n");
+    }
+
+    /** @param array<int, string|null> $competencies */
+    private function normalizeCompetencies(array $competencies): string
+    {
+        return collect($competencies)
+            ->map(fn (?string $competency): string => trim((string) $competency))
             ->filter()
             ->values()
             ->implode("\n");
