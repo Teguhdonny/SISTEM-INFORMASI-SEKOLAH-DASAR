@@ -134,13 +134,28 @@ class PendaftaranWebController extends Controller
     // Mengubah status verifikasi pendaftar oleh admin
     public function updateStatus(Request $request, int $id, FonnteWhatsAppService $whatsapp): RedirectResponse
     {
-        $request->validate([
-            'status' => 'required|in:Menunggu Verifikasi,Diterima,Ditolak',
-        ]);
-
         $siswa = SiswaPpdb::query()->where('dicatat_admin', true)->whereHas('daftarUlang')->findOrFail($id);
         $daftarUlang = $siswa->daftarUlang;
-        $daftarUlang->update(['status' => $request->status]);
+        if ($daftarUlang->status && $daftarUlang->status !== 'Menunggu Verifikasi') {
+            return redirect()->back()->with('warning', 'Status verifikasi sudah ditentukan dan tidak dapat diubah lagi.');
+        }
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:Diterima,Ditolak'],
+        ]);
+
+        $updated = $daftarUlang->newQuery()
+            ->whereKey($daftarUlang->getKey())
+            ->where(function ($query): void {
+                $query->where('status', 'Menunggu Verifikasi')->orWhereNull('status');
+            })
+            ->update(['status' => $validated['status']]);
+
+        if (! $updated) {
+            return redirect()->back()->with('warning', 'Status verifikasi sudah ditentukan dan tidak dapat diubah lagi.');
+        }
+
+        $daftarUlang->refresh();
         $notificationSent = $whatsapp->sendStatusUpdate($daftarUlang);
 
         return redirect()->back()

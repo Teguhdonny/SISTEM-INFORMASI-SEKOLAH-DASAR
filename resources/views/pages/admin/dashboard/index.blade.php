@@ -71,11 +71,12 @@
 
         <section class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <h2 class="mb-4 font-bold text-gray-800">Menu Cepat</h2>
-            <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
                 <a href="{{ route('admin.guru.index') }}" class="flex flex-col items-center rounded-xl border border-gray-100 bg-gray-50 py-4 transition hover:border-blue-100 hover:bg-blue-50"><i class="fas fa-users mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600"></i><span class="text-xs font-semibold text-gray-600">Kelola Guru</span></a>
                 <a href="{{ route('admin.program.index') }}" class="flex flex-col items-center rounded-xl border border-gray-100 bg-gray-50 py-4 transition hover:border-blue-100 hover:bg-blue-50"><i class="fas fa-clipboard-list mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600"></i><span class="text-xs font-semibold text-gray-600">Kelola Program</span></a>
                 <a href="{{ route('admin.ekstrakurikuler.index') }}" class="flex flex-col items-center rounded-xl border border-gray-100 bg-gray-50 py-4 transition hover:border-blue-100 hover:bg-blue-50"><i class="fas fa-person-running mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600"></i><span class="text-xs font-semibold text-gray-600">Ekstrakurikuler</span></a>
                 <a href="{{ route('admin.ppdb.index') }}" class="flex flex-col items-center rounded-xl border border-gray-100 bg-gray-50 py-4 transition hover:border-blue-100 hover:bg-blue-50"><i class="fas fa-address-card mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600"></i><span class="text-xs font-semibold text-gray-600">Data PPDB</span></a>
+                <a href="{{ route('admin.pendaftaran-pindahan.index') }}" class="flex flex-col items-center rounded-xl border border-gray-100 bg-gray-50 py-4 transition hover:border-blue-100 hover:bg-blue-50"><i class="fas fa-right-left mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600"></i><span class="text-xs font-semibold text-gray-600">Murid Pindahan</span></a>
             </div>
         </section>
     </div>

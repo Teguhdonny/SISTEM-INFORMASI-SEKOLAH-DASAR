@@ -112,6 +112,12 @@
                     <span class="text-xs font-semibold">{{ session('success') }}</span>
                 </div>
                 @endif
+                @if(session('warning'))
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 px-5 py-3.5 rounded-2xl shadow-sm flex items-center gap-3" role="alert">
+                    <i class="fas fa-triangle-exclamation text-amber-600 text-base"></i>
+                    <span class="text-xs font-semibold">{{ session('warning') }}</span>
+                </div>
+                @endif
                 @if(session()->has('whatsapp_notification_sent') && ! session('whatsapp_notification_sent'))
                 <div class="mt-3 bg-amber-50 border border-amber-200 text-amber-800 px-5 py-3.5 rounded-2xl shadow-sm flex items-center gap-3" role="alert">
                     <i class="fas fa-triangle-exclamation"></i>
