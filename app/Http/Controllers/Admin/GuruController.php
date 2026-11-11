@@ -50,7 +50,7 @@ class GuruController extends Controller
     {
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
-            'nip' => ['nullable', 'string', 'regex:/^[0-9]{1,50}$/', Rule::unique('guru', 'nip')],
+            'nip' => ['required', 'digits:18', Rule::unique('guru', 'nip')],
             'lulusan' => ['nullable', 'array', 'max:10'],
             'lulusan.*' => ['nullable', 'string', 'max:200'],
             'bagian' => ['required', 'string', 'max:100'],
@@ -58,6 +58,8 @@ class GuruController extends Controller
             'kompetensi.*' => ['nullable', 'string', 'max:100'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ], [
+            'nip.required' => 'NIP wajib diisi dengan tepat 18 digit.',
+            'nip.digits' => 'NIP harus terdiri dari tepat 18 digit angka.',
             'nip.unique' => 'NIP ini sudah terdaftar.',
         ]);
 
@@ -87,7 +89,7 @@ class GuruController extends Controller
     {
         $rules = [
             'nama' => ['required', 'string', 'max:100'],
-            'nip' => ['nullable', 'string', 'regex:/^[0-9]{1,50}$/'],
+            'nip' => ['nullable', 'digits:18'],
             'lulusan' => ['nullable', 'array', 'max:10'],
             'lulusan.*' => ['nullable', 'string', 'max:200'],
             'bagian' => ['required', 'string', 'max:100'],
@@ -100,6 +102,7 @@ class GuruController extends Controller
             $rules['nip'][] = Rule::unique('guru', 'nip')->ignore($guru->id);
         }
         $validated = $request->validate($rules, [
+            'nip.digits' => 'NIP harus terdiri dari tepat 18 digit angka.',
             'nip.unique' => 'NIP ini sudah terdaftar.',
         ]);
 

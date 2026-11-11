@@ -23,10 +23,12 @@
                 <a href="/program-sekolah" class="{{ request()->is('program-sekolah') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Program Sekolah</a>
                 <a href="{{ route('ppdb.public.index') }}" class="{{ request()->is('informasi-ppdb') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">PPDB</a>
                 <a href="{{ route('registrasi.public.create') }}" class="{{ request()->is('registrasi-daftar-ulang') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Registrasi Daftar Ulang</a>
+                <a href="{{ route('pendaftaran-pindahan.public.create') }}" class="{{ request()->is('pendaftaran-pindahan') ? 'text-red-600 border-b-2 border-red-600 pb-1' : 'hover:text-red-600 transition' }}">Murid Pindahan</a>
             </div>
 
             <!-- Bagian Kanan: Tombol Log Masuk -->
             <div class="flex items-center gap-4">
+                <a href="{{ route('pendaftaran-pindahan.public.create') }}" class="rounded-full border border-blue-700 px-3 py-2 text-xs font-bold text-blue-800 transition hover:bg-blue-50 lg:hidden">Murid Pindahan</a>
                 @unless ((request()->routeIs('profil.public.index') && request()->query('tab') === 'galeri') || (request()->routeIs('home') && request()->query('preview') === 'admin'))
                     <a href="/login" class="bg-red-600 text-white px-5 py-2 rounded-full text-sm font-bold shadow hover:bg-red-700 transition shrink-0">
                         <i class="fas fa-user mr-1"></i> Login Admin

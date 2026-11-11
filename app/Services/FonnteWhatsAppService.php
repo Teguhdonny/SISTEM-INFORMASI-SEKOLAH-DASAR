@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\DaftarUlang;
+use App\Models\PendaftaranPindahan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -50,6 +51,34 @@ class FonnteWhatsAppService
                 'SDN Pojok 2 Kota Kediri',
             ])
         );
+    }
+
+    public function sendPendaftaranPindahanStatusUpdate(
+        PendaftaranPindahan $pendaftaranPindahan,
+        string $status,
+        ?string $catatanAdmin = null,
+    ): bool {
+        $statusMessage = match ($status) {
+            'Diterima' => 'Pengajuan murid pindahan telah diterima oleh pihak sekolah.',
+            'Ditolak' => 'Pengajuan murid pindahan belum dapat diterima oleh pihak sekolah. Silakan hubungi sekolah untuk informasi lebih lanjut.',
+            default => throw new \InvalidArgumentException('Status pendaftaran pindahan tidak valid.'),
+        };
+
+        $message = implode("\n", [
+            "Halo {$pendaftaranPindahan->nama_wali},",
+            '',
+            "Status pengajuan murid pindahan untuk {$pendaftaranPindahan->nama_siswa} ({$pendaftaranPindahan->no_pendaftaran}): {$status}.",
+            '',
+            $statusMessage,
+        ]);
+
+        if ($status === 'Ditolak') {
+            $message .= "\n\nCatatan dari admin:\n".(string) $catatanAdmin;
+        }
+
+        $message .= "\n\nSDN Pojok 2 Kota Kediri";
+
+        return $this->send($pendaftaranPindahan->no_whatsapp, $message);
     }
 
     private function send(string $target, string $message): bool

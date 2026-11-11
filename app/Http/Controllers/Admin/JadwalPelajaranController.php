@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Guru;
 use App\Models\JadwalPelajaran;
-use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -50,9 +49,8 @@ class JadwalPelajaranController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate($this->rules());
-        $this->validateDateMatchesDay($validated);
-        $this->validateTeacherCompetency($validated);
         $this->ensureNoScheduleConflict($validated);
+        $this->validateTeacherCompetency($validated);
 
         JadwalPelajaran::query()->create($validated);
 
@@ -73,9 +71,8 @@ class JadwalPelajaranController extends Controller
     public function update(Request $request, JadwalPelajaran $jadwalPelajaran): RedirectResponse
     {
         $validated = $request->validate($this->rules());
-        $this->validateDateMatchesDay($validated);
-        $this->validateTeacherCompetency($validated);
         $this->ensureNoScheduleConflict($validated, $jadwalPelajaran->id);
+        $this->validateTeacherCompetency($validated);
 
         $jadwalPelajaran->update($validated);
 
@@ -95,7 +92,6 @@ class JadwalPelajaranController extends Controller
         return [
             'kelas' => ['required', 'in:Kelas 1,Kelas 2,Kelas 3,Kelas 4,Kelas 5,Kelas 6'],
             'hari' => ['required', 'in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu'],
-            'tanggal' => ['required', 'date'],
             'mata_pelajaran' => ['required', 'string', 'max:100'],
             'jam_mulai' => ['required', 'date_format:H:i'],
             'jam_selesai' => ['required', 'date_format:H:i', 'after:jam_mulai'],
@@ -145,50 +141,31 @@ class JadwalPelajaranController extends Controller
     }
 
     /** @param array<string, mixed> $validated */
-    private function validateDateMatchesDay(array $validated): void
-    {
-        $dayNames = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu'];
-        $expectedDay = $dayNames[CarbonImmutable::parse($validated['tanggal'])->dayOfWeekIso] ?? null;
-
-        if ($expectedDay === null) {
-            throw ValidationException::withMessages([
-                'tanggal' => 'Tanggal jadwal hanya boleh berada pada hari Senin sampai Sabtu.',
-            ]);
-        }
-
-        if ($expectedDay === $validated['hari']) {
-            return;
-        }
-
-        throw ValidationException::withMessages([
-            'tanggal' => "Tanggal tersebut jatuh pada {$expectedDay}. Pilih hari yang sesuai dengan tanggal.",
-        ]);
-    }
-
-    /** @param array<string, mixed> $validated */
     private function ensureNoScheduleConflict(array $validated, ?int $exceptId = null): void
     {
         $overlappingSchedules = JadwalPelajaran::query()
             ->where('hari', $validated['hari'])
-            ->whereDate('tanggal', $validated['tanggal'])
             ->where('jam_mulai', '<', $validated['jam_selesai'])
             ->where('jam_selesai', '>', $validated['jam_mulai'])
             ->when($exceptId, fn ($query) => $query->where('id', '!=', $exceptId));
 
         if ((clone $overlappingSchedules)->where('id_guru', $validated['id_guru'])->exists()) {
             throw ValidationException::withMessages([
-                'id_guru' => 'Guru tersebut sudah memiliki jadwal lain yang bentrok pada hari, tanggal, dan jam yang sama.',
+                'id_guru' => 'Guru tersebut sudah memiliki jadwal lain yang bentrok pada hari dan jam yang sama.',
             ]);
         }
 
-        $classConflict = (clone $overlappingSchedules)
+        $classConflict = JadwalPelajaran::query()
+            ->where('hari', $validated['hari'])
             ->where('kelas', $validated['kelas'])
-            ->where('mata_pelajaran', '!=', $validated['mata_pelajaran'])
+            ->where('jam_mulai', '<', $validated['jam_selesai'])
+            ->where('jam_selesai', '>', $validated['jam_mulai'])
+            ->when($exceptId, fn ($query) => $query->where('id', '!=', $exceptId))
             ->exists();
 
         if ($classConflict) {
             throw ValidationException::withMessages([
-                'jam_mulai' => 'Kelas tersebut sudah memiliki jadwal mata pelajaran lain pada waktu yang bentrok.',
+                'jam_mulai' => 'Kelas tersebut sudah memiliki jadwal pada jam ini di hari yang sama. Silakan pilih jam lain.',
             ]);
         }
     }

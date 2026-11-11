@@ -11,7 +11,6 @@
     })->values();
     $selectedSubject = old('mata_pelajaran', $jadwalPelajaran->mata_pelajaran);
     $selectedTeacher = (string) old('id_guru', $jadwalPelajaran->id_guru ?? '');
-    $selectedDate = old('tanggal', $jadwalPelajaran->tanggal?->format('Y-m-d'));
 @endphp
 
 <x-layouts.admin>
@@ -19,7 +18,7 @@
         <div>
             <a href="{{ route('admin.jadwal.index') }}" class="text-sm font-semibold text-blue-700 hover:text-red-600"><i class="fas fa-arrow-left mr-2"></i>Kembali ke Jadwal Pelajaran</a>
             <h1 class="mt-3 text-2xl font-bold text-gray-800">{{ $jadwalPelajaran->exists ? 'Ubah Jadwal Pelajaran' : 'Tambah Jadwal Pelajaran' }}</h1>
-            <p class="mt-1 text-sm text-gray-500">Isi hari, tanggal, waktu, mata pelajaran, dan guru sesuai kompetensinya.</p>
+            <p class="mt-1 text-sm text-gray-500">Isi hari, waktu, mata pelajaran, dan guru sesuai kompetensinya.</p>
         </div>
 
         <form x-data="scheduleForm(@js($guruOptions), @js($selectedSubject), @js($selectedTeacher), @js(old('hari', $jadwalPelajaran->hari)))" action="{{ $jadwalPelajaran->exists ? route('admin.jadwal.update', $jadwalPelajaran) : route('admin.jadwal.store') }}" method="POST" class="space-y-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
@@ -34,16 +33,10 @@
                     @error('kelas')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label for="tanggal" class="mb-2 block text-sm font-semibold text-gray-700">Tanggal *</label>
-                    <input id="tanggal" name="tanggal" type="date" value="{{ $selectedDate }}" required @change="syncDayFromDate" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                    @error('tanggal')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                </div>
-                <div>
                     <label for="hari" class="mb-2 block text-sm font-semibold text-gray-700">Hari *</label>
                     <select id="hari" name="hari" required x-model="hari" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm">
                         @foreach ($hari as $namaHari)<option value="{{ $namaHari }}">{{ $namaHari }}</option>@endforeach
                     </select>
-                    <p class="mt-1 text-xs text-gray-500">Hari akan mengikuti tanggal saat tanggal diubah.</p>
                     @error('hari')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                 </div>
                 <div x-data="clockPicker('{{ old('jam_mulai', $jadwalPelajaran->jam_mulai ? substr($jadwalPelajaran->jam_mulai, 0, 5) : '07:00') }}')">
@@ -102,15 +95,6 @@
                     if (!this.compatibleTeachers.some((teacher) => String(teacher.id) === String(this.teacherId))) {
                         this.teacherId = '';
                     }
-                },
-                syncDayFromDate(event) {
-                    const date = event.target.value;
-                    if (!date) {
-                        return;
-                    }
-
-                    const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                    this.hari = dayNames[new Date(`${date}T00:00:00`).getDay()];
                 },
             };
         }

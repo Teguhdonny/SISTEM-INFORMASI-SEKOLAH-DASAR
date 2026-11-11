@@ -54,9 +54,13 @@
             <i class="fas fa-user-graduate w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">PPDB</span>
         </a>
-        <a href="{{ route('admin.pendaftaran.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/pendaftaran*') ? 'bg-blue-600 shadow-sm' : '' }}">
+        <a href="{{ route('admin.pendaftaran.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/pendaftaran') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-user-plus w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Registrasi Daftar Ulang</span>
+        </a>
+        <a href="{{ route('admin.pendaftaran-pindahan.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/pendaftaran-pindahan*') ? 'bg-blue-600 shadow-sm' : '' }}">
+            <i class="fas fa-right-left w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Murid Pindahan</span>
         </a>
         <a href="{{ route('admin.registration-period.edit') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/jadwal-registrasi*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-calendar-days w-5 text-center shrink-0"></i>

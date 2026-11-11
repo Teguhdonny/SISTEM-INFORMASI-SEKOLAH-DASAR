@@ -1,5 +1,6 @@
 @foreach ($pendaftars as $item)
     @php
+        $statusVerifikasi = $item->daftarUlang?->status ?? 'Menunggu Verifikasi';
         $aktaUrl = $item->daftarUlang?->file_akta ? asset('storage/'.$item->daftarUlang->file_akta) : null;
         $kkUrl = $item->daftarUlang?->file_kk ? asset('storage/'.$item->daftarUlang->file_kk) : null;
         $aktaType = $item->daftarUlang?->file_akta && str_ends_with(strtolower($item->daftarUlang->file_akta), '.pdf') ? 'pdf' : 'image';
@@ -59,21 +60,31 @@
                         </div>
                     </div>
 
-                    <form action="{{ route('admin.pendaftaran.status', $item->id) }}" method="POST" class="space-y-4 border-t border-gray-200 pt-4">
-                        @csrf
-                        <div>
-                            <label class="mb-1.5 block text-xs font-bold text-gray-700">Ubah Status Verifikasi Admin</label>
-                            <select name="status" class="w-full rounded-xl border border-gray-300 bg-white p-3 text-xs font-semibold text-gray-800 outline-none transition focus:ring-2 focus:ring-blue-500">
-                                @foreach (['Menunggu Verifikasi', 'Diterima', 'Ditolak'] as $statusOption)
-                                    <option value="{{ $statusOption }}" @selected(($item->daftarUlang->status ?? 'Menunggu Verifikasi') === $statusOption)>{{ $statusOption }}</option>
-                                @endforeach
-                            </select>
+                    @if ($statusVerifikasi === 'Menunggu Verifikasi')
+                        <form action="{{ route('admin.pendaftaran.status', $item->id) }}" method="POST" class="space-y-4 border-t border-gray-200 pt-4">
+                            @csrf
+                            <div>
+                                <label class="mb-1.5 block text-xs font-bold text-gray-700">Tentukan Status Verifikasi Admin</label>
+                                <select name="status" required class="w-full rounded-xl border border-gray-300 bg-white p-3 text-xs font-semibold text-gray-800 outline-none transition focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih status akhir</option>
+                                    @foreach (['Diterima', 'Ditolak'] as $statusOption)
+                                        <option value="{{ $statusOption }}">{{ $statusOption }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="flex gap-3 pt-2">
+                                <button type="button" @click="activeModal = null" class="w-1/2 rounded-xl bg-gray-100 py-3 text-xs font-bold text-gray-700 transition hover:bg-gray-200">Batal</button>
+                                <button type="submit" class="w-1/2 rounded-xl bg-blue-600 py-3 text-xs font-bold text-white shadow-md transition hover:bg-blue-700">Simpan Status</button>
+                            </div>
+                            <p class="text-[11px] leading-5 text-amber-700">Status yang sudah disimpan tidak dapat diubah lagi.</p>
+                        </form>
+                    @else
+                        <div class="space-y-2 border-t border-gray-200 pt-4">
+                            <p class="text-xs font-bold text-gray-700">Status Verifikasi</p>
+                            <p class="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1.5 text-xs font-semibold text-blue-800">{{ $statusVerifikasi }}</p>
+                            <p class="text-[11px] leading-5 text-gray-500">Status sudah ditentukan dan dikunci sehingga tidak dapat diubah lagi.</p>
                         </div>
-                        <div class="flex gap-3 pt-2">
-                            <button type="button" @click="activeModal = null" class="w-1/2 rounded-xl bg-gray-100 py-3 text-xs font-bold text-gray-700 transition hover:bg-gray-200">Batal</button>
-                            <button type="submit" class="w-1/2 rounded-xl bg-blue-600 py-3 text-xs font-bold text-white shadow-md transition hover:bg-blue-700">Simpan Perubahan</button>
-                        </div>
-                    </form>
+                    @endif
                 </div>
 
                 <div class="min-w-0 rounded-2xl border border-gray-200 bg-gray-50 p-4">
