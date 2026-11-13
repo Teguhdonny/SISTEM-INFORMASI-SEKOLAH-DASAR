@@ -9,7 +9,7 @@
     </section>
 
     <section class="mx-auto w-full px-6 py-10 lg:px-16 xl:px-24">
-        <div class="mb-8 flex flex-col gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div class="mb-6 flex flex-col gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <h2 class="flex items-center gap-2 text-2xl font-bold text-blue-900"><i class="fas fa-book-reader text-blue-600"></i> Program Unggulan</h2>
                 <p class="mt-1 text-sm text-gray-500">Kegiatan yang membangun kebiasaan baik dan pengalaman belajar siswa.</p>
@@ -17,13 +17,30 @@
             <div class="inline-flex items-center gap-2 self-start rounded-lg bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-800 sm:self-auto"><i class="fas fa-list-check"></i>{{ count($programs) }} program sekolah</div>
         </div>
 
+        <form method="GET" action="{{ route('program.public.index') }}" class="mb-8 flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-end">
+            <div class="w-full sm:max-w-xs">
+                <label for="kategori-program" class="mb-2 block text-sm font-semibold text-gray-700">Tampilkan kategori</label>
+                <select id="kategori-program" name="kategori" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm">
+                    <option value="">Semua kategori</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category }}" @selected($selectedCategory === $category)>{{ $category }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-800">Terapkan</button>
+            @if ($selectedCategory)
+                <a href="{{ route('program.public.index') }}" class="px-2 py-2.5 text-sm font-semibold text-gray-600 hover:text-blue-700">Hapus filter</a>
+            @endif
+        </form>
+
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-            @foreach ($programs as $index => $program)
+            @forelse ($programs as $index => $program)
                 @php
                     $tone = match ($program->warna) {
                         'red', 'rose' => ['bg' => 'bg-red-100', 'text' => 'text-red-600', 'label' => 'bg-red-50 text-red-700'],
                         'green' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'label' => 'bg-green-50 text-green-700'],
                         'purple' => ['bg' => 'bg-purple-100', 'text' => 'text-purple-700', 'label' => 'bg-purple-50 text-purple-700'],
+                        'amber' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-700', 'label' => 'bg-amber-50 text-amber-700'],
                         default => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700', 'label' => 'bg-blue-50 text-blue-700'],
                     };
                 @endphp
@@ -37,10 +54,12 @@
                     </div>
                     <div class="p-5">
                         <p class="min-h-20 text-sm leading-6 text-gray-600">{{ $program->deskripsi }}</p>
-                        <div class="mt-5 flex items-center gap-2 border-t border-gray-100 pt-4 text-sm text-gray-600"><i class="far fa-clock text-red-500"></i><span class="font-semibold">Jadwal:</span>{{ $program->jadwal }}</div>
+                        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4 text-sm text-gray-600"><div class="flex items-center gap-2"><i class="far fa-clock text-red-500"></i><span class="font-semibold">Jadwal:</span>{{ $program->jadwal }}</div><span class="inline-flex items-center gap-1.5 rounded-lg bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600"><i class="fas fa-user-group text-blue-600"></i>{{ $program->peserta }} siswa</span></div>
                     </div>
                 </article>
-            @endforeach
+            @empty
+                <div class="col-span-full rounded-xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center text-sm text-gray-500">Belum ada program aktif{{ $selectedCategory ? ' pada kategori ' . $selectedCategory : '' }}.</div>
+            @endforelse
         </div>
 
         <div class="mt-10 flex flex-col gap-4 border-l-4 border-red-500 bg-gray-50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">

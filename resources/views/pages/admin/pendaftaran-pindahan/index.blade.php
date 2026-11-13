@@ -18,6 +18,25 @@
             </form>
         </section>
 
+        <section class="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm xl:flex-row xl:items-end xl:justify-between">
+            <form method="POST" action="{{ route('admin.pendaftaran-pindahan.import.xlsx') }}" enctype="multipart/form-data" class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end xl:flex-1">
+                @csrf
+                <div class="min-w-0 flex-1">
+                    <label for="pindahan-import-file" class="mb-1 block text-sm font-bold text-gray-800">Impor pembaruan Excel</label>
+                    <p class="mb-2 text-xs text-gray-500">Cocokkan dengan nomor pendaftaran. Status dan dokumen tidak diubah; isi NIK/NISN sebagai teks agar digit tidak berubah.</p>
+                    <input id="pindahan-import-file" name="file" type="file" accept=".xlsx" required class="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-blue-700">
+                </div>
+                <div class="flex shrink-0 gap-2">
+                    <a href="{{ route('admin.pendaftaran-pindahan.template.xlsx') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-xl border border-gray-200 px-4 py-3 text-xs font-bold text-gray-700 hover:bg-gray-50">Template</a>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
+                </div>
+            </form>
+            <div class="flex shrink-0 gap-2 border-t border-gray-100 pt-4 xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">
+                <a href="{{ route('admin.pendaftaran-pindahan.export.pdf', request()->only(['search', 'status'])) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
+                <a href="{{ route('admin.pendaftaran-pindahan.export.xlsx', request()->only(['search', 'status'])) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
+            </div>
+        </section>
+
         <section class="space-y-4">
             @forelse ($pendaftaran as $item)
                 <article class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
@@ -27,7 +46,7 @@
                     </div>
                     <div class="grid gap-5 p-5 lg:grid-cols-[1fr_1fr_320px]">
                         <div class="space-y-2 text-sm text-gray-600"><p><span class="font-semibold text-gray-800">NISN:</span> {{ $item->nisn }}</p><p><span class="font-semibold text-gray-800">NIK:</span> {{ $item->nik }}</p><p><span class="font-semibold text-gray-800">Jenis kelamin:</span> {{ $item->jenis_kelamin }}</p><p><span class="font-semibold text-gray-800">Sekolah asal:</span> {{ $item->asal_sekolah }}</p><p><span class="font-semibold text-gray-800">Alasan pindah:</span> {{ $item->alasan_pindah }}</p></div>
-                        <div class="space-y-2 text-sm text-gray-600"><p><span class="font-semibold text-gray-800">Orang tua/wali:</span> {{ $item->nama_wali }}</p><p><span class="font-semibold text-gray-800">WhatsApp:</span> {{ $item->no_whatsapp }}</p><p class="pt-1 font-semibold text-gray-800">Dokumen</p><div class="flex flex-wrap gap-2">@foreach ([['file_kk', 'kk', 'Kartu Keluarga'], ['file_akta', 'akta', 'Akta'], ['file_rapor', 'rapor', 'Rapor'], ['file_surat_pindah', 'surat-pindah', 'Surat pindah'], ['file_rekomendasi_diterima', 'rekomendasi-diterima', 'Rekomendasi diterima'], ['file_surat_permohonan', 'surat-permohonan', 'Surat permohonan'], ['file_rekomendasi_dinas', 'rekomendasi-dinas', 'Rekomendasi Dinas']] as [$field, $key, $label])@if ($item->{$field})<a href="{{ route('admin.pendaftaran-pindahan.document', [$item, $key]) }}" class="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">{{ $label }}</a>@endif @endforeach</div><p class="text-xs">NISN aktif di Dapodik: {{ $item->nisn_aktif_dapodik ? 'Ya' : 'Belum dikonfirmasi' }}</p></div>
+                        <div class="space-y-2 text-sm text-gray-600"><p><span class="font-semibold text-gray-800">Orang tua/wali:</span> {{ $item->nama_wali }}</p><p><span class="font-semibold text-gray-800">WhatsApp:</span> {{ $item->no_whatsapp }}</p><p class="pt-1 font-semibold text-gray-800">Dokumen</p><div class="flex flex-wrap gap-2">@foreach ([['file_kk', 'kk', 'Kartu Keluarga'], ['file_akta', 'akta', 'Akta'], ['file_rapor', 'rapor', 'Rapor'], ['file_surat_pindah', 'surat-pindah', 'Surat pindah'], ['file_rekomendasi_diterima', 'rekomendasi-diterima', 'Rekomendasi diterima'], ['file_surat_permohonan', 'surat-permohonan', 'Surat permohonan'], ['file_rekomendasi_dinas', 'rekomendasi-dinas', 'Rekomendasi Dinas']] as [$field, $key, $label])@if ($item->{$field})<div class="flex items-center gap-1 rounded-lg bg-blue-50 p-1"><a href="{{ route('admin.pendaftaran-pindahan.document.preview', [$item, $key]) }}" target="_blank" rel="noopener" class="rounded-md px-2 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100" aria-label="Lihat {{ $label }} untuk {{ $item->nama_siswa }}">Lihat</a><a href="{{ route('admin.pendaftaran-pindahan.document', [$item, $key]) }}" class="rounded-md px-2 py-1 text-xs font-semibold text-gray-600 hover:bg-white" aria-label="Unduh {{ $label }} untuk {{ $item->nama_siswa }}">Unduh</a></div>@endif @endforeach</div><p class="text-xs">NISN aktif di Dapodik: {{ $item->nisn_aktif_dapodik ? 'Ya' : 'Belum dikonfirmasi' }}</p></div>
                         @if (in_array($item->status, ['Menunggu Verifikasi', 'Perlu Perbaikan'], true))
                             <form x-data="{ status: '' }" action="{{ route('admin.pendaftaran-pindahan.status', $item) }}" method="POST" class="space-y-3 rounded-xl border border-gray-100 p-4">
                                 @csrf

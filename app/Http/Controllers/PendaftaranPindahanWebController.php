@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\PendaftaranPindahan;
 use App\Models\RegistrationPeriod;
+use App\Models\User;
+use App\Notifications\AdminNewApplicationNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -82,7 +85,12 @@ class PendaftaranPindahanWebController extends Controller
         $validated['file_rapor'] = $request->file('file_rapor')->store('dokumen-pindahan', 'local');
         $validated['file_rekomendasi_dinas'] = $request->file('file_rekomendasi_dinas')?->store('dokumen-pindahan', 'local');
 
-        PendaftaranPindahan::query()->create($validated);
+        $pendaftaran = PendaftaranPindahan::query()->create($validated);
+
+        Notification::send(
+            User::query()->where('role', 'admin')->get(),
+            new AdminNewApplicationNotification('murid_pindahan', $pendaftaran->nama_siswa, $pendaftaran->no_pendaftaran),
+        );
 
         return redirect()->route('pendaftaran-pindahan.public.create')
             ->with('success', 'Pengajuan berhasil dikirim. Simpan nomor pendaftaran Anda: '.$validated['no_pendaftaran']);

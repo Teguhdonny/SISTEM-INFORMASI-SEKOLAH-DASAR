@@ -14,13 +14,30 @@
             <div class="inline-flex items-center gap-2 self-start rounded-lg bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-800 sm:self-auto"><i class="fas fa-users"></i>{{ count($ekstrakurikuler) }} kegiatan tersedia</div>
         </div>
 
+        <form method="GET" action="{{ route('ekstrakurikuler.public.index') }}" class="mb-8 flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 sm:flex-row sm:items-end">
+            <div class="w-full sm:max-w-xs">
+                <label for="kategori-ekskul" class="mb-2 block text-sm font-semibold text-gray-700">Tampilkan kategori</label>
+                <select id="kategori-ekskul" name="kategori" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm">
+                    <option value="">Semua kategori</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category }}" @selected($selectedCategory === $category)>{{ $category }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button type="submit" class="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-800">Terapkan</button>
+            @if ($selectedCategory)
+                <a href="{{ route('ekstrakurikuler.public.index') }}" class="px-2 py-2.5 text-sm font-semibold text-gray-600 hover:text-blue-700">Hapus filter</a>
+            @endif
+        </form>
+
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-            @foreach ($ekstrakurikuler as $index => $item)
+            @forelse ($ekstrakurikuler as $index => $item)
                 @php
                     $tone = match ($item->warna) {
-                        'red' => ['bg' => 'bg-red-100', 'text' => 'text-red-600', 'label' => 'bg-red-50 text-red-700'],
+                        'red', 'rose' => ['bg' => 'bg-red-100', 'text' => 'text-red-600', 'label' => 'bg-red-50 text-red-700'],
                         'green' => ['bg' => 'bg-green-100', 'text' => 'text-green-700', 'label' => 'bg-green-50 text-green-700'],
                         'purple' => ['bg' => 'bg-purple-100', 'text' => 'text-purple-700', 'label' => 'bg-purple-50 text-purple-700'],
+                        'amber' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-700', 'label' => 'bg-amber-50 text-amber-700'],
                         default => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700', 'label' => 'bg-blue-50 text-blue-700'],
                     };
                 @endphp
@@ -38,7 +55,9 @@
                         <div class="mt-4 inline-flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600"><i class="fas fa-user-group text-blue-600"></i>{{ $item->peserta }} siswa mengikuti</div>
                     </div>
                 </article>
-            @endforeach
+            @empty
+                <div class="col-span-full rounded-xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center text-sm text-gray-500">Belum ada kegiatan aktif{{ $selectedCategory ? ' pada kategori ' . $selectedCategory : '' }}.</div>
+            @endforelse
         </div>
         <div class="mt-10 border-l-4 border-red-500 bg-gray-50 p-5 sm:p-6"><h3 class="font-bold text-blue-900">Ayo kembangkan potensimu!</h3><p class="mt-1 text-sm text-gray-600">Hubungi pihak sekolah untuk informasi pendaftaran dan jadwal kegiatan ekstrakurikuler.</p></div>
         <p class="mt-4 text-center text-xs text-gray-400">Informasi kegiatan diperbarui oleh pihak sekolah.</p>

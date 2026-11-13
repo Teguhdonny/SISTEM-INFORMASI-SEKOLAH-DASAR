@@ -112,10 +112,10 @@
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <i class="fas fa-lock text-gray-300 text-xs"></i>
                         </div>
-                        <input type="password" name="password" required autocomplete="current-password" class="w-full pl-9 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent outline-none transition text-sm shadow-sm" placeholder="Masukkan password">
-                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center cursor-pointer text-gray-300 hover:text-[#3b82f6] transition">
-                            <i class="fas fa-eye-slash text-xs"></i>
-                        </div>
+                        <input id="login-password" type="password" name="password" required autocomplete="current-password" class="w-full pl-9 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#3b82f6] focus:border-transparent outline-none transition text-sm shadow-sm" placeholder="Masukkan password">
+                        <button id="toggle-password" type="button" aria-label="Tampilkan password" aria-pressed="false" class="absolute inset-y-0 right-0 flex items-center px-3.5 text-gray-400 transition hover:text-[#3b82f6] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#3b82f6]">
+                            <i class="fas fa-eye-slash text-xs" aria-hidden="true"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -147,5 +147,19 @@
         </div>
     </div>
 
+    <script>
+        const passwordInput = document.getElementById('login-password');
+        const togglePasswordButton = document.getElementById('toggle-password');
+        const passwordToggleIcon = togglePasswordButton.querySelector('i');
+
+        togglePasswordButton.addEventListener('click', () => {
+            const shouldShowPassword = passwordInput.type === 'password';
+            passwordInput.type = shouldShowPassword ? 'text' : 'password';
+            togglePasswordButton.setAttribute('aria-label', shouldShowPassword ? 'Sembunyikan password' : 'Tampilkan password');
+            togglePasswordButton.setAttribute('aria-pressed', shouldShowPassword.toString());
+            passwordToggleIcon.classList.toggle('fa-eye', shouldShowPassword);
+            passwordToggleIcon.classList.toggle('fa-eye-slash', !shouldShowPassword);
+        });
+    </script>
 </body>
 </html>

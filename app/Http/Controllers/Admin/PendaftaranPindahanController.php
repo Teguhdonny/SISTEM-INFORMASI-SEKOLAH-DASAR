@@ -103,6 +103,26 @@ class PendaftaranPindahanController extends Controller
 
     public function downloadDocument(PendaftaranPindahan $pendaftaranPindahan, string $document): StreamedResponse
     {
+        $path = $this->documentPath($pendaftaranPindahan, $document);
+
+        return Storage::disk('local')->download($path);
+    }
+
+    public function previewDocument(PendaftaranPindahan $pendaftaranPindahan, string $document): StreamedResponse
+    {
+        $path = $this->documentPath($pendaftaranPindahan, $document);
+        $mimeType = Storage::disk('local')->mimeType($path);
+
+        abort_unless(in_array($mimeType, ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'], true), 404);
+
+        return Storage::disk('local')->response($path, null, [
+            'Content-Type' => $mimeType,
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
+    private function documentPath(PendaftaranPindahan $pendaftaranPindahan, string $document): string
+    {
         $field = match ($document) {
             'kk' => 'file_kk',
             'akta' => 'file_akta',
@@ -115,8 +135,8 @@ class PendaftaranPindahanController extends Controller
         };
         $path = $pendaftaranPindahan->{$field};
 
-        abort_unless($path && Storage::disk('local')->exists($path), 404);
+        abort_unless(is_string($path) && Storage::disk('local')->exists($path), 404);
 
-        return Storage::disk('local')->download($path);
+        return $path;
     }
 }

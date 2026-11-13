@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\RegistrationPeriod;
 use App\Models\SiswaPpdb;
+use App\Models\User;
+use App\Notifications\AdminNewApplicationNotification;
 use App\Services\FonnteWhatsAppService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
 
 class PendaftaranWebController extends Controller
@@ -69,6 +72,11 @@ class PendaftaranWebController extends Controller
             'file_kk' => $kkPath,
             'status' => 'Menunggu Verifikasi',
         ]);
+
+        Notification::send(
+            User::query()->where('role', 'admin')->get(),
+            new AdminNewApplicationNotification('daftar_ulang', $siswa->nama_siswa, $siswa->nisn),
+        );
 
         $whatsapp->sendDaftarUlangSubmitted($daftarUlang);
 

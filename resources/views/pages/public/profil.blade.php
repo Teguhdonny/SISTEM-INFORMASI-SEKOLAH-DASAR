@@ -3,6 +3,41 @@
         activeTab: @js(request('tab', 'profil')),
         searchGaleri: '',
         kategoriGaleri: 'Semua Kategori',
+        albumOpen: false,
+        selectedAlbum: { title: '', category: '', photos: [] },
+        activePhotoIndex: 0,
+        touchStartX: null,
+        openGalleryAlbum(title, category, photos) {
+            this.selectedAlbum = { title, category, photos };
+            this.activePhotoIndex = 0;
+            this.albumOpen = true;
+        },
+        closeGalleryAlbum() {
+            this.albumOpen = false;
+            this.touchStartX = null;
+        },
+        changeGalleryPhoto(direction) {
+            const photoCount = this.selectedAlbum.photos.length;
+            this.activePhotoIndex = (this.activePhotoIndex + direction + photoCount) % photoCount;
+        },
+        finishGallerySwipe(endX) {
+            if (this.touchStartX === null) {
+                return;
+            }
+
+            const distance = endX - this.touchStartX;
+            if (Math.abs(distance) > 40) {
+                this.changeGalleryPhoto(distance < 0 ? 1 : -1);
+            }
+
+            this.touchStartX = null;
+        },
+        matchesGaleri(kategori, text) {
+            const matchesCategory = this.kategoriGaleri === 'Semua Kategori' || this.kategoriGaleri === kategori;
+            const matchesSearch = text.toLowerCase().includes(this.searchGaleri.trim().toLowerCase());
+
+            return matchesCategory && matchesSearch;
+        },
         titles: {
             'profil': 'PROFIL SEKOLAH',
             'sejarah': 'SEJARAH SINGKAT',

@@ -14,9 +14,7 @@
 <body class="bg-gray-100 font-sans antialiased text-gray-800" 
       x-data="{ 
           sidebarOpen: true, 
-          activeModal: null, 
-          unreadNotification: {{ $menungguVerifikasi > 0 ? 'true' : 'false' }},
-          notificationDropdown: false 
+          activeModal: null
       }">
     @php
         $adminUser = auth()->user();
@@ -42,38 +40,7 @@
                 <!-- Bagian Kanan Profil & Notifikasi Interaktif -->
                 <div class="flex items-center gap-5">
                     
-                    <!-- Dropdown Lonceng Notifikasi -->
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open; unreadNotification = false" class="text-gray-400 hover:text-gray-600 relative focus:outline-none p-1 transition">
-                            <i class="fas fa-bell text-lg"></i>
-                            <!-- Badge Merah (Hilang otomatis setelah dibuka) -->
-                            <span x-show="unreadNotification"
-                                  class="absolute -top-0.5 -right-0.5 bg-red-600 text-white rounded-full text-[10px] w-4 h-4 flex items-center justify-center font-bold shadow-sm animate-pulse">
-                                <span id="registration-notification-badge">{{ $menungguVerifikasi }}</span>
-                            </span>
-                        </button>
-
-                        <!-- Kotak Popup Notifikasi -->
-                        <div x-show="open" @click.away="open = false" style="display: none;" 
-                             class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 py-3 z-50 text-xs">
-                            <div class="px-4 pb-2 border-b font-bold text-gray-800 flex justify-between items-center">
-                                <span>Notifikasi PPDB</span>
-                                <span class="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold"><span id="registration-notification-count">{{ $menungguVerifikasi }}</span> Baru</span>
-                            </div>
-                            <div class="max-h-60 overflow-y-auto divide-y divide-gray-100">
-                                @if($menungguVerifikasi > 0)
-                                    <div class="px-4 py-3 hover:bg-gray-50 transition cursor-pointer">
-                                        <p class="font-semibold text-gray-800">Pendaftaran Baru Masuk</p>
-                                        <p class="text-gray-500 text-[11px] mt-0.5">Terdapat <span id="registration-notification-text-count">{{ $menungguVerifikasi }}</span> siswa menunggu verifikasi dokumen.</p>
-                                    </div>
-                                @else
-                                    <div class="px-4 py-6 text-center text-gray-400">
-                                        <p>Tidak ada notifikasi baru.</p>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
+                    <x-admin.notifications />
 
                     <!-- Profil Admin -->
                     <div class="relative border-l border-gray-200 pl-5" x-data="{ profileOpen: false }" @click.away="profileOpen = false">
@@ -141,6 +108,31 @@
                         </div>
                     </div>
                 </div>
+
+                @if (session('error'))
+                    <div role="alert" class="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-semibold text-red-700">{{ session('error') }}</div>
+                @endif
+                @if ($errors->any())
+                    <div role="alert" class="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700">{{ $errors->first() }}</div>
+                @endif
+                <section class="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm xl:flex-row xl:items-end xl:justify-between">
+                    <form method="POST" action="{{ route('admin.pendaftaran.import.xlsx') }}" enctype="multipart/form-data" class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end xl:flex-1">
+                        @csrf
+                        <div class="min-w-0 flex-1">
+                            <label for="daftar-ulang-import-file" class="mb-1 block text-sm font-bold text-gray-800">Impor pembaruan Excel</label>
+                            <p class="mb-2 text-xs text-gray-500">Cocokkan dengan NISN; hanya nama wali dan WhatsApp yang diperbarui. Isi nomor sebagai teks agar nol awal tidak hilang.</p>
+                            <input id="daftar-ulang-import-file" name="file" type="file" accept=".xlsx" required class="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-blue-700">
+                        </div>
+                        <div class="flex shrink-0 gap-2">
+                            <a href="{{ route('admin.pendaftaran.template.xlsx') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-xl border border-gray-200 px-4 py-3 text-xs font-bold text-gray-700 hover:bg-gray-50">Template</a>
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
+                        </div>
+                    </form>
+                    <div class="flex shrink-0 gap-2 border-t border-gray-100 pt-4 xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">
+                        <a id="registration-export-pdf" href="{{ route('admin.pendaftaran.export.pdf', request()->only(['search', 'status'])) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
+                        <a id="registration-export-excel" href="{{ route('admin.pendaftaran.export.xlsx', request()->only(['search', 'status'])) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
+                    </div>
+                </section>
 
                 <!-- 4 KAD STATISTIK RINGKASAN (Presisi & Rapi) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -263,6 +255,7 @@
         const waitingCount = document.getElementById('registration-waiting-count');
         const acceptedCount = document.getElementById('registration-accepted-count');
         const rejectedCount = document.getElementById('registration-rejected-count');
+        const exportLinks = [document.getElementById('registration-export-pdf'), document.getElementById('registration-export-excel')];
 
         let debounceTimer;
         let activeRequest;
@@ -285,6 +278,13 @@
             if (selectedStatus !== '') {
                 url.searchParams.set('status', selectedStatus);
             }
+            exportLinks.forEach((link) => {
+                if (link) {
+                    const exportUrl = new URL(link.href);
+                    exportUrl.search = url.search;
+                    link.href = exportUrl;
+                }
+            });
 
             activeRequest?.abort();
             activeRequest = new AbortController();

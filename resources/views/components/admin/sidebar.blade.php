@@ -42,11 +42,15 @@
             <i class="fas fa-running w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Ekstrakurikuler</span>
         </a>
+        <a href="{{ route('admin.kategori-konten.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/kategori-konten*') ? 'bg-blue-600 shadow-sm' : '' }}">
+            <i class="fas fa-tags w-5 text-center shrink-0"></i>
+            <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Kategori Konten</span>
+        </a>
         <a href="{{ route('admin.berita.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/berita*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-newspaper w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Berita / Artikel</span>
         </a>
-        <a href="{{ route('profil.public.index') }}?tab=galeri" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800">
+        <a href="{{ route('admin.galeri.index') }}" class="flex items-center px-4 py-2.5 mx-2 rounded transition hover:bg-blue-800 {{ request()->is('admin/galeri*') ? 'bg-blue-600 shadow-sm' : '' }}">
             <i class="fas fa-images w-5 text-center shrink-0"></i>
             <span class="ml-3 text-sm font-medium" x-show="sidebarOpen">Galeri Foto</span>
         </a>
