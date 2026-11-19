@@ -21,7 +21,6 @@ use App\Http\Controllers\PendaftaranPindahanWebController;
 use App\Http\Controllers\PendaftaranWebController;
 use App\Models\Berita;
 use App\Models\Ekstrakurikuler;
-use App\Models\Galeri;
 use App\Models\Guru;
 use App\Models\ProfilSekolah;
 use App\Models\ProgramSekolah;
@@ -48,7 +47,6 @@ Route::get('/', function () {
 
 Route::get('/profil', function () {
     $profilSekolah = ProfilSekolah::query()->first();
-    $galeri = Galeri::query()->latest('id')->get();
     $visi = VisiMisi::query()->where('kategori', 'Visi')->value('deskripsi')
         ?? 'Mewujudkan Generasi Muda yang Berakhlak Mulia, Mandiri, Kreatif Berwawasan Global dan Peduli Lingkungan.';
     $misi = VisiMisi::query()->where('kategori', 'Misi')->orderBy('id')->pluck('deskripsi');
@@ -62,7 +60,7 @@ Route::get('/profil', function () {
         ]);
     }
 
-    return view('pages.public.profil', compact('profilSekolah', 'visi', 'misi', 'galeri'));
+    return view('pages.public.profil', compact('profilSekolah', 'visi', 'misi'));
 })->name('profil.public.index');
 
 Route::get('/visi-misi', function () {
@@ -160,7 +158,12 @@ Route::post('/admin/notifikasi/{notificationId}/buka', [AdminNotificationControl
 Route::get('/admin/profil', [ProfilSekolahController::class, 'index'])->middleware(['auth', 'admin'])->name('admin.profil.index');
 Route::put('/admin/profil', [ProfilSekolahController::class, 'update'])->middleware(['auth', 'admin'])->name('admin.profil.update');
 
+Route::get('/admin/guru/export/excel', [GuruController::class, 'exportExcel'])->middleware(['auth', 'admin'])->name('admin.guru.export.xlsx');
+Route::get('/admin/guru/export/pdf', [GuruController::class, 'exportPdf'])->middleware(['auth', 'admin'])->name('admin.guru.export.pdf');
+Route::get('/admin/guru/template-excel', [GuruController::class, 'importTemplate'])->middleware(['auth', 'admin'])->name('admin.guru.template.xlsx');
+Route::post('/admin/guru/import-excel', [GuruController::class, 'importExcel'])->middleware(['auth', 'admin'])->name('admin.guru.import.xlsx');
 Route::resource('/admin/guru', GuruController::class)->names('admin.guru')->middleware(['auth', 'admin']);
+Route::get('/admin/jadwal-pelajaran/export/pdf', [AdminJadwalPelajaranController::class, 'exportPdf'])->middleware(['auth', 'admin'])->name('admin.jadwal.export.pdf');
 Route::resource('/admin/jadwal-pelajaran', AdminJadwalPelajaranController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['jadwal-pelajaran' => 'jadwalPelajaran'])->names('admin.jadwal')->middleware(['auth', 'admin']);
 
 Route::resource('/admin/program-sekolah', ProgramSekolahController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->parameters(['program-sekolah' => 'programSekolah'])->names('admin.program')->middleware(['auth', 'admin']);

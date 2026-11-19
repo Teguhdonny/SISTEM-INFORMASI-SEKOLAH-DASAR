@@ -26,13 +26,43 @@ class JadwalPelajaranController extends Controller
             ->with('guru')
             ->when($filters['kelas'] ?? null, fn ($query, string $kelas) => $query->where('kelas', $kelas))
             ->when($filters['hari'] ?? null, fn ($query, string $hari) => $query->where('hari', $hari))
-            ->orderBy('kelas')
-            ->orderBy('hari')
+            ->orderByRaw("CASE kelas WHEN 'Kelas 1' THEN 1 WHEN 'Kelas 2' THEN 2 WHEN 'Kelas 3' THEN 3 WHEN 'Kelas 4' THEN 4 WHEN 'Kelas 5' THEN 5 WHEN 'Kelas 6' THEN 6 ELSE 7 END")
+            ->orderByRaw("CASE hari WHEN 'Senin' THEN 1 WHEN 'Selasa' THEN 2 WHEN 'Rabu' THEN 3 WHEN 'Kamis' THEN 4 WHEN 'Jumat' THEN 5 WHEN 'Sabtu' THEN 6 ELSE 7 END")
             ->orderBy('jam_mulai')
             ->paginate(15)
             ->withQueryString();
 
         return view('pages.admin.jadwal.index', compact('jadwal', 'kelas', 'hari', 'filters'));
+    }
+
+    public function exportPdf(Request $request): View
+    {
+        $filters = $request->validate([
+            'kelas' => ['nullable', Rule::in($this->classes())],
+            'hari' => ['nullable', Rule::in($this->days())],
+        ]);
+        $rows = JadwalPelajaran::query()
+            ->with('guru')
+            ->when($filters['kelas'] ?? null, fn ($query, string $kelas) => $query->where('kelas', $kelas))
+            ->when($filters['hari'] ?? null, fn ($query, string $hari) => $query->where('hari', $hari))
+            ->orderByRaw("CASE kelas WHEN 'Kelas 1' THEN 1 WHEN 'Kelas 2' THEN 2 WHEN 'Kelas 3' THEN 3 WHEN 'Kelas 4' THEN 4 WHEN 'Kelas 5' THEN 5 WHEN 'Kelas 6' THEN 6 ELSE 7 END")
+            ->orderByRaw("CASE hari WHEN 'Senin' THEN 1 WHEN 'Selasa' THEN 2 WHEN 'Rabu' THEN 3 WHEN 'Kamis' THEN 4 WHEN 'Jumat' THEN 5 WHEN 'Sabtu' THEN 6 ELSE 7 END")
+            ->orderBy('jam_mulai')
+            ->get()
+            ->map(fn (JadwalPelajaran $jadwal): array => [
+                $jadwal->hari,
+                $jadwal->kelas,
+                substr($jadwal->jam_mulai, 0, 5).'–'.substr($jadwal->jam_selesai, 0, 5),
+                $jadwal->mata_pelajaran,
+                $jadwal->guru->nama,
+            ])->all();
+
+        return view('pages.admin.exports.print', [
+            'title' => 'Jadwal Pelajaran',
+            'columns' => ['Hari', 'Kelas', 'Waktu', 'Mata Pelajaran', 'Guru'],
+            'rows' => $rows,
+            'printedAt' => now('Asia/Jakarta')->format('d/m/Y H:i').' WIB',
+        ]);
     }
 
     public function create(): View

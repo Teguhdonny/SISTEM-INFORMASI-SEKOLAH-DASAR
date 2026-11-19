@@ -54,7 +54,6 @@
                     </div>
                     <div class="p-5">
                         <p class="min-h-20 text-sm leading-6 text-gray-600">{{ $program->deskripsi }}</p>
-                        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4 text-sm text-gray-600"><div class="flex items-center gap-2"><i class="far fa-clock text-red-500"></i><span class="font-semibold">Jadwal:</span>{{ $program->jadwal }}</div><span class="inline-flex items-center gap-1.5 rounded-lg bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600"><i class="fas fa-user-group text-blue-600"></i>{{ $program->peserta }} siswa</span></div>
                     </div>
                 </article>
             @empty

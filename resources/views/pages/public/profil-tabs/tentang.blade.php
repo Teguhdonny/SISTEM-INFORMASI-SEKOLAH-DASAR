@@ -14,7 +14,7 @@
                 <div>
                     <h2 class="text-xl font-extrabold text-blue-950 mb-2">Tentang Sekolah</h2>
                     <p class="text-gray-600 text-sm leading-relaxed border-b border-gray-100 pb-4">
-                        SDN Pojok 2 Kota Kediri adalah sekolah dasar negeri yang berkomitmen untuk memberikan pendidikan berkualitas dengan lingkungan belajar yang aman, nyaman, dan berprestasi.
+                        {{ $profilSekolah?->sejarah ?: 'SDN Pojok 2 Kota Kediri adalah sekolah dasar negeri yang berkomitmen untuk memberikan pendidikan berkualitas dengan lingkungan belajar yang aman, nyaman, dan berprestasi.' }}
                     </p>
                 </div>
                 <div class="bg-blue-50/50 rounded-xl p-4 border border-blue-100/80 grid grid-cols-2 sm:grid-cols-4 gap-4 divide-x divide-blue-100 text-center">

@@ -4,38 +4,9 @@
         <form action="{{ $item->exists ? route('admin.ekstrakurikuler.update', $item) : route('admin.ekstrakurikuler.store') }}" method="POST" class="space-y-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
             @csrf @if ($item->exists) @method('PUT') @endif
             <div class="grid gap-5 md:grid-cols-2">
-                @foreach (['nama_ekskul' => ['Nama kegiatan', 'text'], 'pembina' => ['Nama pembina', 'text'], 'peserta' => ['Jumlah peserta', 'number']] as $field => [$label, $type])
-                    <div><label for="{{ $field }}" class="mb-2 block text-sm font-semibold text-gray-700">{{ $label }}{{ $field !== 'pembina' ? ' *' : '' }}</label><input id="{{ $field }}" name="{{ $field }}" type="{{ $type }}" @if ($field === 'peserta') inputmode="numeric" step="1" min="0" data-digits-only @endif value="{{ old($field, $item->$field ?? ($field === 'peserta' ? 0 : '')) }}" {{ $field !== 'pembina' ? 'required' : '' }} class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">@error($field)<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror</div>
+                @foreach (['nama_ekskul' => ['Nama kegiatan', 'text'], 'pembina' => ['Nama pembina', 'text']] as $field => [$label, $type])
+                    <div><label for="{{ $field }}" class="mb-2 block text-sm font-semibold text-gray-700">{{ $label }}{{ $field !== 'pembina' ? ' *' : '' }}</label><input id="{{ $field }}" name="{{ $field }}" type="{{ $type }}" value="{{ old($field, $item->$field ?? '') }}" {{ $field !== 'pembina' ? 'required' : '' }} class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">@error($field)<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror</div>
                 @endforeach
-                <fieldset class="space-y-3 md:col-span-2">
-                    <legend class="text-sm font-semibold text-gray-700">Jadwal kegiatan *</legend>
-                    @if ($item->exists && $item->jadwal && ! $scheduleParts['hari'])
-                        <p class="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">Jadwal sebelumnya: {{ $item->jadwal }}. Pilih hari serta jam mulai dan selesai untuk menyimpan format jadwal baru.</p>
-                    @endif
-                    <div class="grid gap-4 md:grid-cols-3">
-                        <div>
-                            <label for="hari" class="mb-2 block text-xs font-medium text-gray-600">Hari</label>
-                            <select id="hari" name="hari" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                                <option value="">Pilih hari</option>
-                                @foreach ($days as $day)
-                                    <option value="{{ $day }}" @selected(old('hari', $scheduleParts['hari']) === $day)>{{ $day }}</option>
-                                @endforeach
-                            </select>
-                            @error('hari')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                        <div>
-                            <label for="jam_mulai" class="mb-2 block text-xs font-medium text-gray-600">Jam mulai</label>
-                            <input id="jam_mulai" name="jam_mulai" type="time" value="{{ old('jam_mulai', $scheduleParts['jam_mulai']) }}" required class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                            @error('jam_mulai')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                        <div>
-                            <label for="jam_selesai" class="mb-2 block text-xs font-medium text-gray-600">Jam selesai</label>
-                            <input id="jam_selesai" name="jam_selesai" type="time" value="{{ old('jam_selesai', $scheduleParts['jam_selesai']) }}" required class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-                            @error('jam_selesai')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500">Jam selesai harus setelah jam mulai.</p>
-                </fieldset>
                 <div>
                     <label for="kategori" class="mb-2 block text-sm font-semibold text-gray-700">Kategori *</label>
                     <select id="kategori" name="kategori" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">

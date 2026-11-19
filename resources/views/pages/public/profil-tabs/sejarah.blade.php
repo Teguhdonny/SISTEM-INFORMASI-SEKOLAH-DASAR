@@ -3,7 +3,7 @@
     <div class="flex flex-col lg:flex-row gap-8 items-start">
         <div class="flex-1 relative pl-6 border-l-2 border-blue-200 space-y-6">
             @php
-                $riwayat = [
+                $riwayat = $profilSekolah?->riwayat_sekolah ?: [
                     ['tahun' => '1982', 'judul' => 'Pendirian sekolah', 'isi' => 'SDN Pojok 2 Kota Kediri resmi berdiri pada tahun 1982 sebagai sekolah dasar negeri di wilayah Kecamatan Mojoroto.'],
                     ['tahun' => '1995', 'judul' => 'Pengembangan sarana prasarana', 'isi' => 'Mulai dibangun ruang kelas baru dan perpustakaan sekolah untuk menunjang proses belajar mengajar.'],
                     ['tahun' => '2010', 'judul' => 'Akreditasi', 'isi' => 'SDN Pojok 2 mendapatkan akreditasi B dari BAN-S/M serta terus meningkatkan mutu pembelajaran.'],
@@ -31,7 +31,7 @@
             </div>
             <h4 class="text-sm font-extrabold text-blue-950 mb-2">Sejarah Singkat</h4>
             <p class="text-xs text-gray-600 leading-relaxed">
-                SDN Pojok 2 Kota Kediri terus berkembang menjadi sekolah unggul dengan dukungan guru, orang tua, dan masyarakat.
+                {{ $profilSekolah?->sejarah ?: 'SDN Pojok 2 Kota Kediri terus berkembang menjadi sekolah unggul dengan dukungan guru, orang tua, dan masyarakat.' }}
             </p>
         </div>
     </div>

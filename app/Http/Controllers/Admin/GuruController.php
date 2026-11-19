@@ -4,12 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Guru;
+use App\Services\ExcelWorkbook;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GuruController extends Controller
 {
@@ -39,6 +45,80 @@ class GuruController extends Controller
         $totalGuru = Guru::count();
 
         return view('pages.admin.guru.index', compact('guru', 'search', 'totalGuru'));
+    }
+
+    public function exportExcel(Request $request, ExcelWorkbook $workbook): StreamedResponse
+    {
+        $rows = $this->guruQuery($request)->get()->map(fn (Guru $guru): array => [
+            $guru->nama,
+            $guru->nip,
+            $guru->bagian,
+            $guru->lulusan,
+            $guru->kompetensi,
+        ]);
+
+        return $workbook->download('data-guru-staff.xlsx', ['Nama', 'NIP', 'Bagian', 'Lulusan', 'Kompetensi'], $rows);
+    }
+
+    public function exportPdf(Request $request): View
+    {
+        $rows = $this->guruQuery($request)->get()->map(fn (Guru $guru): array => [
+            $guru->nama,
+            $guru->nip,
+            $guru->bagian,
+            $guru->lulusan,
+            $guru->kompetensi,
+        ])->all();
+
+        return $this->printView('Guru & Staff', ['Nama', 'NIP', 'Bagian', 'Jenjang Pendidikan', 'Kompetensi'], $rows);
+    }
+
+    public function importTemplate(ExcelWorkbook $workbook): StreamedResponse
+    {
+        return $workbook->download('template-impor-guru-staff.xlsx', ['Nama', 'NIP', 'Bagian', 'Lulusan', 'Kompetensi'], []);
+    }
+
+    public function importExcel(Request $request, ExcelWorkbook $workbook): RedirectResponse
+    {
+        $request->validate(['file' => ['required', 'file', 'mimes:xlsx', 'extensions:xlsx', 'max:10240']]);
+
+        try {
+            $rows = $workbook->read($request->file('file'));
+        } catch (InvalidArgumentException $exception) {
+            return back()->with('error', $exception->getMessage());
+        }
+
+        $seenNips = [];
+        $validatedRows = [];
+        foreach ($rows as $index => $row) {
+            $rowNumber = $index + 2;
+            $validator = Validator::make($row, [
+                'nama' => ['required', 'string', 'max:100'],
+                'nip' => ['required', 'digits:18', 'unique:guru,nip'],
+                'bagian' => ['required', 'string', 'max:100'],
+                'lulusan' => ['nullable', 'string', 'max:5000'],
+                'kompetensi' => ['nullable', 'string', 'max:5000'],
+            ]);
+
+            if ($validator->fails()) {
+                return back()->with('error', "Baris {$rowNumber}: ".$validator->errors()->first());
+            }
+
+            $data = $validator->validated();
+            if (isset($seenNips[$data['nip']])) {
+                return back()->with('error', "Baris {$rowNumber}: NIP duplikat di dalam file.");
+            }
+            $seenNips[$data['nip']] = true;
+            $validatedRows[] = $data;
+        }
+
+        DB::transaction(function () use ($validatedRows): void {
+            foreach ($validatedRows as $row) {
+                Guru::query()->create($row);
+            }
+        });
+
+        return back()->with('success', count($validatedRows).' data guru & staff berhasil diimpor.');
     }
 
     public function create(): View
@@ -152,5 +232,34 @@ class GuruController extends Controller
             ->filter()
             ->values()
             ->implode("\n");
+    }
+
+    private function guruQuery(Request $request): Builder
+    {
+        $search = $request->string('search')->trim()->toString();
+
+        return Guru::query()
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('nama', 'like', "%{$search}%")
+                        ->orWhere('nip', 'like', "%{$search}%")
+                        ->orWhere('bagian', 'like', "%{$search}%")
+                        ->orWhere('lulusan', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('nama');
+    }
+
+    /** @param array<int, string> $columns
+     * @param  array<int, array<int, scalar|null>>  $rows
+     */
+    private function printView(string $title, array $columns, array $rows): View
+    {
+        return view('pages.admin.exports.print', [
+            'title' => $title,
+            'columns' => $columns,
+            'rows' => $rows,
+            'printedAt' => now('Asia/Jakarta')->format('d/m/Y H:i').' WIB',
+        ]);
     }
 }

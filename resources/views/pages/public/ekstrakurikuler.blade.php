@@ -49,17 +49,15 @@
                     <div class="p-5">
                         <p class="min-h-20 text-sm leading-6 text-gray-600">{{ $item->deskripsi }}</p>
                         <dl class="mt-5 space-y-3 border-t border-gray-100 pt-4 text-sm">
-                            <div class="flex items-center gap-2 text-gray-600"><i class="far fa-clock w-4 text-center text-red-500"></i><dt class="font-semibold text-blue-900">Jadwal</dt><dd>{{ $item->jadwal }}</dd></div>
                             <div class="flex items-center gap-2 text-gray-600"><i class="fas fa-user-tie w-4 text-center text-blue-600"></i><dt class="font-semibold text-blue-900">Pembina</dt><dd>{{ $item->pembina ?: '—' }}</dd></div>
                         </dl>
-                        <div class="mt-4 inline-flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600"><i class="fas fa-user-group text-blue-600"></i>{{ $item->peserta }} siswa mengikuti</div>
                     </div>
                 </article>
             @empty
                 <div class="col-span-full rounded-xl border border-dashed border-gray-300 bg-white px-6 py-12 text-center text-sm text-gray-500">Belum ada kegiatan aktif{{ $selectedCategory ? ' pada kategori ' . $selectedCategory : '' }}.</div>
             @endforelse
         </div>
-        <div class="mt-10 border-l-4 border-red-500 bg-gray-50 p-5 sm:p-6"><h3 class="font-bold text-blue-900">Ayo kembangkan potensimu!</h3><p class="mt-1 text-sm text-gray-600">Hubungi pihak sekolah untuk informasi pendaftaran dan jadwal kegiatan ekstrakurikuler.</p></div>
+        <div class="mt-10 border-l-4 border-red-500 bg-gray-50 p-5 sm:p-6"><h3 class="font-bold text-blue-900">Ayo kembangkan potensimu!</h3><p class="mt-1 text-sm text-gray-600">Hubungi pihak sekolah untuk informasi pendaftaran kegiatan ekstrakurikuler.</p></div>
         <p class="mt-4 text-center text-xs text-gray-400">Informasi kegiatan diperbarui oleh pihak sekolah.</p>
     </section>
 </x-layouts.app>

@@ -7,13 +7,17 @@
             'Status' => 'Negeri',
             'Jenjang' => 'Sekolah Dasar (SD)',
             'Alamat' => $profilSekolah?->alamat ?? 'Jalan Mastrip Nomor 59, Kota Kediri (64115)',
-            'Kelurahan' => 'Pojok',
-            'Kecamatan' => 'Mojoroto',
-            'Kota' => 'Kota Kediri',
-            'Provinsi' => 'Jawa Timur',
             'Email Resmi' => $profilSekolah?->email_sekolah ?? 'pojok2mojoroto@gmail.com',
-            'Akreditasi' => 'B',
         ];
+        foreach ($profilSekolah?->identitas_sekolah ?? [
+            ['label' => 'Kelurahan', 'nilai' => 'Pojok'],
+            ['label' => 'Kecamatan', 'nilai' => 'Mojoroto'],
+            ['label' => 'Kota', 'nilai' => 'Kota Kediri'],
+            ['label' => 'Provinsi', 'nilai' => 'Jawa Timur'],
+            ['label' => 'Akreditasi', 'nilai' => 'B'],
+        ] as $item) {
+            $identitas[$item['label']] = $item['nilai'];
+        }
     @endphp
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs sm:text-sm">

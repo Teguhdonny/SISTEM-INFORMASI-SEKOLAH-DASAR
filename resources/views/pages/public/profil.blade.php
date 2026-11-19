@@ -1,58 +1,19 @@
 <x-layouts.app>
     <div x-data="{ 
-        activeTab: @js(request('tab', 'profil')),
-        searchGaleri: '',
-        kategoriGaleri: 'Semua Kategori',
-        albumOpen: false,
-        selectedAlbum: { title: '', category: '', photos: [] },
-        activePhotoIndex: 0,
-        touchStartX: null,
-        openGalleryAlbum(title, category, photos) {
-            this.selectedAlbum = { title, category, photos };
-            this.activePhotoIndex = 0;
-            this.albumOpen = true;
-        },
-        closeGalleryAlbum() {
-            this.albumOpen = false;
-            this.touchStartX = null;
-        },
-        changeGalleryPhoto(direction) {
-            const photoCount = this.selectedAlbum.photos.length;
-            this.activePhotoIndex = (this.activePhotoIndex + direction + photoCount) % photoCount;
-        },
-        finishGallerySwipe(endX) {
-            if (this.touchStartX === null) {
-                return;
-            }
-
-            const distance = endX - this.touchStartX;
-            if (Math.abs(distance) > 40) {
-                this.changeGalleryPhoto(distance < 0 ? 1 : -1);
-            }
-
-            this.touchStartX = null;
-        },
-        matchesGaleri(kategori, text) {
-            const matchesCategory = this.kategoriGaleri === 'Semua Kategori' || this.kategoriGaleri === kategori;
-            const matchesSearch = text.toLowerCase().includes(this.searchGaleri.trim().toLowerCase());
-
-            return matchesCategory && matchesSearch;
-        },
+        activeTab: @js(in_array(request('tab'), ['profil', 'sejarah', 'identitas', 'struktur', 'fasilitas'], true) ? request('tab') : 'profil'),
         titles: {
             'profil': 'PROFIL SEKOLAH',
             'sejarah': 'SEJARAH SINGKAT',
             'identitas': 'IDENTITAS SEKOLAH',
             'struktur': 'STRUKTUR ORGANISASI',
-            'fasilitas': 'FASILITAS SEKOLAH',
-            'galeri': 'GALERI'
+            'fasilitas': 'FASILITAS SEKOLAH'
         },
         breadcrumbs: {
             'profil': 'Profil Sekolah',
             'sejarah': 'Sejarah Singkat',
             'identitas': 'Identitas Sekolah',
             'struktur': 'Struktur Organisasi',
-            'fasilitas': 'Fasilitas Sekolah',
-            'galeri': 'Galeri'
+            'fasilitas': 'Fasilitas Sekolah'
         }
     }" class="bg-gray-50/50 min-h-screen pb-20">
 
@@ -100,10 +61,6 @@
                         <i class="fas fa-building w-5 text-center" :class="activeTab === 'fasilitas' ? 'text-white' : 'text-gray-500'"></i>
                         <span>Fasilitas Sekolah</span>
                     </button>
-                    <button @click="activeTab = 'galeri'" :class="activeTab === 'galeri' ? 'bg-blue-700 text-white font-bold' : 'text-gray-700 hover:bg-blue-50/60 font-medium'" class="w-full flex items-center gap-3.5 px-5 py-4 text-left text-sm transition">
-                        <i class="fas fa-images w-5 text-center" :class="activeTab === 'galeri' ? 'text-white' : 'text-gray-500'"></i>
-                        <span>Galeri</span>
-                    </button>
                 </div>
 
                 <!-- AREA KONTEN KANAN (Memanggil 6 File Terpisah) -->
@@ -122,9 +79,6 @@
                     </div>
                     <div x-show="activeTab === 'fasilitas'" x-cloak x-transition.opacity>
                         @include('pages.public.profil-tabs.fasilitas')
-                    </div>
-                    <div x-show="activeTab === 'galeri'" x-cloak x-transition.opacity>
-                        @include('pages.public.profil-tabs.galeri')
                     </div>
                 </div>
 
