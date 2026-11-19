@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-[#f8fafc] flex items-center justify-center min-h-screen relative overflow-hidden font-sans">
+<body class="relative flex min-h-screen items-center justify-center overflow-x-hidden overflow-y-auto bg-[#f8fafc] py-4 font-sans sm:py-8">
 
     <!-- Dekorasi Kiri Atas -->
     <div class="absolute top-8 left-10 pointer-events-none opacity-90 hidden lg:block">
@@ -34,10 +34,10 @@
     </div>
 
     <!-- Main Container Card -->
-    <div class="w-full max-w-[850px] bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col md:flex-row relative z-10 m-4 md:m-8 overflow-hidden">
+    <div class="relative z-10 my-0 mx-4 flex w-full max-w-[850px] flex-col overflow-hidden rounded-3xl bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] md:m-8 md:flex-row">
         
         <!-- Panel Kiri: Branding (Biru) -->
-        <div class="md:w-[45%] bg-[#1d4ed8] text-white relative flex flex-col justify-between overflow-hidden">
+        <div class="relative flex flex-col justify-between overflow-hidden bg-[#1d4ed8] text-white md:w-[45%]">
             
             <!-- Gambar Sekolah (Diperbaiki menggunakan path absolut /images/) -->
             <div class="absolute inset-0 z-0 bg-cover bg-center opacity-30 mix-blend-overlay" style="background-image: url('/images/sekolah.jpg');"></div>
@@ -45,27 +45,27 @@
             <div class="absolute inset-0 bg-gradient-to-t from-[#1e3a8a] via-[#1d4ed8]/90 to-[#2563eb]/70 z-0"></div>
 
             <!-- Konten Atas Panel Kiri -->
-            <div class="relative z-10 p-10 mt-4">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-[#1d4ed8] shrink-0 shadow-lg">
+            <div class="relative z-10 px-6 py-5 sm:p-10 sm:mt-4">
+                <div class="mb-0 flex items-center gap-3 md:mb-8 md:gap-4">
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#1d4ed8] shadow-lg sm:h-12 sm:w-12">
                         <i class="fas fa-book-open text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl font-extrabold tracking-tight">SDN POJOK 2</h1>
+                        <h1 class="text-lg font-extrabold tracking-tight sm:text-xl">SDN POJOK 2</h1>
                         <p class="text-xs text-blue-200 mt-0.5">Kota Kediri</p>
                     </div>
                 </div>
                 
-                <div class="w-10 h-1 bg-[#ef4444] rounded-full mb-5"></div>
+                <div class="mb-5 mt-6 hidden h-1 w-10 rounded-full bg-[#ef4444] md:block"></div>
                 
-                <h2 class="text-xl font-bold leading-snug text-white shadow-sm">
+                <h2 class="hidden text-xl font-bold leading-snug text-white shadow-sm md:block">
                     Bersama Membangun<br>Generasi Berprestasi
                 </h2>
             </div>
             
             <!-- Gelombang Lengkung Merah Putih di Bawah Panel Kiri -->
             <div class="relative z-10 mt-auto">
-                <svg viewBox="0 0 1440 320" class="w-full h-auto text-white align-bottom">
+                <svg viewBox="0 0 1440 320" class="hidden h-auto w-full align-bottom text-white md:block">
                     <!-- Layer Merah (Belakang) -->
                     <path fill="#ef4444" d="M0,160L48,170.7C96,181,192,203,288,208C384,213,480,203,576,192C672,181,768,171,864,181.3C960,192,1056,224,1152,213.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" transform="translate(0, 40)"></path>
                     <!-- Layer Putih (Depan) -->
@@ -75,14 +75,14 @@
         </div>
 
         <!-- Panel Kanan: Form Login -->
-        <div class="md:w-[55%] p-10 md:p-12 bg-white flex flex-col justify-center relative z-20">
+        <div class="relative z-20 flex flex-col justify-center bg-white px-6 pb-7 pt-6 sm:p-8 md:w-[55%] md:p-12">
             
-            <div class="mb-8">
+            <div class="mb-6 sm:mb-8">
                 <h2 class="text-2xl font-extrabold text-[#1e3a8a] mb-1.5">Selamat Datang</h2>
                 <p class="text-gray-400 text-xs font-medium">Silakan masuk ke akun Anda untuk melanjutkan</p>
             </div>
 
-            <form action="{{ route('login.store') }}" method="POST" class="space-y-5">
+            <form action="{{ route('login.store') }}" method="POST" class="space-y-4 sm:space-y-5">
                 @csrf
                 @if (session('error'))
                     <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-700">{{ session('error') }}</div>
@@ -120,7 +120,7 @@
                 </div>
 
                 <!-- Opsi (Ingat Saya & Lupa Password) -->
-                <div class="flex items-center justify-between pt-2">
+                <div class="flex items-center justify-between gap-3 pt-1 sm:pt-2">
                     <label class="flex items-center cursor-pointer group">
                         <input type="checkbox" name="remember" value="1" class="w-3.5 h-3.5 rounded border-gray-300 text-[#3b82f6] focus:ring-[#3b82f6] transition">
                         <span class="ml-2 text-xs text-gray-500 font-medium group-hover:text-[#1d4ed8] transition">Ingat saya</span>
@@ -135,7 +135,7 @@
             </form>
 
             <!-- Garis Bawah (Footer) -->
-            <div class="mt-10 text-center relative">
+            <div class="relative mt-7 text-center sm:mt-10">
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
                     <div class="w-full border-t border-gray-100"></div>
                 </div>

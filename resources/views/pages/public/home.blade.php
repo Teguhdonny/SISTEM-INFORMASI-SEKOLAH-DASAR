@@ -22,48 +22,48 @@
                 this.activeSlide = (this.activeSlide + 1) % this.slides.length;
             }, 5000);
         }
-    }" class="relative w-full h-[70vh] min-h-[480px] flex items-center justify-center overflow-hidden">
+    }" class="relative flex min-h-[640px] w-full items-center justify-center overflow-hidden py-12 sm:h-[70vh] sm:min-h-[480px] sm:py-0">
         <!-- Gambar Latar Belakang -->
         <div class="absolute inset-0 z-0">
-            <img src="{{ asset('images/sekolah.jpg') }}" alt="Siswa SDN Pojok 2" class="w-full h-full object-cover object-center">
+            <img src="{{ asset('images/sekolah.jpg') }}" alt="Siswa SDN Pojok 2" class="h-full w-full object-cover object-[65%_center] sm:object-center">
             <!-- Perbaikan 2: Gradient putih pekat di kiri, transparan di kanan -->
-            <div class="absolute inset-0 bg-gradient-to-r from-white from-30% via-white/80 via-60% to-transparent"></div>
+            <div class="absolute inset-0 bg-white/75 sm:bg-gradient-to-r sm:from-white sm:from-30% sm:via-white/80 sm:via-60% sm:to-transparent"></div>
         </div>
 
         <!-- Kandungan Teks -->
-        <div class="relative z-10 w-full px-6 lg:px-16 xl:px-24 mx-auto flex">
-            <div class="w-full md:w-3/4 lg:w-3/5 space-y-4" data-aos="fade-right">
+        <div class="relative z-10 mx-auto flex w-full px-4 sm:px-6 lg:px-16 xl:px-24">
+            <div class="w-full space-y-4 sm:w-3/4 sm:space-y-5 lg:w-3/5" data-aos="fade-right">
                 
-                <div class="inline-flex items-center gap-2 bg-blue-100/80 text-blue-900 font-semibold px-4 py-1.5 rounded-full backdrop-blur-sm shadow-sm mb-1">
+                <div class="mb-1 inline-flex items-center gap-2 rounded-full bg-blue-100/90 px-3 py-1.5 font-semibold text-blue-900 shadow-sm backdrop-blur-sm sm:px-4">
                     <i class="fas fa-graduation-cap"></i>
-                    <span class="text-sm">Selamat Datang di</span>
+                    <span class="text-xs sm:text-sm">Selamat Datang di</span>
                 </div>
                 
                 <!-- Perbaikan 3: Tipografi "SDN Pojok 2" lebih dominan, "Kota Kediri" sedikit lebih kecil, jarak dirapatkan -->
                 <div class="space-y-1">
-                    <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight text-blue-900 drop-shadow-sm">
+                    <h1 class="text-4xl font-extrabold leading-tight text-blue-900 drop-shadow-sm sm:text-5xl lg:text-7xl">
                         SDN Pojok 2
                     </h1>
-                    <h2 class="text-3xl lg:text-5xl font-extrabold text-red-600 drop-shadow-sm">
+                    <h2 class="text-2xl font-extrabold text-red-600 drop-shadow-sm sm:text-3xl lg:text-5xl">
                         Kota Kediri
                     </h2>
                 </div>
                 
                 <!-- Motto didekatkan ke judul -->
-                <p class="text-lg lg:text-xl font-medium text-gray-800 italic border-l-4 border-red-500 pl-4 py-1" x-html="slides[activeSlide].motto">
+                <p class="border-l-4 border-red-500 py-1 pl-3 text-base font-medium italic text-gray-800 sm:pl-4 sm:text-lg lg:text-xl" x-html="slides[activeSlide].motto">
                     "Maju Bersama, Raih Prestasi"
                 </p>
                 
-                <p class="text-gray-800 text-base lg:text-lg leading-relaxed max-w-lg bg-white/40 p-2 rounded backdrop-blur-sm" x-text="slides[activeSlide].desc">
+                <p class="max-w-lg rounded bg-white/60 p-2 text-sm leading-relaxed text-gray-800 backdrop-blur-sm sm:text-base lg:text-lg" x-text="slides[activeSlide].desc">
                     SDN Pojok 2 Kota Kediri berkomitmen untuk memberikan pendidikan berkualitas, membentuk karakter yang mulia, serta mempersiapkan generasi unggul di masa depan.
                 </p>
                 
                 <!-- Perbaikan 4: Dua CTA (Utama & Sekunder) -->
-                <div class="flex flex-wrap items-center gap-4 pt-4">
-                    <a href="{{ url('/profil') }}" class="inline-block bg-red-600 text-white font-bold px-8 py-3 rounded-full shadow-lg shadow-red-600/30 hover:bg-red-700 hover:-translate-y-1 transition transform duration-300">
+                <div class="flex flex-col items-stretch gap-3 pt-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:pt-4">
+                    <a href="{{ url('/profil') }}" class="inline-block rounded-full bg-red-600 px-6 py-3 text-center font-bold text-white shadow-lg shadow-red-600/30 transition duration-300 hover:-translate-y-1 hover:bg-red-700 sm:px-8">
                         Profil Sekolah &rarr;
                     </a>
-                    <a href="{{ url('/registrasi-daftar-ulang') }}" class="inline-block border-2 border-blue-700 text-blue-900 font-bold px-8 py-3 rounded-full hover:bg-blue-50 hover:-translate-y-1 transition transform duration-300 bg-white/50 backdrop-blur-sm">
+                    <a href="{{ url('/registrasi-daftar-ulang') }}" class="inline-block rounded-full border-2 border-blue-700 bg-white/70 px-6 py-3 text-center font-bold text-blue-900 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:bg-blue-50 sm:px-8">
                         Informasi Daftar Ulang
                     </a>
                 </div>
@@ -71,7 +71,7 @@
         </div>
 
         <!-- Perbaikan 5: Indikator Slider di bawah -->
-        <div class="absolute bottom-6 left-6 lg:left-16 xl:left-24 flex gap-2 z-20">
+        <div class="absolute bottom-4 left-4 z-20 flex gap-2 sm:bottom-6 sm:left-6 lg:left-16 xl:left-24">
             <button type="button" @click="activeSlide = 0" :class="activeSlide === 0 ? 'w-8 bg-blue-700' : 'w-2.5 bg-gray-400 hover:bg-blue-400'" class="h-2.5 rounded-full transition-all"></button>
             <button type="button" @click="activeSlide = 1" :class="activeSlide === 1 ? 'w-8 bg-blue-700' : 'w-2.5 bg-gray-400 hover:bg-blue-400'" class="h-2.5 rounded-full transition-all"></button>
             <button type="button" @click="activeSlide = 2" :class="activeSlide === 2 ? 'w-8 bg-blue-700' : 'w-2.5 bg-gray-400 hover:bg-blue-400'" class="h-2.5 rounded-full transition-all"></button>
