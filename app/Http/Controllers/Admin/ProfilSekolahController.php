@@ -17,10 +17,13 @@ class ProfilSekolahController extends Controller
     {
         $profilSekolah = ProfilSekolah::query()->first() ?? new ProfilSekolah([
             'nama_sekolah' => 'SD Negeri Pojok 2 Kota Kediri',
+            'tentang_sekolah' => 'SD Negeri Pojok 2 Kota Kediri adalah sekolah dasar negeri yang berkomitmen untuk memberikan pendidikan berkualitas dengan lingkungan belajar yang aman, nyaman, dan berprestasi.',
             'sejarah' => 'SD Negeri Pojok 2 Kota Kediri merupakan sekolah dasar negeri di bawah naungan Dinas Pendidikan Pemerintah Kota Kediri.',
             'alamat' => 'Jalan Mastrip Nomor 59, Kota Kediri, 64115, Jawa Timur',
             'kontak' => '',
             'email_sekolah' => 'pojok2mojoroto@gmail.com',
+            'tahun_berdiri' => 1982,
+            'status_sekolah' => 'Negeri / Aktif',
         ]);
         $visi = VisiMisi::query()->where('kategori', 'Visi')->value('deskripsi')
             ?? 'MEWUJUDKAN GENERASI MUDA YANG BERAKHLAK MULIA, MANDIRI, KREATIF BERWAWASAN GLOBAL DAN PEDULI LINGKUNGAN';
@@ -65,14 +68,17 @@ class ProfilSekolahController extends Controller
                 'nama_sekolah' => ['required', 'string', 'max:150'],
                 'email_sekolah' => ['required', 'email', 'max:100'],
                 'alamat' => ['required', 'string', 'max:1000'],
+                'tentang_sekolah' => ['required', 'string', 'max:5000'],
+                'tahun_berdiri' => ['required', 'integer', 'digits:4', 'min:1800', 'max:'.now()->year],
+                'status_sekolah' => ['required', 'string', 'max:100'],
             ]);
 
             DB::transaction(function () use ($validated): void {
                 $profilSekolah = ProfilSekolah::query()->firstOrNew();
                 $profilSekolah->fill([
                     ...$validated,
-                    'kontak' => $profilSekolah->kontak ?? '',
                     'sejarah' => $profilSekolah->sejarah ?: 'SD Negeri Pojok 2 Kota Kediri merupakan sekolah dasar negeri di bawah naungan Dinas Pendidikan Pemerintah Kota Kediri.',
+                    'kontak' => $profilSekolah->kontak ?? '',
                 ])->save();
             });
 
@@ -209,10 +215,13 @@ class ProfilSekolahController extends Controller
     {
         return ProfilSekolah::query()->first() ?? new ProfilSekolah([
             'nama_sekolah' => 'SD Negeri Pojok 2 Kota Kediri',
+            'tentang_sekolah' => 'SD Negeri Pojok 2 Kota Kediri adalah sekolah dasar negeri yang berkomitmen untuk memberikan pendidikan berkualitas dengan lingkungan belajar yang aman, nyaman, dan berprestasi.',
             'sejarah' => 'SD Negeri Pojok 2 Kota Kediri merupakan sekolah dasar negeri di bawah naungan Dinas Pendidikan Pemerintah Kota Kediri.',
             'alamat' => 'Jalan Mastrip Nomor 59, Kota Kediri, 64115, Jawa Timur',
             'kontak' => '',
             'email_sekolah' => 'pojok2mojoroto@gmail.com',
+            'tahun_berdiri' => 1982,
+            'status_sekolah' => 'Negeri / Aktif',
         ]);
     }
 

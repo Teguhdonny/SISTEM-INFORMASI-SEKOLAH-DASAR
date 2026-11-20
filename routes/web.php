@@ -47,6 +47,8 @@ Route::get('/', function () {
 
 Route::get('/profil', function () {
     $profilSekolah = ProfilSekolah::query()->first();
+    $jumlahGuru = Guru::query()->count();
+    $jumlahSiswa = SiswaPpdb::query()->where('dicatat_admin', true)->count();
     $visi = VisiMisi::query()->where('kategori', 'Visi')->value('deskripsi')
         ?? 'Mewujudkan Generasi Muda yang Berakhlak Mulia, Mandiri, Kreatif Berwawasan Global dan Peduli Lingkungan.';
     $misi = VisiMisi::query()->where('kategori', 'Misi')->orderBy('id')->pluck('deskripsi');
@@ -60,7 +62,7 @@ Route::get('/profil', function () {
         ]);
     }
 
-    return view('pages.public.profil', compact('profilSekolah', 'visi', 'misi'));
+    return view('pages.public.profil', compact('profilSekolah', 'visi', 'misi', 'jumlahGuru', 'jumlahSiswa'));
 })->name('profil.public.index');
 
 Route::get('/visi-misi', function () {

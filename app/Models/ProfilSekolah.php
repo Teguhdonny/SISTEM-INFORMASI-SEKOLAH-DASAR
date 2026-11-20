@@ -10,10 +10,13 @@ class ProfilSekolah extends Model
 
     protected $fillable = [
         'nama_sekolah',
+        'tentang_sekolah',
         'sejarah',
         'alamat',
         'kontak',
         'email_sekolah',
+        'tahun_berdiri',
+        'status_sekolah',
         'tujuan',
         'riwayat_sekolah',
         'identitas_sekolah',
@@ -22,6 +25,7 @@ class ProfilSekolah extends Model
     ];
 
     protected $casts = [
+        'tahun_berdiri' => 'integer',
         'tujuan' => 'array',
         'riwayat_sekolah' => 'array',
         'identitas_sekolah' => 'array',

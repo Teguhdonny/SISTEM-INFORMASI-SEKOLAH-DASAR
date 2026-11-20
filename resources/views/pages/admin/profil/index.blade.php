@@ -144,15 +144,15 @@
                 @include('pages.admin.profil.fasilitas')
 
                 <!-- TAB 1: IDENTITAS & PROFIL SEKOLAH -->
-                <div x-show="activeTab === 'profil'" style="display: none;" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div x-show="activeTab === 'profil'" style="display: none;" class="grid grid-cols-1 gap-6">
                     <!-- Kartu Info Singkat -->
-                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                    <div class="mx-auto w-full max-w-2xl bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">
                         <div class="w-24 h-24 bg-blue-50 text-blue-900 rounded-3xl flex items-center justify-center text-4xl shadow-inner border border-blue-100 mb-4">
                             <i class="fas fa-school"></i>
                         </div>
                         <h3 class="text-lg font-extrabold text-gray-900">{{ $profilSekolah->nama_sekolah }}</h3>
                         <p class="text-xs text-gray-500 mt-1">Dinas Pendidikan Pemerintah Kota Kediri</p>
-                        <span class="mt-3 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[11px] font-bold">Status: Negeri / Aktif</span>
+                        <span class="mt-3 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[11px] font-bold">Status: {{ $profilSekolah->status_sekolah ?: 'Negeri / Aktif' }}</span>
                         
                         <div class="w-full border-t border-gray-100 mt-6 pt-5 text-left space-y-3 text-xs">
                             <div>
@@ -170,35 +170,6 @@
                         </div>
                     </div>
 
-                    <!-- Detail Deskripsi Profil -->
-                    <div class="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-gray-100 space-y-6">
-                        <div>
-                            <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
-                                <i class="fas fa-info-circle text-blue-600"></i> Tentang SD Negeri Pojok 2 Kota Kediri
-                            </h3>
-                            <p class="text-xs text-gray-600 leading-relaxed">
-                                {{ $profilSekolah->sejarah }}
-                            </p>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-gray-100">
-                            <div class="bg-blue-50/60 p-4 rounded-2xl border border-blue-100">
-                                <span class="text-[11px] text-blue-600 font-bold uppercase">Tenaga Pendidik</span>
-                                <p class="text-2xl font-extrabold text-blue-900 mt-1">8 Guru</p>
-                                <span class="text-[10px] text-gray-500">PNS & PPPK Tersertifikasi</span>
-                            </div>
-                            <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-100">
-                                <span class="text-[11px] text-amber-600 font-bold uppercase">Program Unggulan</span>
-                                <p class="text-2xl font-extrabold text-amber-800 mt-1">CERMAT</p>
-                                <span class="text-[10px] text-gray-500">Cerdas, Mandiri & Terampil</span>
-                            </div>
-                            <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100">
-                                <span class="text-[11px] text-emerald-600 font-bold uppercase">Gerakan Lingkungan</span>
-                                <p class="text-2xl font-extrabold text-emerald-800 mt-1">BERSEHAT</p>
-                                <span class="text-[10px] text-gray-500">Bersih, Elok, Sehat, Rindang</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- TAB 2: VISI & MISI RESMI 2026 -->
@@ -288,6 +259,20 @@
                               <div>
                                 <label class="font-bold text-gray-700 block mb-1">Alamat Sekolah</label>
                                 <input type="text" name="alamat" value="{{ old('alamat', $profilSekolah->alamat) }}" x-bind:disabled="activeTab !== 'profil'" required maxlength="1000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                              </div>
+                              <div>
+                                <label class="font-bold text-gray-700 block mb-1">Tentang Sekolah</label>
+                                <textarea name="tentang_sekolah" rows="4" x-bind:disabled="activeTab !== 'profil'" required maxlength="5000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('tentang_sekolah', $profilSekolah->tentang_sekolah ?: $profilSekolah->sejarah) }}</textarea>
+                              </div>
+                              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="font-bold text-gray-700 block mb-1">Tahun Berdiri</label>
+                                    <input type="number" name="tahun_berdiri" value="{{ old('tahun_berdiri', $profilSekolah->tahun_berdiri ?: 1982) }}" x-bind:disabled="activeTab !== 'profil'" required min="1800" max="{{ now()->year }}" step="1" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="font-bold text-gray-700 block mb-1">Status Sekolah</label>
+                                    <input type="text" name="status_sekolah" value="{{ old('status_sekolah', $profilSekolah->status_sekolah ?: 'Negeri / Aktif') }}" x-bind:disabled="activeTab !== 'profil'" required maxlength="100" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
                               </div>
                             </div>
                             <div x-show="activeTab === 'visimisi'" style="display: none;" class="space-y-4">
