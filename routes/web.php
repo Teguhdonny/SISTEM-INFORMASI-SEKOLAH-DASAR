@@ -142,6 +142,7 @@ Route::get('/informasi-ppdb/pdf', [PendaftaranWebController::class, 'publicPpdbP
 
 // Halaman Registrasi Daftar Ulang (PPDB Publik - Tanpa Login)
 Route::get('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'create'])->name('registrasi.public.create');
+Route::get('/registrasi-daftar-ulang/cari-siswa', [PendaftaranWebController::class, 'lookupStudent'])->name('registrasi.public.lookup');
 Route::post('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'store'])->name('registrasi.public.store');
 Route::get('/pendaftaran-pindahan', [PendaftaranPindahanWebController::class, 'create'])->name('pendaftaran-pindahan.public.create');
 Route::post('/pendaftaran-pindahan', [PendaftaranPindahanWebController::class, 'store'])->name('pendaftaran-pindahan.public.store');

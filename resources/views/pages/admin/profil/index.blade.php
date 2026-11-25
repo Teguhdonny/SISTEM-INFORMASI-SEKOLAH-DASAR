@@ -261,6 +261,11 @@
                                 <input type="text" name="alamat" value="{{ old('alamat', $profilSekolah->alamat) }}" x-bind:disabled="activeTab !== 'profil'" required maxlength="1000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
                               </div>
                               <div>
+                                <label class="font-bold text-gray-700 block mb-1">WhatsApp Admin untuk Pengingat</label>
+                                <input type="text" name="no_whatsapp_admin" value="{{ old('no_whatsapp_admin', $profilSekolah->no_whatsapp_admin) }}" x-bind:disabled="activeTab !== 'profil'" inputmode="numeric" pattern="[0-9]{8,20}" maxlength="20" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="08xxxxxxxxxx">
+                                <p class="mt-1 text-[11px] text-gray-500">Gunakan nomor yang terdaftar di WhatsApp. Pengingat pendaftaran baru dikirim ke nomor ini.</p>
+                              </div>
+                              <div>
                                 <label class="font-bold text-gray-700 block mb-1">Tentang Sekolah</label>
                                 <textarea name="tentang_sekolah" rows="4" x-bind:disabled="activeTab !== 'profil'" required maxlength="5000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('tentang_sekolah', $profilSekolah->tentang_sekolah ?: $profilSekolah->sejarah) }}</textarea>
                               </div>

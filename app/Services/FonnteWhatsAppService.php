@@ -5,12 +5,37 @@ namespace App\Services;
 use App\Models\Berita;
 use App\Models\DaftarUlang;
 use App\Models\PendaftaranPindahan;
+use App\Models\ProfilSekolah;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class FonnteWhatsAppService
 {
+    public function sendAdminNewApplicationAlert(string $applicationType, string $studentName, string $reference): bool
+    {
+        [$applicationLabel, $reviewUrl] = match ($applicationType) {
+            'daftar_ulang' => ['daftar ulang', route('admin.pendaftaran.index')],
+            'murid_pindahan' => ['murid pindahan', route('admin.pendaftaran-pindahan.index')],
+            default => throw new \InvalidArgumentException('Jenis pengajuan tidak valid.'),
+        };
+
+        return $this->sendAdminMessage(implode("\n", [
+            'Pendaftaran baru menunggu verifikasi.',
+            "Jenis: {$applicationLabel}",
+            "Nama siswa: {$studentName}",
+            "Nomor referensi: {$reference}",
+            '',
+            "Periksa pengajuan: {$reviewUrl}",
+            'SDN Pojok 2 Kota Kediri',
+        ]));
+    }
+
+    public function sendAdminPendingApplicationReminder(string $message): bool
+    {
+        return $this->sendAdminMessage($message);
+    }
+
     public function sendDaftarUlangSubmitted(DaftarUlang $daftarUlang): bool
     {
         $daftarUlang->loadMissing('siswaPpdb');
@@ -36,6 +61,7 @@ class FonnteWhatsAppService
 
         $statusMessage = match ($daftarUlang->status) {
             'Diterima' => 'Data daftar ulang telah disetujui oleh pihak sekolah.',
+            'Ditolak' => 'Data daftar ulang belum dapat diterima oleh pihak sekolah.',
             'Perlu Perbaikan' => 'Silakan perbaiki berkas sesuai catatan admin, lalu kirim ulang melalui formulir daftar ulang.',
             default => 'Data daftar ulang sedang dalam proses verifikasi.',
         };
@@ -155,6 +181,19 @@ class FonnteWhatsAppService
 
             return false;
         }
+    }
+
+    private function sendAdminMessage(string $message): bool
+    {
+        $target = ProfilSekolah::query()->value('no_whatsapp_admin');
+
+        if (! filled($target)) {
+            Log::warning('Notifikasi WhatsApp admin dilewati karena nomor WhatsApp admin belum diatur.');
+
+            return false;
+        }
+
+        return $this->send($target, $message);
     }
 
     private function normalizeTarget(string $target): string

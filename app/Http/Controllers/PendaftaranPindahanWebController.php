@@ -6,6 +6,7 @@ use App\Models\PendaftaranPindahan;
 use App\Models\RegistrationPeriod;
 use App\Models\User;
 use App\Notifications\AdminNewApplicationNotification;
+use App\Services\FonnteWhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -22,7 +23,7 @@ class PendaftaranPindahanWebController extends Controller
         return view('pages.public.registrasi.pindahan', compact('tahunAjaranAktif'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, FonnteWhatsAppService $whatsapp): RedirectResponse
     {
         $validated = $request->validate([
             'nama_siswa' => ['required', 'string', 'max:150'],
@@ -91,6 +92,8 @@ class PendaftaranPindahanWebController extends Controller
             User::query()->where('role', 'admin')->get(),
             new AdminNewApplicationNotification('murid_pindahan', $pendaftaran->nama_siswa, $pendaftaran->no_pendaftaran),
         );
+
+        $whatsapp->sendAdminNewApplicationAlert('murid_pindahan', $pendaftaran->nama_siswa, $pendaftaran->no_pendaftaran);
 
         return redirect()->route('pendaftaran-pindahan.public.create')
             ->with('success', 'Pengajuan berhasil dikirim. Simpan nomor pendaftaran Anda: '.$validated['no_pendaftaran']);

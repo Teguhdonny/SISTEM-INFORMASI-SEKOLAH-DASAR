@@ -7,12 +7,11 @@
                 <p class="mt-1 text-sm text-gray-500">Kelola profil tenaga pendidik yang tampil di website sekolah.</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <form x-data="{ fileName: '' }" method="POST" action="{{ route('admin.guru.import.xlsx') }}" enctype="multipart/form-data" class="flex items-center gap-2">
+                <form method="POST" action="{{ route('admin.guru.import.xlsx') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
                     @csrf
-                    <input x-ref="importFile" @change="fileName = $event.target.files[0]?.name ?? ''" name="file" type="file" accept=".xlsx" required class="sr-only">
+                    <input name="file" type="file" accept=".xlsx" required aria-label="Pilih file Excel guru" class="max-w-52 rounded-xl border border-gray-200 bg-white px-2 py-2 text-xs text-gray-600 file:mr-2 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-blue-700">
                     <a href="{{ route('admin.guru.template.xlsx') }}" class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50">Template</a>
-                    <button x-show="! fileName" type="button" @click="$refs.importFile.click()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
-                    <button x-show="fileName" type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
                 </form>
                 <a href="{{ route('admin.guru.export.xlsx', request()->only('search')) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
                 <a href="{{ route('admin.guru.export.pdf', request()->only('search')) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
@@ -27,6 +26,9 @@
         @endif
         @if (session('error'))
             <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ session('error') }}</div>
+        @endif
+        @if ($errors->any())
+            <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $errors->first() }}</div>
         @endif
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

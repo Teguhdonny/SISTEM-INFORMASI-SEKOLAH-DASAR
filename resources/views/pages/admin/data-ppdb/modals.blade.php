@@ -60,35 +60,26 @@
                         </div>
                     </div>
 
-                    @if (in_array($statusVerifikasi, ['Menunggu Verifikasi', 'Perlu Perbaikan'], true))
-                        <form action="{{ route('admin.pendaftaran.status', $item->id) }}" method="POST" class="space-y-4 border-t border-gray-200 pt-4">
+                    <form x-data="{ status: @js($statusVerifikasi) }" action="{{ route('admin.pendaftaran.status', $item->id) }}" method="POST" class="space-y-4 border-t border-gray-200 pt-4">
                             @csrf
                             <div>
                                 <label class="mb-1.5 block text-xs font-bold text-gray-700">Tentukan Status Verifikasi Admin</label>
-                                <select name="status" required class="w-full rounded-xl border border-gray-300 bg-white p-3 text-xs font-semibold text-gray-800 outline-none transition focus:ring-2 focus:ring-blue-500">
-                                    <option value="">Pilih status akhir</option>
-                                    @foreach (['Diterima', 'Perlu Perbaikan'] as $statusOption)
-                                        <option value="{{ $statusOption }}">{{ $statusOption }}</option>
+                                <select name="status" x-model="status" required class="w-full rounded-xl border border-gray-300 bg-white p-3 text-xs font-semibold text-gray-800 outline-none transition focus:ring-2 focus:ring-blue-500">
+                                    @foreach (['Menunggu Verifikasi', 'Diterima', 'Perlu Perbaikan', 'Ditolak'] as $statusOption)
+                                        <option value="{{ $statusOption }}" @selected($statusVerifikasi === $statusOption)>{{ $statusOption }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
-                                <label for="catatan-admin-{{ $item->id }}" class="mb-1.5 block text-xs font-bold text-gray-700">Catatan perbaikan</label>
-                                <textarea id="catatan-admin-{{ $item->id }}" name="catatan_admin" rows="3" maxlength="2000" placeholder="Wajib diisi jika berkas perlu diperbaiki" class="w-full rounded-xl border border-gray-300 p-3 text-xs outline-none focus:ring-2 focus:ring-blue-500">{{ $item->daftarUlang?->catatan_admin }}</textarea>
+                                <label for="catatan-admin-{{ $item->id }}" class="mb-1.5 block text-xs font-bold text-gray-700">Catatan untuk wali (wajib jika Ditolak atau Perlu Perbaikan)</label>
+                                <textarea id="catatan-admin-{{ $item->id }}" name="catatan_admin" rows="3" maxlength="2000" x-bind:required="['Ditolak', 'Perlu Perbaikan'].includes(status)" placeholder="Tuliskan alasan penolakan atau berkas yang perlu diperbaiki" class="w-full rounded-xl border border-gray-300 p-3 text-xs outline-none focus:ring-2 focus:ring-blue-500">{{ $item->daftarUlang?->catatan_admin }}</textarea>
                             </div>
                             <div class="flex gap-3 pt-2">
                                 <button type="button" @click="activeModal = null" class="w-1/2 rounded-xl bg-gray-100 py-3 text-xs font-bold text-gray-700 transition hover:bg-gray-200">Batal</button>
-                                <button type="submit" class="w-1/2 rounded-xl bg-blue-600 py-3 text-xs font-bold text-white shadow-md transition hover:bg-blue-700">Simpan Status</button>
+                                <button type="submit" class="w-1/2 rounded-xl bg-blue-600 py-3 text-xs font-bold text-white shadow-md transition hover:bg-blue-700">Simpan & Kirim WhatsApp</button>
                             </div>
-                            <p class="text-[11px] leading-5 text-amber-700">Pilih “Perlu Perbaikan” untuk mengirim catatan dan membuka verifikasi ulang.</p>
+                            <p class="text-[11px] leading-5 text-amber-700">Status dapat diperbarui kembali. Jika Ditolak atau Perlu Perbaikan, catatan akan disertakan dalam WhatsApp kepada wali.</p>
                         </form>
-                    @else
-                        <div class="space-y-2 border-t border-gray-200 pt-4">
-                            <p class="text-xs font-bold text-gray-700">Status Verifikasi</p>
-                            <p class="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3.5 py-1.5 text-xs font-semibold text-blue-800">{{ $statusVerifikasi }}</p>
-                            <p class="text-[11px] leading-5 text-gray-500">Status sudah ditentukan dan dikunci sehingga tidak dapat diubah lagi.</p>
-                        </div>
-                    @endif
                 </div>
 
                 <div class="min-w-0 rounded-2xl border border-gray-200 bg-gray-50 p-4">

@@ -233,9 +233,9 @@ class StudentDataTransferController extends Controller
         foreach ($rows as $index => $row) {
             $rowNumber = $index + 2;
             $validator = Validator::make($row, [
-                'no_pendaftaran' => ['required', 'string', 'max:40', 'exists:pendaftaran_pindahans,no_pendaftaran'],
+                'no_pendaftaran' => ['nullable', 'string', 'max:40'],
                 'nama_siswa' => ['required', 'string', 'max:150'],
-                'nisn' => ['required', 'digits:10'],
+                'nisn' => ['required', 'digits:10', 'exists:pendaftaran_pindahans,nisn'],
                 'nik' => ['required', 'digits:16'],
                 'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
                 'asal_sekolah' => ['required', 'string', 'max:150'],
@@ -250,16 +250,36 @@ class StudentDataTransferController extends Controller
                 return back()->with('error', "Baris {$rowNumber}: ".$validator->errors()->first());
             }
             $data = $validator->validated();
-            if (isset($seenRegistrationNumbers[$data['no_pendaftaran']])) {
+            $registration = filled($data['no_pendaftaran'] ?? null)
+                ? PendaftaranPindahan::query()->where('no_pendaftaran', $data['no_pendaftaran'])->first()
+                : null;
+
+            if ($registration && $registration->nisn !== $data['nisn']) {
+                return back()->with('error', "Baris {$rowNumber}: nomor pendaftaran dan NISN mengarah ke pengajuan yang berbeda.");
+            }
+
+            if (! $registration) {
+                $nisnMatches = PendaftaranPindahan::query()->where('nisn', $data['nisn'])->limit(2)->get();
+                if ($nisnMatches->count() !== 1) {
+                    return back()->with('error', "Baris {$rowNumber}: NISN cocok dengan lebih dari satu pengajuan, sehingga data tidak dapat dicocokkan otomatis.");
+                }
+
+                $registration = $nisnMatches->first();
+            }
+
+            if (isset($seenRegistrationNumbers[$registration->id])) {
                 return back()->with('error', "Baris {$rowNumber}: nomor pendaftaran duplikat di dalam file.");
             }
-            $seenRegistrationNumbers[$data['no_pendaftaran']] = true;
-            $updates[] = $data;
+            $seenRegistrationNumbers[$registration->id] = true;
+            $updates[] = [
+                'id' => $registration->id,
+                'data' => $data,
+            ];
         }
 
         DB::transaction(function () use ($updates): void {
             foreach ($updates as $update) {
-                PendaftaranPindahan::query()->where('no_pendaftaran', $update['no_pendaftaran'])->update(collect($update)->except('no_pendaftaran')->all());
+                PendaftaranPindahan::query()->whereKey($update['id'])->update(collect($update['data'])->except('no_pendaftaran')->all());
             }
         });
 

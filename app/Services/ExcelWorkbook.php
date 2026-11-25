@@ -44,11 +44,12 @@ class ExcelWorkbook
         }
 
         try {
-            $sheetInfo = $archive->statName('xl/worksheets/sheet1.xml');
+            $sheetPath = $this->firstWorksheetPath($archive);
+            $sheetInfo = $archive->statName($sheetPath);
             if ($sheetInfo === false || $sheetInfo['size'] > 10_000_000) {
                 throw new InvalidArgumentException('Ukuran lembar Excel tidak valid atau terlalu besar.');
             }
-            $sheetContents = $archive->getFromName('xl/worksheets/sheet1.xml');
+            $sheetContents = $archive->getFromName($sheetPath);
             if ($sheetContents === false) {
                 throw new InvalidArgumentException('Lembar pertama pada file Excel tidak ditemukan.');
             }
@@ -75,11 +76,18 @@ class ExcelWorkbook
         }
 
         $rows = [];
-        foreach (array_slice($sheetRows, 1) as $sheetRow) {
-            $values = $this->rowValues($sheetRow, $sharedStrings);
+        foreach (array_slice($sheetRows, 1) as $index => $sheetRow) {
+            $cellTypes = [];
+            $values = $this->rowValues($sheetRow, $sharedStrings, $cellTypes);
             $row = [];
             foreach ($headers as $column => $header) {
                 $row[$header] = trim($values[$column] ?? '');
+
+                if ($row[$header] !== ''
+                    && in_array($header, ['nip', 'nik', 'nisn', 'no_whatsapp'], true)
+                    && ! in_array($cellTypes[$column] ?? '', ['inlineStr', 's', 'str'], true)) {
+                    throw new InvalidArgumentException('Baris '.($index + 2).': kolom '.Str::upper(str_replace('_', ' ', $header)).' harus disimpan sebagai teks. Atur sel ke format Teks, lalu ketik ulang nilainya sebelum mengimpor.');
+                }
             }
 
             if (count(array_filter($row, static fn (string $value): bool => $value !== '')) === 0) {
@@ -95,6 +103,63 @@ class ExcelWorkbook
         }
 
         return $rows;
+    }
+
+    private function firstWorksheetPath(ZipArchive $archive): string
+    {
+        $workbookContents = $archive->getFromName('xl/workbook.xml');
+        $relationshipsContents = $archive->getFromName('xl/_rels/workbook.xml.rels');
+        if ($workbookContents === false || $relationshipsContents === false) {
+            throw new InvalidArgumentException('Struktur workbook Excel tidak lengkap.');
+        }
+
+        $workbook = $this->parseXml($workbookContents, 'Struktur workbook Excel tidak valid.');
+        $relationships = $this->parseXml($relationshipsContents, 'Relasi workbook Excel tidak valid.');
+        $firstSheet = $workbook->xpath('//*[local-name()="sheets"]/*[local-name()="sheet"]')[0] ?? null;
+        if (! $firstSheet instanceof SimpleXMLElement) {
+            throw new InvalidArgumentException('File Excel tidak memiliki lembar kerja.');
+        }
+
+        $relationshipId = '';
+        foreach ($firstSheet->attributes('http://schemas.openxmlformats.org/officeDocument/2006/relationships') as $name => $value) {
+            if ($name === 'id') {
+                $relationshipId = (string) $value;
+                break;
+            }
+        }
+        if ($relationshipId === '') {
+            throw new InvalidArgumentException('Relasi lembar kerja Excel tidak ditemukan.');
+        }
+
+        foreach ($relationships->xpath('//*[local-name()="Relationship"]') ?: [] as $relationship) {
+            if ((string) $relationship['Id'] !== $relationshipId
+                || (string) $relationship['TargetMode'] === 'External') {
+                continue;
+            }
+
+            $target = (string) $relationship['Target'];
+            $path = str_starts_with($target, '/')
+                ? ltrim($target, '/')
+                : 'xl/'.ltrim($target, '/');
+            $segments = [];
+            foreach (explode('/', $path) as $segment) {
+                if ($segment === '' || $segment === '.') {
+                    continue;
+                }
+                if ($segment === '..') {
+                    array_pop($segments);
+
+                    continue;
+                }
+                $segments[] = $segment;
+            }
+            $resolvedPath = implode('/', $segments);
+            if (str_starts_with($resolvedPath, 'xl/worksheets/')) {
+                return $resolvedPath;
+            }
+        }
+
+        throw new InvalidArgumentException('Lembar pertama pada file Excel tidak ditemukan.');
     }
 
     /**
@@ -117,6 +182,7 @@ class ExcelWorkbook
         $archive->addFromString('xl/workbook.xml', $this->workbookXml());
         $archive->addFromString('xl/_rels/workbook.xml.rels', $this->workbookRelationshipsXml());
         $archive->addFromString('xl/worksheets/sheet1.xml', $this->worksheetXml($sheetRows));
+        $archive->addFromString('xl/styles.xml', $this->stylesXml());
         $archive->close();
     }
 
@@ -125,13 +191,17 @@ class ExcelWorkbook
     {
         $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
         $xml .= '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
-        foreach ($rows as $rowIndex => $cells) {
+        $rowCount = max(count($rows), 501);
+        $columnCount = count($rows[0] ?? []);
+        for ($rowIndex = 0; $rowIndex < $rowCount; $rowIndex++) {
+            $cells = $rows[$rowIndex] ?? array_fill(0, $columnCount, '');
             $excelRow = $rowIndex + 1;
             $xml .= '<row r="'.$excelRow.'">';
             foreach ($cells as $columnIndex => $cellValue) {
                 $cellReference = $this->columnName($columnIndex + 1).$excelRow;
                 $escapedValue = htmlspecialchars($cellValue, ENT_XML1 | ENT_COMPAT, 'UTF-8');
-                $xml .= '<c r="'.$cellReference.'" t="inlineStr"><is><t xml:space="preserve">'.$escapedValue.'</t></is></c>';
+                $style = $rowIndex === 0 ? '' : ' s="1"';
+                $xml .= '<c r="'.$cellReference.'"'.$style.' t="inlineStr"><is><t xml:space="preserve">'.$escapedValue.'</t></is></c>';
             }
             $xml .= '</row>';
         }
@@ -165,7 +235,7 @@ class ExcelWorkbook
     }
 
     /** @return array<int, string> */
-    private function rowValues(SimpleXMLElement $row, array $sharedStrings): array
+    private function rowValues(SimpleXMLElement $row, array $sharedStrings, ?array &$cellTypes = null): array
     {
         $values = [];
         foreach ($row->xpath('./*[local-name()="c"]') ?: [] as $cell) {
@@ -179,6 +249,7 @@ class ExcelWorkbook
             }
             $columnIndex--;
 
+            $cellTypes[$columnIndex] = (string) $cell['t'];
             $value = '';
             if ((string) $cell['t'] === 'inlineStr') {
                 foreach ($cell->xpath('./*[local-name()="is"]//*[local-name()="t"]') ?: [] as $textNode) {
@@ -229,7 +300,21 @@ class ExcelWorkbook
             '<Default Extension="xml" ContentType="application/xml"/>'.
             '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'.
             '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'.
+            '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'.
             '</Types>';
+    }
+
+    private function stylesXml(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.
+            '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'.
+            '<fonts count="1"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts>'.
+            '<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>'.
+            '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'.
+            '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'.
+            '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>'.
+            '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'.
+            '</styleSheet>';
     }
 
     private function rootRelationshipsXml(): string
@@ -253,6 +338,7 @@ class ExcelWorkbook
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.
             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'.
             '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'.
+            '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'.
             '</Relationships>';
     }
 }

@@ -98,6 +98,7 @@ class PendaftaranController extends Controller
             'status' => 'Menunggu Verifikasi',
         ]);
 
+        $whatsapp->sendAdminNewApplicationAlert('daftar_ulang', $siswa->nama_siswa, $siswa->nisn);
         $whatsapp->sendDaftarUlangSubmitted($daftarUlang);
 
         return response()->json([

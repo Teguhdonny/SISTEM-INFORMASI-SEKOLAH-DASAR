@@ -67,6 +67,7 @@ class ProfilSekolahController extends Controller
             $validated = $request->validate([
                 'nama_sekolah' => ['required', 'string', 'max:150'],
                 'email_sekolah' => ['required', 'email', 'max:100'],
+                'no_whatsapp_admin' => ['nullable', 'regex:/^[0-9]{8,20}$/'],
                 'alamat' => ['required', 'string', 'max:1000'],
                 'tentang_sekolah' => ['required', 'string', 'max:5000'],
                 'tahun_berdiri' => ['required', 'integer', 'digits:4', 'min:1800', 'max:'.now()->year],
@@ -79,6 +80,7 @@ class ProfilSekolahController extends Controller
                     ...$validated,
                     'sejarah' => $profilSekolah->sejarah ?: 'SD Negeri Pojok 2 Kota Kediri merupakan sekolah dasar negeri di bawah naungan Dinas Pendidikan Pemerintah Kota Kediri.',
                     'kontak' => $profilSekolah->kontak ?? '',
+                    'no_whatsapp_admin' => $validated['no_whatsapp_admin'] ?? null,
                 ])->save();
             });
 

@@ -14,6 +14,7 @@ class ProfilSekolah extends Model
         'sejarah',
         'alamat',
         'kontak',
+        'no_whatsapp_admin',
         'email_sekolah',
         'tahun_berdiri',
         'status_sekolah',

@@ -116,16 +116,14 @@
                     <div role="alert" class="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700">{{ $errors->first() }}</div>
                 @endif
                 <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-                    <form x-data="{ fileName: '' }" method="POST" action="{{ route('admin.pendaftaran.import.xlsx') }}" enctype="multipart/form-data" class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end xl:flex-1">
+                    <form method="POST" action="{{ route('admin.pendaftaran.import.xlsx') }}" enctype="multipart/form-data" class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end xl:flex-1">
                         @csrf
                         <div class="min-w-0 flex-1">
-                            <input id="daftar-ulang-import-file" x-ref="importFile" @change="fileName = $event.target.files[0]?.name ?? ''" name="file" type="file" accept=".xlsx" required class="sr-only">
-                            <p x-show="fileName" x-text="fileName" class="truncate text-xs text-gray-600" aria-live="polite"></p>
+                            <input id="daftar-ulang-import-file" name="file" type="file" accept=".xlsx" required aria-label="Pilih file Excel daftar ulang" class="max-w-full rounded-xl border border-gray-200 bg-white px-2 py-2 text-xs text-gray-600 file:mr-2 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-blue-700">
                         </div>
                         <div class="flex shrink-0 gap-2">
                             <a href="{{ route('admin.pendaftaran.template.xlsx') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-xl border border-gray-200 px-4 py-3 text-xs font-bold text-gray-700 hover:bg-gray-50">Template</a>
-                            <button x-show="! fileName" type="button" @click="$refs.importFile.click()" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
-                            <button x-show="fileName" type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
                         </div>
                     </form>
                     <div class="flex shrink-0 gap-2 border-t border-gray-100 pt-4 xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">

@@ -5,7 +5,7 @@
         if ($statusVerifikasi === 'Diterima') {
             $badgeColor = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
         }
-        if ($statusVerifikasi === 'Perlu Perbaikan') {
+        if (in_array($statusVerifikasi, ['Perlu Perbaikan', 'Ditolak'], true)) {
             $badgeColor = 'bg-rose-100 text-rose-800 border border-rose-200';
         }
     @endphp

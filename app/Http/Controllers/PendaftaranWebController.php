@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class PendaftaranWebController extends Controller
@@ -22,6 +23,39 @@ class PendaftaranWebController extends Controller
         $registrationOpen = $registrationPeriod?->acceptsRegistrationsAt(now('Asia/Jakarta')) ?? false;
 
         return view('pages.public.registrasi.ppdb', compact('registrationPeriod', 'registrationOpen'));
+    }
+
+    public function lookupStudent(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'nisn' => ['required', 'digits:10'],
+        ]);
+
+        $tahunAjaran = RegistrationPeriod::query()->value('tahun_ajaran');
+        $siswa = SiswaPpdb::query()
+            ->where('dicatat_admin', true)
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->where('status_diterima', true)
+            ->where('nisn', $validated['nisn'])
+            ->with('daftarUlang:id,id_siswa_ppdb,status')
+            ->first(['id', 'nama_siswa']);
+
+        if (! $siswa) {
+            return response()->json(['message' => 'NISN belum terdaftar sebagai siswa yang diterima.'], 404);
+        }
+
+        $statusPendaftaran = $siswa->daftarUlang?->status;
+
+        return response()->json([
+            'nama_siswa' => $siswa->nama_siswa,
+            'message' => match ($statusPendaftaran) {
+                'Ditolak' => 'Pengajuan sebelumnya ditolak. Anda dapat mengirim ulang formulir selama masa pendaftaran masih dibuka.',
+                'Perlu Perbaikan' => 'Berkas perlu diperbaiki. Silakan perbarui data dan kirim ulang formulir selama masa pendaftaran masih dibuka.',
+                'Diterima' => 'Pendaftaran siswa ini sudah diterima.',
+                'Menunggu Verifikasi' => 'Pendaftaran siswa ini masih menunggu verifikasi.',
+                default => 'Nama siswa berhasil ditemukan.',
+            },
+        ]);
     }
 
     public function publicPpdbPdf(): View
@@ -86,8 +120,8 @@ class PendaftaranWebController extends Controller
         $daftarUlangLama = $siswa->daftarUlang;
         if ($daftarUlangLama && ! in_array($daftarUlangLama->status, ['Perlu Perbaikan', 'Ditolak'], true)) {
             return back()
-                ->withErrors(['nisn' => 'NISN ini sudah terdaftar. Status pendaftaran tidak dapat dikirim ulang.'])
-                ->with('registration_notice', 'NISN ini sudah terdaftar pada daftar ulang. Silakan tunggu hasil verifikasi sekolah.')
+                ->withErrors(['nisn' => 'Siswa sudah melakukan daftar ulang dan pengajuan tidak dapat dikirim kembali saat ini.'])
+                ->with('registration_notice', 'Pendaftaran gagal dikirim karena siswa sudah melakukan daftar ulang dan statusnya masih diproses. Silakan tunggu verifikasi admin.')
                 ->withInput();
         }
 
@@ -116,6 +150,7 @@ class PendaftaranWebController extends Controller
             new AdminNewApplicationNotification('daftar_ulang', $siswa->nama_siswa, $siswa->nisn),
         );
 
+        $whatsapp->sendAdminNewApplicationAlert('daftar_ulang', $siswa->nama_siswa, $siswa->nisn);
         $whatsapp->sendDaftarUlangSubmitted($daftarUlang);
 
         return redirect()->back()->with('success', 'Pendaftaran berhasil dikirim! Data Anda sudah masuk ke sistem.');
@@ -186,33 +221,33 @@ class PendaftaranWebController extends Controller
     {
         $siswa = SiswaPpdb::query()->where('dicatat_admin', true)->whereHas('daftarUlang')->findOrFail($id);
         $daftarUlang = $siswa->daftarUlang;
-        if ($daftarUlang->status && ! in_array($daftarUlang->status, ['Menunggu Verifikasi', 'Perlu Perbaikan'], true)) {
-            return redirect()->back()->with('warning', 'Status verifikasi sudah ditentukan dan tidak dapat diubah lagi.');
-        }
 
         $validated = $request->validate([
-            'status' => ['required', 'in:Diterima,Perlu Perbaikan'],
-            'catatan_admin' => ['nullable', 'required_if:status,Perlu Perbaikan', 'string', 'max:2000'],
+            'status' => ['required', 'in:Diterima,Ditolak,Perlu Perbaikan'],
+            'catatan_admin' => ['nullable', 'required_if:status,Ditolak,Perlu Perbaikan', 'string', 'max:2000'],
+        ], [
+            'catatan_admin.required_if' => 'Catatan admin wajib diisi jika status Ditolak atau Perlu Perbaikan.',
         ]);
 
-        $catatanAdmin = $validated['status'] === 'Perlu Perbaikan' ? trim($validated['catatan_admin']) : null;
+        $catatanAdmin = in_array($validated['status'], ['Ditolak', 'Perlu Perbaikan'], true)
+            ? trim($validated['catatan_admin'])
+            : null;
 
-        $updated = $daftarUlang->newQuery()
-            ->whereKey($daftarUlang->getKey())
-            ->where(function ($query): void {
-                $query->whereIn('status', ['Menunggu Verifikasi', 'Perlu Perbaikan'])->orWhereNull('status');
-            })
-            ->update(['status' => $validated['status'], 'catatan_admin' => $catatanAdmin]);
-
-        if (! $updated) {
-            return redirect()->back()->with('warning', 'Status verifikasi sudah ditentukan dan tidak dapat diubah lagi.');
+        if (in_array($validated['status'], ['Ditolak', 'Perlu Perbaikan'], true) && $catatanAdmin === '') {
+            throw ValidationException::withMessages([
+                'catatan_admin' => 'Catatan admin wajib diisi jika status Ditolak atau Perlu Perbaikan.',
+            ]);
         }
 
-        $daftarUlang->refresh();
+        $daftarUlang->update([
+            'status' => $validated['status'],
+            'catatan_admin' => $catatanAdmin,
+        ]);
+
         $notificationSent = $whatsapp->sendStatusUpdate($daftarUlang);
 
         return redirect()->back()
-            ->with('success', 'Status verifikasi siswa berhasil diperbarui!')
+            ->with('success', 'Status verifikasi siswa berhasil diperbarui.')
             ->with('whatsapp_notification_sent', $notificationSent);
     }
 }

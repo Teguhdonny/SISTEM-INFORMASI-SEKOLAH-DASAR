@@ -16,8 +16,8 @@
 <body class="bg-gray-50 flex flex-col min-h-screen font-sans">
 
     @if (session('registration_notice'))
-        <div class="fixed inset-x-4 top-5 z-[70] mx-auto max-w-lg rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 shadow-xl" role="alert">
-            <div class="flex items-start gap-3"><i class="fas fa-circle-info mt-0.5"></i><div><p class="font-bold">Informasi pendaftaran</p><p class="mt-1">{{ session('registration_notice') }}</p></div></div>
+        <div class="fixed inset-x-4 top-5 z-[70] mx-auto max-w-lg rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-900 shadow-xl" role="alert">
+            <div class="flex items-start gap-3"><i class="fas fa-circle-exclamation mt-0.5"></i><div><p class="font-bold">Pendaftaran gagal</p><p class="mt-1">{{ session('registration_notice') }}</p></div></div>
         </div>
     @endif
 
@@ -246,14 +246,15 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Lengkap Siswa</label>
-                        <input type="text" name="nama_siswa" required placeholder="Sesuai Akta Kelahiran" value="{{ old('nama_siswa') }}"
+                        <input type="text" name="nama_siswa" required placeholder="Sesuai Akta Kelahiran" value="{{ old('nama_siswa') }}" readonly aria-describedby="nisn-lookup-status"
                             class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-1">NISN</label>
-                        <input type="text" name="nisn" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="10" required placeholder="10 digit NISN" value="{{ old('nisn') }}"
+                        <input type="text" name="nisn" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="10" required placeholder="10 digit NISN" value="{{ old('nisn') }}" autocomplete="off" aria-describedby="nisn-lookup-status"
                             class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                         @error('nisn') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        <p id="nisn-lookup-status" class="mt-1 text-xs text-gray-500" aria-live="polite"></p>
                     </div>
                 </div>
 
@@ -291,7 +292,7 @@
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition duration-200 text-sm">
+                    <button id="registration-submit-button" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition duration-200 text-sm">
                         Kirim Pendaftaran Daftar Ulang
                     </button>
                 </div>
@@ -306,6 +307,46 @@
 
     <!-- Skrip JavaScript untuk Modal & Auto Show saat Error Validasi -->
     <script>
+        const nisnInput = document.querySelector('input[name="nisn"]');
+        const studentNameInput = document.querySelector('input[name="nama_siswa"]');
+        const nisnLookupStatus = document.getElementById('nisn-lookup-status');
+        let lookupRequestController;
+
+        if (nisnInput && studentNameInput && nisnLookupStatus) {
+            nisnInput.addEventListener('input', async () => {
+                lookupRequestController?.abort();
+                studentNameInput.value = '';
+                nisnLookupStatus.textContent = '';
+
+                if (nisnInput.value.length !== 10 || !/^\d{10}$/.test(nisnInput.value)) {
+                    return;
+                }
+
+                lookupRequestController = new AbortController();
+                nisnLookupStatus.textContent = 'Memeriksa NISN…';
+
+                try {
+                    const response = await fetch(`${@js(route('registrasi.public.lookup'))}?nisn=${encodeURIComponent(nisnInput.value)}`, {
+                        headers: { Accept: 'application/json' },
+                        signal: lookupRequestController.signal,
+                    });
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        nisnLookupStatus.textContent = result.message || 'NISN belum ditemukan pada data siswa diterima.';
+                        return;
+                    }
+
+                    studentNameInput.value = result.nama_siswa;
+                    nisnLookupStatus.textContent = result.message;
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        nisnLookupStatus.textContent = 'Data siswa belum dapat diperiksa. Silakan coba kembali.';
+                    }
+                }
+            });
+        }
+
         const modal = document.getElementById('pendaftaranModal');
         const openBtn = document.getElementById('openModalBtn');
         const closeBtn = document.getElementById('closeModalBtn');
