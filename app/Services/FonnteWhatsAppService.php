@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Berita;
 use App\Models\DaftarUlang;
 use App\Models\PendaftaranPindahan;
 use Illuminate\Support\Facades\Http;
@@ -35,7 +36,7 @@ class FonnteWhatsAppService
 
         $statusMessage = match ($daftarUlang->status) {
             'Diterima' => 'Data daftar ulang telah disetujui oleh pihak sekolah.',
-            'Ditolak' => 'Data daftar ulang belum dapat disetujui. Silakan hubungi pihak sekolah untuk informasi lebih lanjut.',
+            'Perlu Perbaikan' => 'Silakan perbaiki berkas sesuai catatan admin, lalu kirim ulang melalui formulir daftar ulang.',
             default => 'Data daftar ulang sedang dalam proses verifikasi.',
         };
 
@@ -47,10 +48,36 @@ class FonnteWhatsAppService
                 "Pembaruan status daftar ulang siswa {$daftarUlang->siswaPpdb?->nama_siswa}:",
                 "Status: {$daftarUlang->status}",
                 $statusMessage,
+                $daftarUlang->catatan_admin ? "Catatan admin: {$daftarUlang->catatan_admin}" : '',
                 '',
                 'SDN Pojok 2 Kota Kediri',
             ])
         );
+    }
+
+    public function sendNewsAnnouncement(Berita $berita): int
+    {
+        $sent = 0;
+        $url = route('home').'#berita';
+
+        DaftarUlang::query()
+            ->whereNotNull('no_whatsapp')
+            ->whereIn('status', ['Menunggu Verifikasi', 'Perlu Perbaikan', 'Diterima'])
+            ->get(['no_whatsapp'])
+            ->each(function (DaftarUlang $daftarUlang) use ($berita, $url, &$sent): void {
+                if ($this->send($daftarUlang->no_whatsapp, implode("\n", [
+                    'Halo, ada berita baru dari SDN Pojok 2 Kota Kediri.',
+                    '',
+                    $berita->judul,
+                    $url,
+                    '',
+                    'SDN Pojok 2 Kota Kediri',
+                ]))) {
+                    $sent++;
+                }
+            });
+
+        return $sent;
     }
 
     public function sendPendaftaranPindahanStatusUpdate(

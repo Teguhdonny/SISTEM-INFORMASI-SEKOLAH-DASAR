@@ -6,15 +6,27 @@
                 <h1 class="mt-1 text-2xl font-bold text-gray-800">Daftar Guru & Staff</h1>
                 <p class="mt-1 text-sm text-gray-500">Kelola profil tenaga pendidik yang tampil di website sekolah.</p>
             </div>
-            <a href="{{ route('admin.guru.create') }}" class="inline-flex items-center justify-center rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-red-700">
-                <i class="fas fa-plus mr-2"></i>Tambah Guru
-            </a>
+            <div class="flex flex-wrap gap-2">
+                <form x-data="{ fileName: '' }" method="POST" action="{{ route('admin.guru.import.xlsx') }}" enctype="multipart/form-data" class="flex items-center gap-2">
+                    @csrf
+                    <input x-ref="importFile" @change="fileName = $event.target.files[0]?.name ?? ''" name="file" type="file" accept=".xlsx" required class="sr-only">
+                    <a href="{{ route('admin.guru.template.xlsx') }}" class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50">Template</a>
+                    <button x-show="! fileName" type="button" @click="$refs.importFile.click()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
+                    <button x-show="fileName" type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
+                </form>
+                <a href="{{ route('admin.guru.export.xlsx', request()->only('search')) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
+                <a href="{{ route('admin.guru.export.pdf', request()->only('search')) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
+                <a href="{{ route('admin.guru.create') }}" class="inline-flex items-center justify-center rounded-xl bg-red-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"><i class="fas fa-plus mr-2"></i>Tambah Guru</a>
+            </div>
         </div>
 
         @if (session('success'))
             <div class="flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">
                 <i class="fas fa-check-circle"></i>{{ session('success') }}
             </div>
+        @endif
+        @if (session('error'))
+            <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ session('error') }}</div>
         @endif
 
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

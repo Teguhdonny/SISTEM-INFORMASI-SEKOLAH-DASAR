@@ -9,7 +9,7 @@ class JadwalPelajaran extends Model
 {
     protected $table = 'jadwal_pelajaran';
 
-    protected $fillable = ['kelas', 'hari', 'mata_pelajaran', 'jam_mulai', 'jam_selesai', 'id_guru'];
+    protected $fillable = ['kelas', 'semester', 'tahun_ajaran', 'hari', 'tanggal', 'mata_pelajaran', 'jam_mulai', 'jam_selesai', 'id_guru'];
 
     public function guru(): BelongsTo
     {

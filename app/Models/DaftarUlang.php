@@ -22,6 +22,7 @@ class DaftarUlang extends Model
         'file_surat_pernyataan',
         'file_pas_foto',
         'status',
+        'catatan_admin',
     ];
 
     // Relasi balik ke siswa_ppdb

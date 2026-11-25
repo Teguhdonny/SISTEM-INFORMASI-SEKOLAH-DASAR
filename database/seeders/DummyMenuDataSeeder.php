@@ -199,5 +199,7 @@ class DummyMenuDataSeeder extends Seeder
                 $dataSiswa,
             );
         }
+
+        $this->call(KategoriKontenSeeder::class);
     }
 }

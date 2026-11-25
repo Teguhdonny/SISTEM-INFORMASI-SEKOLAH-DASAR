@@ -14,29 +14,29 @@
                 <div>
                     <h2 class="text-xl font-extrabold text-blue-950 mb-2">Tentang Sekolah</h2>
                     <p class="text-gray-600 text-sm leading-relaxed border-b border-gray-100 pb-4">
-                        SDN Pojok 2 Kota Kediri adalah sekolah dasar negeri yang berkomitmen untuk memberikan pendidikan berkualitas dengan lingkungan belajar yang aman, nyaman, dan berprestasi.
+                        {{ $profilSekolah?->tentang_sekolah ?: ($profilSekolah?->sejarah ?: 'SDN Pojok 2 Kota Kediri adalah sekolah dasar negeri yang berkomitmen untuk memberikan pendidikan berkualitas dengan lingkungan belajar yang aman, nyaman, dan berprestasi.') }}
                     </p>
                 </div>
                 <div class="bg-blue-50/50 rounded-xl p-4 border border-blue-100/80 grid grid-cols-2 sm:grid-cols-4 gap-4 divide-x divide-blue-100 text-center">
                     <div class="px-2">
                         <i class="fas fa-users text-blue-700 text-lg mb-1"></i>
                         <p class="text-[11px] text-gray-500">Jumlah Siswa</p>
-                        <p class="text-base font-extrabold text-blue-950 mt-0.5">&plusmn; 320</p>
+                        <p class="text-base font-extrabold text-blue-950 mt-0.5">{{ number_format($jumlahSiswa) }}</p>
                     </div>
                     <div class="px-2">
                         <i class="fas fa-chalkboard-teacher text-blue-700 text-lg mb-1"></i>
                         <p class="text-[11px] text-gray-500">Jumlah Guru</p>
-                        <p class="text-base font-extrabold text-blue-950 mt-0.5">24</p>
+                        <p class="text-base font-extrabold text-blue-950 mt-0.5">{{ number_format($jumlahGuru) }}</p>
                     </div>
                     <div class="px-2">
                         <i class="fas fa-building text-blue-700 text-lg mb-1"></i>
                         <p class="text-[11px] text-gray-500">Tahun Berdiri</p>
-                        <p class="text-base font-extrabold text-blue-950 mt-0.5">1982</p>
+                        <p class="text-base font-extrabold text-blue-950 mt-0.5">{{ $profilSekolah?->tahun_berdiri ?: 1982 }}</p>
                     </div>
                     <div class="px-2">
                         <i class="fas fa-map-marker-alt text-blue-700 text-lg mb-1"></i>
                         <p class="text-[11px] text-gray-500">Status</p>
-                        <p class="text-base font-extrabold text-blue-950 mt-0.5">Negeri</p>
+                        <p class="text-base font-extrabold text-blue-950 mt-0.5">{{ $profilSekolah?->status_sekolah ?: 'Negeri' }}</p>
                     </div>
                 </div>
             </div>

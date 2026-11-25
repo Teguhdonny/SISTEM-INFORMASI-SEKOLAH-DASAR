@@ -13,10 +13,7 @@
 
     <!-- Kanan: Notifikasi & Profil -->
     <div class="flex items-center gap-6">
-        <button class="relative text-gray-500 hover:text-blue-600">
-            <i class="far fa-bell text-xl"></i>
-            <span class="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 w-2.5 h-2.5 rounded-full border border-white"></span>
-        </button>
+        <x-admin.notifications />
         <div class="relative border-l pl-6" x-data="{ profileOpen: false }" @click.away="profileOpen = false">
             <button type="button" @click="profileOpen = !profileOpen" :aria-expanded="profileOpen.toString()" aria-haspopup="true" class="flex items-center gap-3 rounded-xl p-1.5 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-100">
                 <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">

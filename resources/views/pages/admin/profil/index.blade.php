@@ -10,12 +10,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>[x-cloak] { display: none !important; }</style>
 </head>
 <body class="bg-gray-100 font-sans antialiased text-gray-800" 
       x-data="{ 
           sidebarOpen: true, 
-          activeTab: 'profil',
-          editModal: {{ $errors->any() ? 'true' : 'false' }},
+          activeTab: @js(in_array(old('section', request('tab', 'profil')), ['profil', 'sejarah', 'identitas', 'struktur', 'fasilitas', 'visimisi', 'tujuan'], true) ? old('section', request('tab', 'profil')) : 'profil'),
+          editModal: {{ $errors->any() && in_array(old('section'), ['profil', 'sejarah', 'identitas', 'struktur', 'fasilitas', 'visimisi', 'tujuan'], true) ? 'true' : 'false' }},
           visiSekolah: @js($visi),
           notifSuccess: {{ session('success') ? 'true' : 'false' }}
       }">
@@ -41,6 +42,7 @@
                 </div>
 
                 <div class="flex items-center gap-5">
+                    <x-admin.notifications />
                     <div class="relative border-l border-gray-200 pl-5" x-data="{ profileOpen: false }" @click.away="profileOpen = false">
                         <button type="button" @click="profileOpen = !profileOpen" :aria-expanded="profileOpen.toString()" aria-haspopup="true" class="flex items-center gap-3 rounded-xl p-1.5 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-100">
                             <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
@@ -74,7 +76,7 @@
                 <div x-show="notifSuccess" x-transition style="display: none;" class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-3.5 rounded-2xl shadow-sm flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-check-circle text-emerald-600 text-base"></i>
-                        <span class="text-xs font-semibold">Perubahan data Profil & Visi Misi sekolah berhasil disimpan!</span>
+                        <span class="text-xs font-semibold">{{ session('success') }}</span>
                     </div>
                     <button @click="notifSuccess = false" class="text-emerald-500 hover:text-emerald-700"><i class="fas fa-times"></i></button>
                 </div>
@@ -87,44 +89,70 @@
                         <p class="text-xs text-gray-500 mt-1">Kelola identitas utama, visi, misi, dan tujuan strategis SDN Pojok 2 Kota Kediri.</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <a href="{{ url('/visi-misi') }}" target="_blank" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-2">
+                        <a href="{{ route('profil.public.index') }}" target="_blank" rel="noopener" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-2">
                             <i class="fas fa-external-link-alt text-blue-600"></i> Lihat Halaman Publik
                         </a>
                         <button @click="editModal = true" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-2">
-                            <i class="fas fa-edit"></i> Edit Profil & Visi Misi
+                            <i class="fas fa-edit"></i>
+                            <span x-text="activeTab === 'profil' ? 'Edit Profil Sekolah' : (activeTab === 'sejarah' ? 'Edit Sejarah Singkat' : (activeTab === 'identitas' ? 'Edit Identitas Sekolah' : (activeTab === 'struktur' ? 'Edit Struktur Organisasi' : (activeTab === 'fasilitas' ? 'Edit Fasilitas Sekolah' : (activeTab === 'visimisi' ? 'Edit Visi & Misi' : 'Edit Tujuan Sekolah')))))">Edit Profil Sekolah</span>
                         </button>
                     </div>
                 </div>
 
                 <!-- Tab Navigasi -->
-                <div class="flex gap-2 border-b border-gray-200 pb-3">
+                <div class="flex flex-wrap gap-2 border-b border-gray-200 pb-3">
                     <button @click="activeTab = 'profil'" 
                             :class="activeTab === 'profil' ? 'bg-blue-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100'"
                             class="px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
-                        <i class="fas fa-school"></i> Identitas & Profil Sekolah
+                        <i class="fas fa-school"></i> Profil Sekolah
                     </button>
-                    <button @click="activeTab = 'visimisi'" 
+                    <button @click="activeTab = 'sejarah'"
+                            :class="activeTab === 'sejarah' ? 'bg-blue-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100'"
+                            class="px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                        <i class="fas fa-file-lines"></i> Sejarah Singkat
+                    </button>
+                    <button @click="activeTab = 'identitas'"
+                            :class="activeTab === 'identitas' ? 'bg-blue-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100'"
+                            class="px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                        <i class="fas fa-id-card"></i> Identitas Sekolah
+                    </button>
+                    <button @click="activeTab = 'struktur'"
+                            :class="activeTab === 'struktur' ? 'bg-blue-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100'"
+                            class="px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                        <i class="fas fa-sitemap"></i> Struktur Organisasi
+                    </button>
+                    <button @click="activeTab = 'fasilitas'"
+                            :class="activeTab === 'fasilitas' ? 'bg-blue-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100'"
+                            class="px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
+                        <i class="fas fa-building"></i> Fasilitas Sekolah
+                    </button>
+                    <button @click="activeTab = 'visimisi'"
                             :class="activeTab === 'visimisi' ? 'bg-blue-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100'"
                             class="px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
                         <i class="fas fa-bullseye"></i> Visi & Misi (2026)
                     </button>
-                    <button @click="activeTab = 'tujuan'" 
+                    <button @click="activeTab = 'tujuan'"
                             :class="activeTab === 'tujuan' ? 'bg-blue-900 text-white shadow-sm' : 'bg-white text-gray-600 hover:bg-gray-100'"
                             class="px-5 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2">
                         <i class="fas fa-flag-checkered"></i> Tujuan Sekolah
                     </button>
                 </div>
 
+                @include('pages.admin.profil.sejarah')
+                @include('pages.admin.profil.identitas')
+                @include('pages.admin.profil.struktur')
+                @include('pages.admin.profil.fasilitas')
+
                 <!-- TAB 1: IDENTITAS & PROFIL SEKOLAH -->
-                <div x-show="activeTab === 'profil'" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div x-show="activeTab === 'profil'" style="display: none;" class="grid grid-cols-1 gap-6">
                     <!-- Kartu Info Singkat -->
-                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                    <div class="mx-auto w-full max-w-2xl bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">
                         <div class="w-24 h-24 bg-blue-50 text-blue-900 rounded-3xl flex items-center justify-center text-4xl shadow-inner border border-blue-100 mb-4">
                             <i class="fas fa-school"></i>
                         </div>
                         <h3 class="text-lg font-extrabold text-gray-900">{{ $profilSekolah->nama_sekolah }}</h3>
                         <p class="text-xs text-gray-500 mt-1">Dinas Pendidikan Pemerintah Kota Kediri</p>
-                        <span class="mt-3 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[11px] font-bold">Status: Negeri / Aktif</span>
+                        <span class="mt-3 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-[11px] font-bold">Status: {{ $profilSekolah->status_sekolah ?: 'Negeri / Aktif' }}</span>
                         
                         <div class="w-full border-t border-gray-100 mt-6 pt-5 text-left space-y-3 text-xs">
                             <div>
@@ -142,35 +170,6 @@
                         </div>
                     </div>
 
-                    <!-- Detail Deskripsi Profil -->
-                    <div class="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-gray-100 space-y-6">
-                        <div>
-                            <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
-                                <i class="fas fa-info-circle text-blue-600"></i> Tentang SD Negeri Pojok 2 Kota Kediri
-                            </h3>
-                            <p class="text-xs text-gray-600 leading-relaxed">
-                                SD Negeri Pojok 2 Kota Kediri merupakan sekolah dasar negeri di bawah naungan Dinas Pendidikan Pemerintah Kota Kediri yang berlokasi di Jalan Mastrip Nomor 59, Kecamatan Mojoroto, Kota Kediri. Sekolah ini berkomitmen menyelenggarakan pendidikan dasar yang berfokus pada pembentukan akhlak mulia, kemandirian, kreativitas, wawasan global, serta kepedulian terhadap lingkungan sekitar.
-                            </p>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-gray-100">
-                            <div class="bg-blue-50/60 p-4 rounded-2xl border border-blue-100">
-                                <span class="text-[11px] text-blue-600 font-bold uppercase">Tenaga Pendidik</span>
-                                <p class="text-2xl font-extrabold text-blue-900 mt-1">8 Guru</p>
-                                <span class="text-[10px] text-gray-500">PNS & PPPK Tersertifikasi</span>
-                            </div>
-                            <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-100">
-                                <span class="text-[11px] text-amber-600 font-bold uppercase">Program Unggulan</span>
-                                <p class="text-2xl font-extrabold text-amber-800 mt-1">CERMAT</p>
-                                <span class="text-[10px] text-gray-500">Cerdas, Mandiri & Terampil</span>
-                            </div>
-                            <div class="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-100">
-                                <span class="text-[11px] text-emerald-600 font-bold uppercase">Gerakan Lingkungan</span>
-                                <p class="text-2xl font-extrabold text-emerald-800 mt-1">BERSEHAT</p>
-                                <span class="text-[10px] text-gray-500">Bersih, Elok, Sehat, Rindang</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- TAB 2: VISI & MISI RESMI 2026 -->
@@ -208,12 +207,7 @@
                         <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-[11px] font-bold">1 Tahun ke Depan</span>
                         <h3 class="text-base font-extrabold text-gray-900 mt-3 mb-4">Tujuan Jangka Pendek</h3>
                         <ul class="space-y-2.5 text-xs text-gray-600 list-disc list-inside leading-relaxed">
-                            <li>85% peserta didik memahami keimanan & nilai agama.</li>
-                            <li>90% peserta didik menunjukkan keteladanan di dalam & luar kelas.</li>
-                            <li>85% peserta didik mencintai potensi daerah.</li>
-                            <li>85% peserta didik mengikuti program <strong>CERMAT</strong> (Cerdas, Mandiri dan Terampil).</li>
-                            <li>85% peserta didik mengasah literasi, numerasi, dan pembelajaran HOTS.</li>
-                            <li>85% peserta didik bijak bermedia sosial & menjaga kebersihan lingkungan.</li>
+                            @foreach ($tujuan['pendek'] as $objective)<li>{{ $objective }}</li>@endforeach
                         </ul>
                     </div>
 
@@ -222,11 +216,7 @@
                         <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-lg text-[11px] font-bold">2 - 3 Tahun ke Depan</span>
                         <h3 class="text-base font-extrabold text-gray-900 mt-3 mb-4">Tujuan Jangka Menengah</h3>
                         <ul class="space-y-2.5 text-xs text-gray-600 list-disc list-inside leading-relaxed">
-                            <li>90% peserta didik mengamalkan nilai agama sehari-hari.</li>
-                            <li>85% peserta didik mandiri dalam kepemimpinan proyek & ekstrakurikuler.</li>
-                            <li>85% pendidik merancang pembelajaran sesuai bakat & meningkatkan literasi-numerasi.</li>
-                            <li>85% peserta didik mampu mencegah hoax & menjaga etika digital.</li>
-                            <li>85% peserta didik menerapkan gerakan <strong>BERSEHAT</strong> (Bersih, Elok, Sehat, Rindang dan Tentram).</li>
+                            @foreach ($tujuan['menengah'] as $objective)<li>{{ $objective }}</li>@endforeach
                         </ul>
                     </div>
 
@@ -235,50 +225,84 @@
                         <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[11px] font-bold">4 Tahun ke Depan</span>
                         <h3 class="text-base font-extrabold text-gray-900 mt-3 mb-4">Tujuan Jangka Panjang</h3>
                         <ul class="space-y-2.5 text-xs text-gray-600 list-disc list-inside leading-relaxed">
-                            <li>90% peserta didik berakhlak mulia & peduli sosial dalam toleransi beragama.</li>
-                            <li>90% warga sekolah membangun kultur sekolah yang kompetitif dan positif.</li>
-                            <li>90% pendidik menyusun pembelajaran berbasis proyek budaya lokal.</li>
-                            <li>90% peserta didik mewujudkan budaya belajar mandiri & kolaborasi dengan mitra luar.</li>
+                            @foreach ($tujuan['panjang'] as $objective)<li>{{ $objective }}</li>@endforeach
                         </ul>
                     </div>
                 </div>
 
-                <!-- MODAL EDIT PROFIL & VISI MISI -->
-                <div x-show="editModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4 overflow-y-auto">
-                    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8 relative my-8">
+                <!-- MODAL EDIT KONTEN PROFIL -->
+                <div x-show="editModal" style="display: none;" @keydown.escape.window="editModal = false" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+                    <div class="bg-white rounded-3xl shadow-2xl max-h-[90vh] max-w-3xl w-full overflow-y-auto p-8 relative my-8">
                         <button @click="editModal = false" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 text-gray-500 hover:bg-gray-200 rounded-full flex items-center justify-center">
                             <i class="fas fa-times"></i>
                         </button>
-                        <h3 class="text-lg font-extrabold text-gray-900 mb-1">Perbarui Profil & Visi Misi Sekolah</h3>
-                        <p class="text-xs text-gray-500 mb-6">Ubah informasi profil, alamat, dan rumusan visi misi sekolah di bawah ini.</p>
+                        <h3 class="text-lg font-extrabold text-gray-900 mb-1" x-text="activeTab === 'profil' ? 'Edit Profil Sekolah' : (activeTab === 'sejarah' ? 'Edit Sejarah Singkat' : (activeTab === 'identitas' ? 'Edit Identitas Sekolah' : (activeTab === 'struktur' ? 'Edit Struktur Organisasi' : (activeTab === 'fasilitas' ? 'Edit Fasilitas Sekolah' : (activeTab === 'visimisi' ? 'Edit Visi & Misi' : 'Edit Tujuan Sekolah')))))"></h3>
+                        <p class="text-xs text-gray-500 mb-6">Perubahan hanya diterapkan pada tab yang sedang terbuka.</p>
 
                         @if ($errors->any())<div class="mb-4 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-700">{{ $errors->first() }}</div>@endif
 
                         <form action="{{ route('admin.profil.update') }}" method="POST" class="space-y-4 text-xs">
                             @csrf
                             @method('PUT')
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <input type="hidden" name="section" x-bind:value="activeTab">
+                            <div x-show="activeTab === 'profil'" class="space-y-4">
+                              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="font-bold text-gray-700 block mb-1">Nama Sekolah</label>
-                                    <input type="text" name="nama_sekolah" value="{{ old('nama_sekolah', $profilSekolah->nama_sekolah) }}" required maxlength="150" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <input type="text" name="nama_sekolah" value="{{ old('nama_sekolah', $profilSekolah->nama_sekolah) }}" x-bind:disabled="activeTab !== 'profil'" required maxlength="150" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
                                 </div>
                                 <div>
                                     <label class="font-bold text-gray-700 block mb-1">Email Resmi</label>
-                                    <input type="email" name="email_sekolah" value="{{ old('email_sekolah', $profilSekolah->email_sekolah) }}" required maxlength="100" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <input type="email" name="email_sekolah" value="{{ old('email_sekolah', $profilSekolah->email_sekolah) }}" x-bind:disabled="activeTab !== 'profil'" required maxlength="100" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                              </div>
+                              <div>
+                                <label class="font-bold text-gray-700 block mb-1">Alamat Sekolah</label>
+                                <input type="text" name="alamat" value="{{ old('alamat', $profilSekolah->alamat) }}" x-bind:disabled="activeTab !== 'profil'" required maxlength="1000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                              </div>
+                              <div>
+                                <label class="font-bold text-gray-700 block mb-1">Tentang Sekolah</label>
+                                <textarea name="tentang_sekolah" rows="4" x-bind:disabled="activeTab !== 'profil'" required maxlength="5000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('tentang_sekolah', $profilSekolah->tentang_sekolah ?: $profilSekolah->sejarah) }}</textarea>
+                              </div>
+                              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="font-bold text-gray-700 block mb-1">Tahun Berdiri</label>
+                                    <input type="number" name="tahun_berdiri" value="{{ old('tahun_berdiri', $profilSekolah->tahun_berdiri ?: 1982) }}" x-bind:disabled="activeTab !== 'profil'" required min="1800" max="{{ now()->year }}" step="1" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="font-bold text-gray-700 block mb-1">Status Sekolah</label>
+                                    <input type="text" name="status_sekolah" value="{{ old('status_sekolah', $profilSekolah->status_sekolah ?: 'Negeri / Aktif') }}" x-bind:disabled="activeTab !== 'profil'" required maxlength="100" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                              </div>
+                            </div>
+                            <div x-show="activeTab === 'visimisi'" style="display: none;" class="space-y-4">
+                              <div>
+                                <label class="font-bold text-gray-700 block mb-1">Visi Sekolah</label>
+                                <textarea name="visi" rows="2" x-bind:disabled="activeTab !== 'visimisi'" required maxlength="5000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('visi', $visi) }}</textarea>
+                              </div>
+                              <div>
+                                <label class="font-bold text-gray-700 block mb-1">Daftar Misi Sekolah (Satu per baris)</label>
+                                <textarea name="misi" rows="5" x-bind:disabled="activeTab !== 'visimisi'" required maxlength="10000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('misi', implode("\n", $misi)) }}</textarea>
+                              </div>
+                            </div>
+                            <div x-show="activeTab === 'tujuan'" style="display: none;" class="space-y-4">
+                                <div>
+                                    <label class="font-bold text-gray-700 block mb-1">Tujuan Jangka Pendek (Satu per baris)</label>
+                                    <textarea name="tujuan_pendek" rows="5" x-bind:disabled="activeTab !== 'tujuan'" required maxlength="10000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('tujuan_pendek', implode("\n", $tujuan['pendek'])) }}</textarea>
+                                </div>
+                                <div>
+                                    <label class="font-bold text-gray-700 block mb-1">Tujuan Jangka Menengah (Satu per baris)</label>
+                                    <textarea name="tujuan_menengah" rows="5" x-bind:disabled="activeTab !== 'tujuan'" required maxlength="10000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('tujuan_menengah', implode("\n", $tujuan['menengah'])) }}</textarea>
+                                </div>
+                                <div>
+                                    <label class="font-bold text-gray-700 block mb-1">Tujuan Jangka Panjang (Satu per baris)</label>
+                                    <textarea name="tujuan_panjang" rows="5" x-bind:disabled="activeTab !== 'tujuan'" required maxlength="10000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('tujuan_panjang', implode("\n", $tujuan['panjang'])) }}</textarea>
                                 </div>
                             </div>
-                            <div>
-                                <label class="font-bold text-gray-700 block mb-1">Alamat Sekolah</label>
-                                <input type="text" name="alamat" value="{{ old('alamat', $profilSekolah->alamat) }}" required maxlength="1000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="font-bold text-gray-700 block mb-1">Visi Sekolah</label>
-                                <textarea name="visi" rows="2" required maxlength="5000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('visi', $visi) }}</textarea>
-                            </div>
-                            <div>
-                                <label class="font-bold text-gray-700 block mb-1">Daftar Misi Sekolah (Satu per baris)</label>
-                                <textarea name="misi" rows="5" required maxlength="10000" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">{{ old('misi', implode("\n", $misi)) }}</textarea>
-                            </div>
+                            @include('pages.admin.profil.sejarah-form')
+                            @include('pages.admin.profil.identitas-form')
+                            @include('pages.admin.profil.struktur-form')
+                            @include('pages.admin.profil.fasilitas-form')
                             <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                                 <button type="button" @click="editModal = false" class="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">Batal</button>
                                 <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-sm">Simpan Perubahan</button>
