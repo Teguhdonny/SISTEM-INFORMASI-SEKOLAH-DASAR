@@ -39,6 +39,20 @@
                     </select>
                     @error('hari')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                 </div>
+                <div>
+                    <label for="semester" class="mb-2 block text-sm font-semibold text-gray-700">Semester *</label>
+                    <select id="semester" name="semester" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm">
+                        @foreach (['Ganjil', 'Genap'] as $namaSemester)<option value="{{ $namaSemester }}" @selected(old('semester', $jadwalPelajaran->semester ?? 'Ganjil') === $namaSemester)>{{ $namaSemester }}</option>@endforeach
+                    </select>
+                    @error('semester')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label for="tahun_ajaran" class="mb-2 block text-sm font-semibold text-gray-700">Tahun ajaran *</label>
+                    <select id="tahun_ajaran" name="tahun_ajaran" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm">
+                        @foreach ($academicYears as $academicYear)<option value="{{ $academicYear }}" @selected(old('tahun_ajaran', $jadwalPelajaran->tahun_ajaran) === $academicYear)>{{ $academicYear }}</option>@endforeach
+                    </select>
+                    @error('tahun_ajaran')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                </div>
                 <div x-data="clockPicker('{{ old('jam_mulai', $jadwalPelajaran->jam_mulai ? substr($jadwalPelajaran->jam_mulai, 0, 5) : '07:00') }}')">
                     <label class="mb-2 block text-sm font-semibold text-gray-700">Jam mulai *</label>
                     <input type="hidden" name="jam_mulai" x-model="value">

@@ -290,7 +290,7 @@ class StudentDataTransferController extends Controller
                     ->orWhere('nisn', 'like', "%{$search}%")
                     ->orWhere('no_pendaftaran', 'like', "%{$search}%");
             }))
-            ->when(in_array($status, ['Menunggu Verifikasi', 'Diterima', 'Ditolak'], true), fn (Builder $query) => $query->whereHas('daftarUlang', function (Builder $query) use ($status): void {
+            ->when(in_array($status, ['Menunggu Verifikasi', 'Perlu Perbaikan', 'Diterima', 'Ditolak'], true), fn (Builder $query) => $query->whereHas('daftarUlang', function (Builder $query) use ($status): void {
                 $query->where('status', $status);
                 if ($status === 'Menunggu Verifikasi') {
                     $query->orWhereNull('status');

@@ -23,34 +23,20 @@
             </div>
 
             <div class="p-5 sm:p-7">
-                <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Periode PPDB</p>
                         <p class="mt-1 text-lg font-bold text-gray-900">{{ $tahunAjaran ?: 'Belum ada periode tersedia' }}</p>
                     </div>
+                    <a href="{{ route('ppdb.public.pdf') }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-red-700">
+                        <i class="fas fa-file-pdf"></i>Lihat Daftar dalam PDF
+                    </a>
                 </div>
                 @if ($siswaDiterima->count())
-                    <div class="overflow-x-auto rounded-2xl border border-gray-200">
-                        <table class="min-w-full divide-y divide-gray-200 text-left">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="w-20 px-4 py-3 text-xs font-bold uppercase tracking-wide text-gray-500 sm:px-5">No</th>
-                                    <th scope="col" class="px-4 py-3 text-xs font-bold uppercase tracking-wide text-gray-500 sm:px-5">Nama Siswa</th>
-                                    <th scope="col" class="px-4 py-3 text-xs font-bold uppercase tracking-wide text-gray-500 sm:px-5">Jenis Kelamin</th>
-                                    <th scope="col" class="w-36 px-4 py-3 text-xs font-bold uppercase tracking-wide text-gray-500 sm:px-5">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 bg-white">
-                                @foreach ($siswaDiterima as $index => $siswa)
-                                    <tr class="transition hover:bg-blue-50/50">
-                                        <td class="whitespace-nowrap px-4 py-4 text-sm font-semibold text-blue-700 sm:px-5">{{ $siswaDiterima->firstItem() + $index }}</td>
-                                        <td class="break-words px-4 py-4 text-sm font-semibold text-gray-900 sm:px-5">{{ $siswa->nama_siswa }}</td>
-                                        <td class="px-4 py-4 text-sm text-gray-600 sm:px-5">{{ $siswa->jenis_kelamin ?: '-' }}</td>
-                                        <td class="px-4 py-4 sm:px-5"><span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">Diterima</span></td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="rounded-2xl border border-blue-100 bg-blue-50/60 p-6 text-center sm:p-10">
+                        <i class="fas fa-file-pdf text-5xl text-red-600"></i>
+                        <h3 class="mt-4 text-lg font-bold text-gray-900">Daftar siswa tersedia dalam PDF</h3>
+                        <p class="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-gray-600">Klik tombol di atas untuk melihat atau menyimpan daftar lengkap siswa yang diterima dalam format PDF.</p>
                     </div>
                 @else
                     <div class="rounded-2xl border border-dashed border-gray-300 px-5 py-10 text-center">

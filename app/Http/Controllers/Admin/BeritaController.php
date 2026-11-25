@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Berita;
+use App\Services\FonnteWhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -19,11 +20,12 @@ class BeritaController extends Controller
         return view('pages.admin.berita.index', compact('berita', 'editBerita'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, FonnteWhatsAppService $whatsapp): RedirectResponse
     {
-        Berita::create($this->validatedData($request));
+        $berita = Berita::query()->create($this->validatedData($request));
+        $notified = $berita->status === 'Aktif' ? $whatsapp->sendNewsAnnouncement($berita) : 0;
 
-        return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil ditambahkan.');
+        return redirect()->route('admin.berita.index')->with('success', "Berita berhasil ditambahkan. {$notified} wali siswa diberi notifikasi WhatsApp.");
     }
 
     public function update(Request $request, Berita $berita): RedirectResponse

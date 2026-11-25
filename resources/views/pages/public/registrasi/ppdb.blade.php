@@ -15,6 +15,12 @@
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen font-sans">
 
+    @if (session('registration_notice'))
+        <div class="fixed inset-x-4 top-5 z-[70] mx-auto max-w-lg rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 shadow-xl" role="alert">
+            <div class="flex items-start gap-3"><i class="fas fa-circle-info mt-0.5"></i><div><p class="font-bold">Informasi pendaftaran</p><p class="mt-1">{{ session('registration_notice') }}</p></div></div>
+        </div>
+    @endif
+
     <!-- Memanggil Navbar Publik -->
     @include('components.public.navbar')
 

@@ -138,6 +138,8 @@ Route::get('/informasi-ppdb', function () {
     return view('pages.public.ppdb', compact('siswaDiterima', 'tahunAjaran'));
 })->name('ppdb.public.index');
 
+Route::get('/informasi-ppdb/pdf', [PendaftaranWebController::class, 'publicPpdbPdf'])->name('ppdb.public.pdf');
+
 // Halaman Registrasi Daftar Ulang (PPDB Publik - Tanpa Login)
 Route::get('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'create'])->name('registrasi.public.create');
 Route::post('/registrasi-daftar-ulang', [PendaftaranWebController::class, 'store'])->name('registrasi.public.store');

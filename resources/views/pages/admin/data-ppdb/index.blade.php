@@ -176,9 +176,9 @@
                     <!-- Ditolak -->
                     <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between transition hover:shadow-md">
                         <div>
-                            <p class="text-xs text-gray-500 font-medium">Ditolak</p>
-                            <h3 id="registration-rejected-count" class="text-2xl font-extrabold text-rose-600 mt-1">{{ $ditolak }}</h3>
-                            <span class="text-[10px] text-rose-600 font-semibold mt-1 inline-block"><i class="fas fa-times mr-1"></i> Tidak valid</span>
+                            <p class="text-xs text-gray-500 font-medium">Perlu Perbaikan</p>
+                            <h3 id="registration-rejected-count" class="text-2xl font-extrabold text-rose-600 mt-1">{{ $perluPerbaikan }}</h3>
+                            <span class="text-[10px] text-rose-600 font-semibold mt-1 inline-block"><i class="fas fa-rotate mr-1"></i> Verifikasi ulang</span>
                         </div>
                         <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-lg shadow-inner">
                             <i class="fas fa-user-times"></i>
@@ -199,7 +199,7 @@
                             </label>
                             <select id="registration-status" name="status" aria-label="Filter status verifikasi" class="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 outline-none transition">
                                 <option value="">Semua Status</option>
-                                @foreach (['Menunggu Verifikasi', 'Diterima', 'Ditolak'] as $statusOption)
+                                @foreach (['Menunggu Verifikasi', 'Perlu Perbaikan', 'Diterima'] as $statusOption)
                                     <option value="{{ $statusOption }}" @selected($status === $statusOption)>{{ $statusOption }}</option>
                                 @endforeach
                             </select>

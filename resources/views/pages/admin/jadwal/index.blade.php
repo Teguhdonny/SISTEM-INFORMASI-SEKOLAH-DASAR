@@ -1,7 +1,7 @@
 <x-layouts.admin>
     <div class="space-y-6">
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div><p class="text-sm font-semibold text-blue-700">Konten Website</p><h1 class="mt-1 text-2xl font-bold text-gray-800">Jadwal Pelajaran</h1><p class="mt-1 text-sm text-gray-500">Kelola jadwal belajar berdasarkan kelas, hari, mata pelajaran, dan guru.</p></div>
+            <div><p class="text-sm font-semibold text-blue-700">Konten Website</p><h1 class="mt-1 text-2xl font-bold text-gray-800">Jadwal Pelajaran</h1><p class="mt-1 text-sm text-gray-500">Kelola jadwal belajar berdasarkan tahun ajaran, semester, kelas, hari, mata pelajaran, dan guru.</p></div>
             <div class="flex flex-wrap gap-2"><a href="{{ route('admin.jadwal.export.pdf', request()->only(['kelas', 'hari'])) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a><a href="{{ route('admin.jadwal.create') }}" class="inline-flex items-center justify-center rounded-xl bg-red-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-red-700"><i class="fas fa-plus mr-2"></i>Tambah Jadwal</a></div>
         </div>
         @if (session('success'))<div role="status" class="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800"><i class="fas fa-check-circle"></i>{{ session('success') }}</div>@endif
