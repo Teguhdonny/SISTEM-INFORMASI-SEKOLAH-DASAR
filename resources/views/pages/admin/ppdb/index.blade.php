@@ -1,13 +1,11 @@
 <x-layouts.admin>
     <div class="space-y-6">
-        <div class="flex flex-col justify-between gap-4 xl:flex-row xl:items-end">
+        <div class="flex flex-col gap-5">
             <div>
                 <p class="text-sm font-semibold uppercase tracking-wide text-blue-700">Manajemen PPDB</p>
                 <h1 class="mt-1 text-2xl font-bold text-gray-800">Siswa Diterima PPDB</h1>
                 <p class="mt-1 text-sm text-gray-500">Kelola data siswa dari hasil PPDB pemerintah. NIK dan NISN hanya dapat dilihat admin.</p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('admin.ppdb.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800"><i class="fas fa-plus"></i>Tambah Siswa</a>
+                <p class="mt-2 text-xs text-gray-500">Semua kolom wajib. Jenis Kelamin pilih Laki-laki atau Perempuan; NIK harus 16 digit dan NISN 10 digit. Template menjaga NIK/NISN sebagai teks.</p>
             </div>
         </div>
 
@@ -21,22 +19,19 @@
             <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ $errors->first() }}</div>
         @endif
 
-        <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-            <form x-data="{ fileName: '' }" method="POST" action="{{ route('admin.ppdb.import.xlsx') }}" enctype="multipart/form-data" class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end xl:flex-1">
+        <div class="flex flex-col justify-between gap-3 xl:flex-row xl:items-center">
+            <form x-data="{ fileName: '' }" method="POST" action="{{ route('admin.ppdb.import.xlsx') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
                 @csrf
-                <div class="min-w-0 flex-1">
-                    <input id="ppdb-import-file" x-ref="importFile" @change="fileName = $event.target.files[0]?.name ?? ''" name="file" type="file" accept=".xlsx" required aria-label="Pilih file Excel PPDB" class="sr-only">
-                    <p x-show="fileName" x-text="fileName" class="truncate text-xs text-gray-600" aria-live="polite"></p>
-                </div>
-                <div class="flex shrink-0 gap-2">
-                    <a href="{{ route('admin.ppdb.template.xlsx') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-xl border border-gray-200 px-4 py-3 text-xs font-bold text-gray-700 hover:bg-gray-50">Template</a>
-                    <button x-show="! fileName" type="button" @click="$refs.importFile.click()" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
-                    <button x-show="fileName" type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
-                </div>
+                <a href="{{ route('admin.ppdb.template.xlsx') }}" class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50">Template</a>
+                <input id="ppdb-import-file" x-ref="importFile" @change="fileName = $event.target.files[0]?.name ?? ''" name="file" type="file" accept=".xlsx" required aria-label="Pilih file Excel PPDB" class="sr-only">
+                <button type="button" @click="$refs.importFile.click()" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-folder-open"></i>Pilih file</button>
+                <span x-text="fileName || 'Belum ada file dipilih'" class="max-w-48 truncate text-sm text-gray-500" aria-live="polite"></span>
+                <button type="submit" :disabled="! fileName" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"><i class="fas fa-upload"></i>Upload &amp; Impor</button>
             </form>
-            <div class="flex shrink-0 gap-2 border-t border-gray-100 pt-4 xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">
+            <div class="flex flex-wrap items-center gap-2">
                 <a id="ppdb-export-pdf" href="{{ route('admin.ppdb.export.pdf', request()->only('search')) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
                 <a id="ppdb-export-excel" href="{{ route('admin.ppdb.export.xlsx', request()->only('search')) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
+                <a href="{{ route('admin.ppdb.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800"><i class="fas fa-plus"></i>Tambah Siswa</a>
             </div>
         </div>
 

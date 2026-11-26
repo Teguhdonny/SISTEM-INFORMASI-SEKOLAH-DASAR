@@ -47,12 +47,24 @@ class StudentDataTransferController extends Controller
 
     public function ppdbTemplate(ExcelWorkbook $workbook): StreamedResponse
     {
-        return $workbook->download('template-impor-ppdb.xlsx', ['Nama Siswa', 'Jenis Kelamin', 'NIK', 'NISN'], []);
+        return $workbook->download('template-impor-ppdb.xlsx', ['Nama Siswa', 'Jenis Kelamin', 'NIK', 'NISN'], [], [2, 3], true);
     }
 
     public function importPpdb(Request $request, ExcelWorkbook $workbook): RedirectResponse
     {
-        $request->validate(['file' => ['required', 'file', 'mimes:xlsx', 'extensions:xlsx', 'max:10240']]);
+        $fileValidator = Validator::make($request->all(), [
+            'file' => ['required', 'file', 'mimes:xlsx', 'extensions:xlsx', 'max:10240'],
+        ], [
+            'file.required' => 'Pilih file Excel yang akan diimpor.',
+            'file.mimes' => 'File harus berformat Excel .xlsx.',
+            'file.extensions' => 'Gunakan template PPDB dengan ekstensi .xlsx.',
+            'file.max' => 'Ukuran file maksimal 10 MB.',
+        ]);
+
+        if ($fileValidator->fails()) {
+            return back()->with('error', $fileValidator->errors()->first());
+        }
+
         $academicYear = RegistrationPeriod::query()->value('tahun_ajaran');
         if (! $academicYear) {
             return back()->with('error', 'Atur tahun ajaran aktif sebelum mengimpor data PPDB.');
@@ -74,6 +86,16 @@ class StudentDataTransferController extends Controller
                 'jenis_kelamin' => ['required', 'in:Laki-laki,Perempuan'],
                 'nik' => ['required', 'digits:16', 'unique:siswa_ppdb,nik'],
                 'nisn' => ['required', 'digits:10', 'unique:siswa_ppdb,nisn'],
+            ], [
+                'nama_siswa.required' => 'Nama siswa wajib diisi.',
+                'jenis_kelamin.required' => 'Jenis kelamin wajib diisi.',
+                'jenis_kelamin.in' => 'Jenis kelamin harus Laki-laki atau Perempuan.',
+                'nik.required' => 'NIK wajib diisi.',
+                'nik.digits' => 'NIK harus tepat 16 digit. Pastikan kolom NIK berformat Teks dan ketik ulang dari sumber asli.',
+                'nik.unique' => 'NIK sudah terdaftar.',
+                'nisn.required' => 'NISN wajib diisi.',
+                'nisn.digits' => 'NISN harus tepat 10 digit. Pastikan kolom NISN berformat Teks dan ketik ulang dari sumber asli.',
+                'nisn.unique' => 'NISN sudah terdaftar.',
             ]);
             if ($validator->fails()) {
                 return back()->with('error', "Baris {$rowNumber}: ".$validator->errors()->first());

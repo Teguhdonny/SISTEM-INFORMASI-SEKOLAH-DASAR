@@ -75,12 +75,23 @@ class GuruController extends Controller
 
     public function importTemplate(ExcelWorkbook $workbook): StreamedResponse
     {
-        return $workbook->download('template-impor-guru-staff.xlsx', ['Nama', 'NIP', 'Bagian', 'Lulusan', 'Kompetensi'], []);
+        return $workbook->download('template-impor-guru-staff.xlsx', ['Nama', 'NIP', 'Bagian', 'Lulusan', 'Kompetensi'], [], [1], true);
     }
 
     public function importExcel(Request $request, ExcelWorkbook $workbook): RedirectResponse
     {
-        $request->validate(['file' => ['required', 'file', 'mimes:xlsx', 'extensions:xlsx', 'max:10240']]);
+        $fileValidator = Validator::make($request->all(), [
+            'file' => ['required', 'file', 'mimes:xlsx', 'extensions:xlsx', 'max:10240'],
+        ], [
+            'file.required' => 'Pilih file Excel yang akan diimpor.',
+            'file.mimes' => 'File harus berformat Excel .xlsx.',
+            'file.extensions' => 'Gunakan template Excel dengan ekstensi .xlsx.',
+            'file.max' => 'Ukuran file maksimal 10 MB.',
+        ]);
+
+        if ($fileValidator->fails()) {
+            return back()->with('error', $fileValidator->errors()->first());
+        }
 
         try {
             $rows = $workbook->read($request->file('file'));
@@ -98,6 +109,12 @@ class GuruController extends Controller
                 'bagian' => ['required', 'string', 'max:100'],
                 'lulusan' => ['nullable', 'string', 'max:5000'],
                 'kompetensi' => ['nullable', 'string', 'max:5000'],
+            ], [
+                'nama.required' => 'Nama lengkap wajib diisi.',
+                'nip.required' => 'NIP wajib diisi.',
+                'nip.digits' => 'NIP harus tepat 18 digit. Pastikan kolom NIP berformat Teks dan ketik ulang NIP dari sumber asli.',
+                'nip.unique' => 'NIP sudah terdaftar.',
+                'bagian.required' => 'Bagian / Tugas wajib diisi.',
             ]);
 
             if ($validator->fails()) {
