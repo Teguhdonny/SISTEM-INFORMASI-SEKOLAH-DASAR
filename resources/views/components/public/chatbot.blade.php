@@ -46,7 +46,7 @@
             open: false,
             loading: false,
             message: '',
-            suggestions: ['Syarat registrasi daftar ulang?', 'Jadwal daftar ulang?', 'Alamat sekolah?'],
+            suggestions: ['Syarat registrasi daftar ulang?', 'Kapan jadwal daftar ulang?', 'Alamat sekolah?'],
             messages: [{ role: 'assistant', text: 'Halo! Saya Asisten Sekolah. Ada yang bisa saya bantu?' }],
             async send() {
                 const question = this.message.trim();
@@ -54,6 +54,10 @@
                     return;
                 }
 
+                const history = this.messages.slice(1).slice(-8).map((item) => ({
+                    role: item.role,
+                    content: item.text,
+                }));
                 this.messages.push({ role: 'user', text: question });
                 this.message = '';
                 this.loading = true;
@@ -67,7 +71,7 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         },
-                        body: JSON.stringify({ message: question }),
+                        body: JSON.stringify({ message: question, history }),
                     });
                     const data = await response.json();
                     if (!response.ok) {

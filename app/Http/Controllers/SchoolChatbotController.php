@@ -12,10 +12,15 @@ class SchoolChatbotController extends Controller
     {
         $validated = $request->validate([
             'message' => ['required', 'string', 'max:1000'],
+            'history' => ['sometimes', 'array', 'max:8'],
+            'history.*.role' => ['required', 'in:user,assistant'],
+            'history.*.content' => ['required', 'string', 'max:1000'],
         ]);
 
         return response()->json([
-            'message' => $chatbot->ask($validated['message']),
+            'message' => isset($validated['history'])
+                ? $chatbot->ask($validated['message'], $validated['history'])
+                : $chatbot->ask($validated['message']),
         ]);
     }
 }

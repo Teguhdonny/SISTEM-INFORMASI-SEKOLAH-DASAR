@@ -55,6 +55,12 @@ return [
         'provider' => env('AI_PROVIDER', 'openai'),
     ],
 
+    'relayrouter' => [
+        'key' => env('RELAYROUTER_API_KEY'),
+        'model' => env('AI_MODEL', 'gemini-3.5-flash'),
+        'url' => env('AI_API_URL'),
+    ],
+
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
