@@ -30,7 +30,7 @@
     <tr>
         <td colspan="7" class="px-6 py-12 text-center text-gray-400">
             <i class="fas fa-folder-open text-3xl mb-2"></i>
-            <p class="text-sm">{{ $search || $status ? 'Tidak ada pendaftar yang sesuai filter.' : 'Belum ada data pendaftar masuk ke sistem.' }}</p>
+            <p class="text-sm">{{ $search || $status || $tahunAjaran ? 'Tidak ada pendaftar yang sesuai filter.' : 'Belum ada data pendaftar masuk ke sistem.' }}</p>
         </td>
     </tr>
 @endforelse

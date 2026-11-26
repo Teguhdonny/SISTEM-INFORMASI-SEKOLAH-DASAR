@@ -16,8 +16,9 @@
 <body class="bg-gray-50 flex flex-col min-h-screen font-sans">
 
     @if (session('registration_notice'))
-        <div class="fixed inset-x-4 top-5 z-[70] mx-auto max-w-lg rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-900 shadow-xl" role="alert">
-            <div class="flex items-start gap-3"><i class="fas fa-circle-exclamation mt-0.5"></i><div><p class="font-bold">Pendaftaran gagal</p><p class="mt-1">{{ session('registration_notice') }}</p></div></div>
+        <div x-data="{ visible: true }" x-init="setTimeout(() => visible = false, 6000)" x-show="visible" x-transition.opacity class="fixed inset-x-4 top-5 z-[70] mx-auto max-w-lg rounded-2xl border border-red-200 bg-red-50 p-4 pr-12 text-sm text-red-900 shadow-xl" role="alert">
+            <button type="button" @click="visible = false" class="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-red-700 transition hover:bg-red-100" aria-label="Tutup pemberitahuan"><i class="fas fa-times"></i></button>
+            <div class="flex items-start gap-3"><i class="fas fa-circle-exclamation mt-0.5"></i><div><p class="font-bold">Pendaftaran gagal</p><p class="mt-1">{{ $errors->first('nisn') ?: session('registration_notice') }}</p></div></div>
         </div>
     @endif
 
@@ -253,7 +254,6 @@
                         <label class="block text-xs font-semibold text-gray-700 mb-1">NISN</label>
                         <input type="text" name="nisn" inputmode="numeric" pattern="[0-9]*" data-digits-only maxlength="10" required placeholder="10 digit NISN" value="{{ old('nisn') }}" autocomplete="off" aria-describedby="nisn-lookup-status"
                             class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                        @error('nisn') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         <p id="nisn-lookup-status" class="mt-1 text-xs text-gray-500" aria-live="polite"></p>
                     </div>
                 </div>

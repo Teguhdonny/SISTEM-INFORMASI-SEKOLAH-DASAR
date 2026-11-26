@@ -17,8 +17,25 @@ class SiswaPpdbController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         $search = $request->string('search')->trim()->toString();
+        $tahunAjaran = $request->string('tahun_ajaran')->trim()->toString();
+        $periodeTahunAjaran = SiswaPpdb::query()
+            ->where('dicatat_admin', true)
+            ->whereNotNull('tahun_ajaran')
+            ->distinct()
+            ->orderByDesc('tahun_ajaran')
+            ->pluck('tahun_ajaran');
+        $tahunAjaranAktif = RegistrationPeriod::query()->value('tahun_ajaran');
+        if (filled($tahunAjaranAktif)) {
+            $periodeTahunAjaran->push($tahunAjaranAktif);
+        }
+        $periodeTahunAjaran = $periodeTahunAjaran->unique()->sortDesc()->values();
+        if (! $periodeTahunAjaran->contains($tahunAjaran)) {
+            $tahunAjaran = '';
+        }
+
         $siswa = SiswaPpdb::query()
             ->where('dicatat_admin', true)
+            ->when($tahunAjaran !== '', fn ($query) => $query->where('tahun_ajaran', $tahunAjaran))
             ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($query) use ($search): void {
                     $query->where('nama_siswa', 'like', "%{$search}%")
@@ -33,13 +50,13 @@ class SiswaPpdbController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'rows' => view('pages.admin.ppdb.rows', compact('siswa', 'search'))->render(),
+                'rows' => view('pages.admin.ppdb.rows', compact('siswa', 'search', 'tahunAjaran'))->render(),
                 'count' => $siswa->total(),
                 'pagination' => $siswa->hasPages() ? (string) $siswa->links() : '',
             ]);
         }
 
-        return view('pages.admin.ppdb.index', compact('siswa', 'search'));
+        return view('pages.admin.ppdb.index', compact('siswa', 'search', 'tahunAjaran', 'periodeTahunAjaran'));
     }
 
     public function create(): View

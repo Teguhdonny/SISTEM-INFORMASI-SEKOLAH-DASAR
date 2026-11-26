@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Guru;
 use App\Models\JadwalPelajaran;
+use App\Models\PendaftaranPindahan;
 use App\Models\RegistrationPeriod;
+use App\Models\SiswaPpdb;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -18,13 +20,16 @@ class JadwalPelajaranController extends Controller
     {
         $kelas = $this->classes();
         $hari = $this->days();
+        $academicYears = $this->availableAcademicYears();
         $filters = $request->validate([
             'kelas' => ['nullable', Rule::in($kelas)],
             'hari' => ['nullable', Rule::in($hari)],
+            'tahun_ajaran' => ['nullable', Rule::in($academicYears)],
         ]);
 
         $jadwal = JadwalPelajaran::query()
             ->with('guru')
+            ->when($filters['tahun_ajaran'] ?? null, fn ($query, string $tahunAjaran) => $query->where('tahun_ajaran', $tahunAjaran))
             ->when($filters['kelas'] ?? null, fn ($query, string $kelas) => $query->where('kelas', $kelas))
             ->when($filters['hari'] ?? null, fn ($query, string $hari) => $query->where('hari', $hari))
             ->orderByRaw("CASE kelas WHEN 'Kelas 1' THEN 1 WHEN 'Kelas 2' THEN 2 WHEN 'Kelas 3' THEN 3 WHEN 'Kelas 4' THEN 4 WHEN 'Kelas 5' THEN 5 WHEN 'Kelas 6' THEN 6 ELSE 7 END")
@@ -33,7 +38,7 @@ class JadwalPelajaranController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('pages.admin.jadwal.index', compact('jadwal', 'kelas', 'hari', 'filters'));
+        return view('pages.admin.jadwal.index', compact('jadwal', 'kelas', 'hari', 'academicYears', 'filters'));
     }
 
     public function exportPdf(Request $request): View
@@ -41,9 +46,11 @@ class JadwalPelajaranController extends Controller
         $filters = $request->validate([
             'kelas' => ['nullable', Rule::in($this->classes())],
             'hari' => ['nullable', Rule::in($this->days())],
+            'tahun_ajaran' => ['nullable', Rule::in($this->availableAcademicYears())],
         ]);
         $rows = JadwalPelajaran::query()
             ->with('guru')
+            ->when($filters['tahun_ajaran'] ?? null, fn ($query, string $tahunAjaran) => $query->where('tahun_ajaran', $tahunAjaran))
             ->when($filters['kelas'] ?? null, fn ($query, string $kelas) => $query->where('kelas', $kelas))
             ->when($filters['hari'] ?? null, fn ($query, string $hari) => $query->where('hari', $hari))
             ->orderByRaw("CASE kelas WHEN 'Kelas 1' THEN 1 WHEN 'Kelas 2' THEN 2 WHEN 'Kelas 3' THEN 3 WHEN 'Kelas 4' THEN 4 WHEN 'Kelas 5' THEN 5 WHEN 'Kelas 6' THEN 6 ELSE 7 END")
@@ -175,9 +182,24 @@ class JadwalPelajaranController extends Controller
     /** @return array<int, string> */
     private function academicYears(): array
     {
-        $current = RegistrationPeriod::query()->value('tahun_ajaran') ?? now('Asia/Jakarta')->year.'/'.(now('Asia/Jakarta')->year + 1);
+        return $this->availableAcademicYears();
+    }
 
-        return array_values(array_unique([$current, ((int) substr($current, 0, 4) - 1).'/'.((int) substr($current, 0, 4))]));
+    /** @return array<int, string> */
+    private function availableAcademicYears(): array
+    {
+        $academicYears = collect()
+            ->merge(JadwalPelajaran::query()->whereNotNull('tahun_ajaran')->distinct()->pluck('tahun_ajaran'))
+            ->merge(SiswaPpdb::query()->where('dicatat_admin', true)->whereNotNull('tahun_ajaran')->distinct()->pluck('tahun_ajaran'))
+            ->merge(PendaftaranPindahan::query()->whereNotNull('tahun_ajaran')->distinct()->pluck('tahun_ajaran'));
+        $currentYear = now('Asia/Jakarta')->year;
+        $currentAcademicYear = RegistrationPeriod::query()->value('tahun_ajaran') ?? $currentYear.'/'.($currentYear + 1);
+
+        if (filled($currentAcademicYear)) {
+            $academicYears->push($currentAcademicYear);
+        }
+
+        return $academicYears->unique()->sortDesc()->values()->all();
     }
 
     /** @param array<string, mixed> $validated */

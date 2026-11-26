@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PendaftaranPindahan;
+use App\Models\RegistrationPeriod;
 use App\Services\FonnteWhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,10 +40,25 @@ class PendaftaranPindahanController extends Controller
     {
         $search = $request->string('search')->trim()->toString();
         $status = $request->string('status')->toString();
+        $tahunAjaran = $request->string('tahun_ajaran')->trim()->toString();
         $statuses = ['Diterima', 'Ditolak'];
         $filterStatuses = ['Menunggu Verifikasi', 'Perlu Perbaikan', ...$statuses, 'Selesai Daftar'];
+        $periodeTahunAjaran = PendaftaranPindahan::query()
+            ->whereNotNull('tahun_ajaran')
+            ->distinct()
+            ->orderByDesc('tahun_ajaran')
+            ->pluck('tahun_ajaran');
+        $tahunAjaranAktif = RegistrationPeriod::query()->value('tahun_ajaran');
+        if (filled($tahunAjaranAktif)) {
+            $periodeTahunAjaran->push($tahunAjaranAktif);
+        }
+        $periodeTahunAjaran = $periodeTahunAjaran->unique()->sortDesc()->values();
+        if (! $periodeTahunAjaran->contains($tahunAjaran)) {
+            $tahunAjaran = '';
+        }
 
         $pendaftaran = PendaftaranPindahan::query()
+            ->when($tahunAjaran !== '', fn ($query) => $query->where('tahun_ajaran', $tahunAjaran))
             ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($query) use ($search): void {
                     $query->where('nama_siswa', 'like', "%{$search}%")
@@ -56,7 +72,7 @@ class PendaftaranPindahanController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('pages.admin.pendaftaran-pindahan.index', compact('pendaftaran', 'search', 'status', 'statuses', 'filterStatuses'));
+        return view('pages.admin.pendaftaran-pindahan.index', compact('pendaftaran', 'search', 'status', 'statuses', 'filterStatuses', 'tahunAjaran', 'periodeTahunAjaran'));
     }
 
     public function updateStatus(

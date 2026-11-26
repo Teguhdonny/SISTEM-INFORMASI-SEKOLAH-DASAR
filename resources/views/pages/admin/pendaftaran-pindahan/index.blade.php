@@ -13,9 +13,10 @@
         @if ($errors->any())<div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $errors->first() }}</div>@endif
 
         <section class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-            <form method="GET" action="{{ route('admin.pendaftaran-pindahan.index') }}" class="grid gap-4 md:grid-cols-[1fr_240px_auto] md:items-end">
+            <form method="GET" action="{{ route('admin.pendaftaran-pindahan.index') }}" class="grid gap-4 md:grid-cols-[1fr_220px_220px_auto] md:items-end">
                 <div><label for="search" class="mb-2 block text-sm font-semibold text-gray-700">Cari pengajuan</label><input id="search" name="search" value="{{ $search }}" placeholder="Nama, NISN, nomor pendaftaran, sekolah asal" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm"></div>
                 <div><label for="status" class="mb-2 block text-sm font-semibold text-gray-700">Status</label><select id="status" name="status" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm"><option value="">Semua status</option>@foreach ($filterStatuses as $option)<option value="{{ $option }}" @selected($status === $option)>{{ $option }}</option>@endforeach</select></div>
+                <div><label for="tahun_ajaran" class="mb-2 block text-sm font-semibold text-gray-700">Periode</label><select id="tahun_ajaran" name="tahun_ajaran" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm"><option value="">Semua Periode</option>@foreach ($periodeTahunAjaran as $periode)<option value="{{ $periode }}" @selected($tahunAjaran === $periode)>{{ $periode }}</option>@endforeach</select></div>
                 <button type="submit" class="rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white hover:bg-blue-800">Terapkan Filter</button>
             </form>
         </section>
@@ -32,8 +33,8 @@
                 </div>
             </form>
             <div class="flex shrink-0 gap-2 border-t border-gray-100 pt-4 xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">
-                <a href="{{ route('admin.pendaftaran-pindahan.export.pdf', request()->only(['search', 'status'])) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
-                <a href="{{ route('admin.pendaftaran-pindahan.export.xlsx', request()->only(['search', 'status'])) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
+                <a href="{{ route('admin.pendaftaran-pindahan.export.pdf', request()->only(['search', 'status', 'tahun_ajaran'])) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
+                <a href="{{ route('admin.pendaftaran-pindahan.export.xlsx', request()->only(['search', 'status', 'tahun_ajaran'])) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
             </div>
         </div>
 

@@ -115,20 +115,10 @@
                 @if ($errors->any())
                     <div role="alert" class="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700">{{ $errors->first() }}</div>
                 @endif
-                <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-                    <form method="POST" action="{{ route('admin.pendaftaran.import.xlsx') }}" enctype="multipart/form-data" class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end xl:flex-1">
-                        @csrf
-                        <div class="min-w-0 flex-1">
-                            <input id="daftar-ulang-import-file" name="file" type="file" accept=".xlsx" required aria-label="Pilih file Excel daftar ulang" class="max-w-full rounded-xl border border-gray-200 bg-white px-2 py-2 text-xs text-gray-600 file:mr-2 file:rounded-lg file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-blue-700">
-                        </div>
-                        <div class="flex shrink-0 gap-2">
-                            <a href="{{ route('admin.pendaftaran.template.xlsx') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-xl border border-gray-200 px-4 py-3 text-xs font-bold text-gray-700 hover:bg-gray-50">Template</a>
-                            <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800"><i class="fas fa-upload"></i>Impor</button>
-                        </div>
-                    </form>
-                    <div class="flex shrink-0 gap-2 border-t border-gray-100 pt-4 xl:border-l xl:border-t-0 xl:pl-4 xl:pt-0">
-                        <a id="registration-export-pdf" href="{{ route('admin.pendaftaran.export.pdf', request()->only(['search', 'status'])) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
-                        <a id="registration-export-excel" href="{{ route('admin.pendaftaran.export.xlsx', request()->only(['search', 'status'])) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
+                <div class="flex justify-end">
+                    <div class="flex flex-wrap gap-2">
+                        <a id="registration-export-pdf" href="{{ route('admin.pendaftaran.export.pdf', request()->only(['search', 'status', 'tahun_ajaran'])) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"><i class="fas fa-file-pdf text-red-600"></i>PDF</a>
+                        <a id="registration-export-excel" href="{{ route('admin.pendaftaran.export.xlsx', request()->only(['search', 'status', 'tahun_ajaran'])) }}" class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-800 hover:bg-green-100"><i class="fas fa-file-excel"></i>Excel</a>
                     </div>
                 </div>
 
@@ -201,6 +191,12 @@
                                     <option value="{{ $statusOption }}" @selected($status === $statusOption)>{{ $statusOption }}</option>
                                 @endforeach
                             </select>
+                            <select id="registration-year" name="tahun_ajaran" aria-label="Filter tahun ajaran" class="rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-xs font-semibold text-gray-700 outline-none transition">
+                                <option value="">Semua Periode</option>
+                                @foreach ($periodeTahunAjaran as $periode)
+                                    <option value="{{ $periode }}" @selected($tahunAjaran === $periode)>{{ $periode }}</option>
+                                @endforeach
+                            </select>
                             <button type="submit" class="rounded-xl bg-blue-700 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-800">Cari</button>
                         </form>
                         <span id="registration-filter-status" class="sr-only" aria-live="polite"></span>
@@ -246,6 +242,7 @@
         const form = document.getElementById('registration-filter-form');
         const searchInput = document.getElementById('registration-search');
         const statusSelect = document.getElementById('registration-status');
+        const yearSelect = document.getElementById('registration-year');
         const results = document.getElementById('registration-results');
         const modals = document.getElementById('registration-modals');
         const filterStatus = document.getElementById('registration-filter-status');
@@ -259,7 +256,7 @@
         let activeRequest;
         let requestNumber = 0;
 
-        if (!form || !searchInput || !statusSelect || !results || !modals || !filterStatus) {
+        if (!form || !searchInput || !statusSelect || !yearSelect || !results || !modals || !filterStatus) {
             return;
         }
 
@@ -268,6 +265,7 @@
             const url = new URL(form.action);
             const searchTerm = searchInput.value.trim();
             const selectedStatus = statusSelect.value;
+            const selectedYear = yearSelect.value;
 
             url.search = '';
             if (searchTerm !== '') {
@@ -275,6 +273,9 @@
             }
             if (selectedStatus !== '') {
                 url.searchParams.set('status', selectedStatus);
+            }
+            if (selectedYear !== '') {
+                url.searchParams.set('tahun_ajaran', selectedYear);
             }
             exportLinks.forEach((link) => {
                 if (link) {
@@ -329,6 +330,11 @@
         });
 
         statusSelect.addEventListener('change', () => {
+            clearTimeout(debounceTimer);
+            updateResults();
+        });
+
+        yearSelect.addEventListener('change', () => {
             clearTimeout(debounceTimer);
             updateResults();
         });

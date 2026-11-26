@@ -19,7 +19,7 @@
 @empty
     <tr>
         <td colspan="7" class="px-5 py-12 text-center text-gray-500">
-            {{ $search ? 'Siswa tidak ditemukan. Coba kata pencarian lain.' : 'Belum ada data siswa PPDB.' }}
+            {{ $search || $tahunAjaran ? 'Siswa tidak ditemukan pada filter yang dipilih.' : 'Belum ada data siswa PPDB.' }}
         </td>
     </tr>
 @endforelse

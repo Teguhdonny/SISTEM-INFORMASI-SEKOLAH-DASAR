@@ -14,17 +14,18 @@ class ExcelWorkbook
     /**
      * @param  array<int, string>  $headers
      * @param  iterable<array<int, scalar|null>>  $rows
+     * @param  array<int, int>  $textColumns  Zero-based column indexes to format as text, with index 0 as column A.
      */
-    public function download(string $filename, array $headers, iterable $rows): StreamedResponse
+    public function download(string $filename, array $headers, iterable $rows, array $textColumns = [], bool $isTemplate = false): StreamedResponse
     {
-        return response()->streamDownload(function () use ($headers, $rows): void {
+        return response()->streamDownload(function () use ($headers, $rows, $textColumns, $isTemplate): void {
             $temporaryPath = tempnam(sys_get_temp_dir(), 'school-xlsx-');
             if ($temporaryPath === false) {
                 throw new InvalidArgumentException('File Excel sementara tidak dapat dibuat.');
             }
 
             try {
-                $this->writeWorkbook($temporaryPath, $headers, $rows);
+                $this->writeWorkbook($temporaryPath, $headers, $rows, $textColumns, $isTemplate);
                 readfile($temporaryPath);
             } finally {
                 @unlink($temporaryPath);
@@ -165,8 +166,9 @@ class ExcelWorkbook
     /**
      * @param  array<int, string>  $headers
      * @param  iterable<array<int, scalar|null>>  $rows
+     * @param  array<int, int>  $textColumns
      */
-    private function writeWorkbook(string $path, array $headers, iterable $rows): void
+    private function writeWorkbook(string $path, array $headers, iterable $rows, array $textColumns, bool $isTemplate): void
     {
         $archive = new ZipArchive;
         if ($archive->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
@@ -181,32 +183,96 @@ class ExcelWorkbook
         $archive->addFromString('_rels/.rels', $this->rootRelationshipsXml());
         $archive->addFromString('xl/workbook.xml', $this->workbookXml());
         $archive->addFromString('xl/_rels/workbook.xml.rels', $this->workbookRelationshipsXml());
-        $archive->addFromString('xl/worksheets/sheet1.xml', $this->worksheetXml($sheetRows));
+        $archive->addFromString('xl/worksheets/sheet1.xml', $this->worksheetXml($sheetRows, $textColumns, $isTemplate));
         $archive->addFromString('xl/styles.xml', $this->stylesXml());
         $archive->close();
     }
 
     /** @param array<int, array<int, string>> $rows */
-    private function worksheetXml(array $rows): string
+    private function worksheetXml(array $rows, array $textColumns, bool $isTemplate): string
     {
         $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-        $xml .= '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
-        $rowCount = max(count($rows), 501);
-        $columnCount = count($rows[0] ?? []);
-        for ($rowIndex = 0; $rowIndex < $rowCount; $rowIndex++) {
-            $cells = $rows[$rowIndex] ?? array_fill(0, $columnCount, '');
+        $xml .= '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
+        if ($isTemplate) {
+            $xml .= '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>';
+        }
+        if ($textColumns !== []) {
+            $xml .= '<cols>';
+            if ($isTemplate) {
+                $widths = [30, 24, 30, 34, 38];
+                for ($columnIndex = 0; $columnIndex < count($rows[0] ?? []); $columnIndex++) {
+                    $columnNumber = $columnIndex + 1;
+                    $style = in_array($columnIndex, $textColumns, true) ? ' style="1" customFormat="1"' : '';
+                    $width = $widths[$columnIndex] ?? 24;
+                    $xml .= '<col min="'.$columnNumber.'" max="'.$columnNumber.'" width="'.$width.'" customWidth="1"'.$style.'/>';
+                }
+            } else {
+                foreach ($textColumns as $columnIndex) {
+                    $columnNumber = $columnIndex + 1;
+                    $xml .= '<col min="'.$columnNumber.'" max="'.$columnNumber.'" style="1" customFormat="1"/>';
+                }
+            }
+            $xml .= '</cols>';
+        }
+        $xml .= '<sheetData>';
+        $lastRowIndex = max(count($rows) - 1, $textColumns === [] ? 0 : 500);
+        for ($rowIndex = 0; $rowIndex <= $lastRowIndex; $rowIndex++) {
+            $cells = $rows[$rowIndex] ?? [];
             $excelRow = $rowIndex + 1;
             $xml .= '<row r="'.$excelRow.'">';
             foreach ($cells as $columnIndex => $cellValue) {
                 $cellReference = $this->columnName($columnIndex + 1).$excelRow;
                 $escapedValue = htmlspecialchars($cellValue, ENT_XML1 | ENT_COMPAT, 'UTF-8');
-                $style = $rowIndex === 0 ? '' : ' s="1"';
+                $styleIndex = $isTemplate && $rowIndex === 0
+                    ? 2
+                    : (in_array($columnIndex, $textColumns, true) ? 1 : 0);
+                $style = $styleIndex === 0 ? '' : ' s="'.$styleIndex.'"';
                 $xml .= '<c r="'.$cellReference.'"'.$style.' t="inlineStr"><is><t xml:space="preserve">'.$escapedValue.'</t></is></c>';
+            }
+            if ($rowIndex > 0) {
+                foreach ($textColumns as $columnIndex) {
+                    if (! array_key_exists($columnIndex, $cells)) {
+                        $cellReference = $this->columnName($columnIndex + 1).$excelRow;
+                        $xml .= '<c r="'.$cellReference.'" s="1"/>';
+                    }
+                }
             }
             $xml .= '</row>';
         }
+        $xml .= '</sheetData>';
+        if ($isTemplate) {
+            $lastColumn = $this->columnName(count($rows[0] ?? []));
+            $xml .= '<autoFilter ref="A1:'.$lastColumn.'501"/>';
+            $textValidations = [];
+            foreach ($textColumns as $columnIndex) {
+                $header = strtoupper(trim($rows[0][$columnIndex] ?? ''));
+                $digitCount = match ($header) {
+                    'NIP' => 18,
+                    'NIK' => 16,
+                    'NISN' => 10,
+                    default => null,
+                };
+                if ($digitCount === null) {
+                    continue;
+                }
 
-        return $xml.'</sheetData></worksheet>';
+                $columnName = $this->columnName($columnIndex + 1);
+                $textValidations[] = '<dataValidation type="custom" allowBlank="1" showInputMessage="1" showErrorMessage="1" errorTitle="'.$header.' tidak valid" error="Isi '.$header.' sebagai teks tepat '.$digitCount.' digit." promptTitle="'.$header.'" prompt="Ketik atau tempel '.$digitCount.' digit. Jangan gunakan notasi ilmiah." sqref="'.$columnName.'2:'.$columnName.'501"><formula1>AND(ISTEXT('.$columnName.'2),LEN('.$columnName.'2)='.$digitCount.')</formula1></dataValidation>';
+            }
+            foreach ($rows[0] ?? [] as $columnIndex => $header) {
+                if (strtoupper(trim($header)) !== 'JENIS KELAMIN') {
+                    continue;
+                }
+
+                $columnName = $this->columnName($columnIndex + 1);
+                $textValidations[] = '<dataValidation type="list" allowBlank="1" showInputMessage="1" showErrorMessage="1" errorTitle="Jenis kelamin tidak valid" error="Pilih Laki-laki atau Perempuan." promptTitle="Jenis Kelamin" prompt="Pilih Laki-laki atau Perempuan dari daftar." sqref="'.$columnName.'2:'.$columnName.'501"><formula1>"Laki-laki,Perempuan"</formula1></dataValidation>';
+            }
+            if ($textValidations !== []) {
+                $xml .= '<dataValidations count="'.count($textValidations).'">'.implode('', $textValidations).'</dataValidations>';
+            }
+        }
+
+        return $xml.'</worksheet>';
     }
 
     /** @return array<int, string> */
@@ -340,5 +406,18 @@ class ExcelWorkbook
             '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'.
             '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'.
             '</Relationships>';
+    }
+
+    private function stylesXml(): string
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.
+            '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'.
+            '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><color rgb="FFFFFFFF"/><sz val="11"/><name val="Calibri"/></font></fonts>'.
+            '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1D4ED8"/><bgColor indexed="64"/></patternFill></fill></fills>'.
+            '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'.
+            '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'.
+            '<cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs>'.
+            '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'.
+            '</styleSheet>';
     }
 }

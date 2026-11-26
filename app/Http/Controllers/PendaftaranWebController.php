@@ -161,10 +161,28 @@ class PendaftaranWebController extends Controller
     {
         $search = $request->string('search')->trim()->toString();
         $status = $request->string('status')->toString();
+        $tahunAjaran = $request->string('tahun_ajaran')->trim()->toString();
+        $periodeTahunAjaran = SiswaPpdb::query()
+            ->where('dicatat_admin', true)
+            ->whereHas('daftarUlang')
+            ->whereNotNull('tahun_ajaran')
+            ->distinct()
+            ->orderByDesc('tahun_ajaran')
+            ->pluck('tahun_ajaran');
+        $tahunAjaranAktif = RegistrationPeriod::query()->value('tahun_ajaran');
+        if (filled($tahunAjaranAktif)) {
+            $periodeTahunAjaran->push($tahunAjaranAktif);
+        }
+        $periodeTahunAjaran = $periodeTahunAjaran->unique()->sortDesc()->values();
+        if (! $periodeTahunAjaran->contains($tahunAjaran)) {
+            $tahunAjaran = '';
+        }
+
         $pendaftars = SiswaPpdb::query()
             ->where('dicatat_admin', true)
             ->whereHas('daftarUlang')
             ->with('daftarUlang')
+            ->when($tahunAjaran !== '', fn ($query) => $query->where('tahun_ajaran', $tahunAjaran))
             ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($query) use ($search): void {
                     $query->where('nama_siswa', 'like', "%{$search}%")
@@ -201,7 +219,7 @@ class PendaftaranWebController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'rows' => view('pages.admin.data-ppdb.rows', compact('pendaftars', 'search', 'status'))->render(),
+                'rows' => view('pages.admin.data-ppdb.rows', compact('pendaftars', 'search', 'status', 'tahunAjaran'))->render(),
                 'modals' => view('pages.admin.data-ppdb.modals', compact('pendaftars'))->render(),
                 'total' => $totalPendaftar,
                 'waiting' => $menungguVerifikasi,
@@ -212,7 +230,7 @@ class PendaftaranWebController extends Controller
         }
 
         return view('pages.admin.data-ppdb.index', compact(
-            'pendaftars', 'totalPendaftar', 'menungguVerifikasi', 'diterima', 'perluPerbaikan', 'ditolak', 'search', 'status'
+            'pendaftars', 'totalPendaftar', 'menungguVerifikasi', 'diterima', 'perluPerbaikan', 'ditolak', 'search', 'status', 'tahunAjaran', 'periodeTahunAjaran'
         ));
     }
 
