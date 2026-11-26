@@ -43,6 +43,35 @@
         </div>
     </div>
 
+    <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-gray-100 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
+            <div>
+                <p class="text-xs font-extrabold uppercase tracking-wider text-blue-700">Lokasi Sekolah</p>
+                <h2 class="mt-1 text-xl font-extrabold text-blue-950">Temukan Kami di Google Maps</h2>
+                <p class="mt-1 text-sm text-gray-500">Lihat lokasi dan dapatkan petunjuk arah menuju sekolah.</p>
+            </div>
+            <a href="{{ $googleMapsDirectionsUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-700">
+                <i class="fas fa-route"></i>
+                Buka Petunjuk Arah
+            </a>
+        </div>
+        @if ($googleMapsEmbedUrl)
+            <iframe
+                src="{{ $googleMapsEmbedUrl }}"
+                title="Lokasi {{ $profilSekolah?->nama_sekolah ?? 'sekolah' }} di Google Maps"
+                class="h-80 w-full border-0 md:h-96"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen>
+            </iframe>
+        @else
+            <div class="flex min-h-80 flex-col items-center justify-center gap-3 bg-gray-50 px-6 py-10 text-center md:min-h-96">
+                <i class="fas fa-map-location-dot text-4xl text-blue-700"></i>
+                <p class="max-w-md text-sm text-gray-600">Peta interaktif belum dikonfigurasi. Gunakan tombol petunjuk arah untuk membuka lokasi sekolah.</p>
+            </div>
+        @endif
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">

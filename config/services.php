@@ -41,4 +41,24 @@ return [
         'enabled' => env('FONNTE_ENABLED', true),
     ],
 
+    'google_maps' => [
+        'key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
+
+    'openai' => [
+        'key' => env('OPENAI_API_KEY'),
+        'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+        'url' => env('OPENAI_API_URL', 'https://api.openai.com/v1/responses'),
+    ],
+
+    'ai' => [
+        'provider' => env('AI_PROVIDER', 'openai'),
+    ],
+
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+        'url' => env('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1beta/models'),
+    ],
+
 ];

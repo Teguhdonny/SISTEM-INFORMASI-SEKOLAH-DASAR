@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\JadwalPelajaranController;
 use App\Http\Controllers\PendaftaranPindahanWebController;
 use App\Http\Controllers\PendaftaranWebController;
+use App\Http\Controllers\SchoolChatbotController;
 use App\Models\Berita;
 use App\Models\Ekstrakurikuler;
 use App\Models\Guru;
@@ -47,6 +48,16 @@ Route::get('/', function () {
 
 Route::get('/profil', function () {
     $profilSekolah = ProfilSekolah::query()->first();
+    $namaSekolah = $profilSekolah?->nama_sekolah ?? 'SDN Pojok 2 Kota Kediri';
+    $alamatSekolah = $profilSekolah?->alamat ?? 'Jalan Mastrip Nomor 59, Kota Kediri, 64115, Jawa Timur';
+    $lokasiSekolah = $namaSekolah.', '.$alamatSekolah;
+    $googleMapsEmbedUrl = config('services.google_maps.key')
+        ? 'https://www.google.com/maps/embed/v1/place?'.http_build_query([
+            'key' => config('services.google_maps.key'),
+            'q' => $lokasiSekolah,
+        ])
+        : null;
+    $googleMapsDirectionsUrl = 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($lokasiSekolah);
     $jumlahGuru = Guru::query()->count();
     $jumlahSiswa = SiswaPpdb::query()->where('dicatat_admin', true)->count();
     $visi = VisiMisi::query()->where('kategori', 'Visi')->value('deskripsi')
@@ -62,8 +73,20 @@ Route::get('/profil', function () {
         ]);
     }
 
-    return view('pages.public.profil', compact('profilSekolah', 'visi', 'misi', 'jumlahGuru', 'jumlahSiswa'));
+    return view('pages.public.profil', compact(
+        'profilSekolah',
+        'visi',
+        'misi',
+        'jumlahGuru',
+        'jumlahSiswa',
+        'googleMapsEmbedUrl',
+        'googleMapsDirectionsUrl',
+    ));
 })->name('profil.public.index');
+
+Route::post('/chatbot/message', SchoolChatbotController::class)
+    ->middleware('throttle:10,1')
+    ->name('chatbot.message');
 
 Route::get('/visi-misi', function () {
     $profilSekolah = ProfilSekolah::query()->first();

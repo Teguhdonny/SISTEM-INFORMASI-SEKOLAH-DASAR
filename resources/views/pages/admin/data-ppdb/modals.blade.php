@@ -41,9 +41,11 @@
                         <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 text-center">
                             <p class="mb-2 text-xs font-semibold text-gray-700">Akta Kelahiran</p>
                             @if ($aktaUrl)
-                                <button type="button" @click="previewUrl = @js($aktaUrl); previewTitle = 'Akta Kelahiran'; previewType = @js($aktaType)" class="inline-block rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-bold text-blue-600 shadow-sm transition hover:bg-blue-100">
-                                    <i class="fas fa-eye mr-1 text-blue-500"></i> Lihat Akta
-                                </button>
+                                <div class="flex flex-wrap justify-center gap-2">
+                                    <button type="button" @click="previewUrl = @js($aktaUrl); previewTitle = 'Akta Kelahiran'; previewType = @js($aktaType)" class="rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-bold text-blue-600 shadow-sm transition hover:bg-blue-100">
+                                        <i class="fas fa-eye mr-1 text-blue-500"></i> Lihat Akta
+                                    </button>
+                                </div>
                             @else
                                 <span class="text-xs italic text-rose-500">Tidak ada file</span>
                             @endif
@@ -51,9 +53,11 @@
                         <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 text-center">
                             <p class="mb-2 text-xs font-semibold text-gray-700">Kartu Keluarga (KK)</p>
                             @if ($kkUrl)
-                                <button type="button" @click="previewUrl = @js($kkUrl); previewTitle = 'Kartu Keluarga (KK)'; previewType = @js($kkType)" class="inline-block rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-bold text-blue-600 shadow-sm transition hover:bg-blue-100">
-                                    <i class="fas fa-eye mr-1 text-blue-500"></i> Lihat KK
-                                </button>
+                                <div class="flex flex-wrap justify-center gap-2">
+                                    <button type="button" @click="previewUrl = @js($kkUrl); previewTitle = 'Kartu Keluarga (KK)'; previewType = @js($kkType)" class="rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-bold text-blue-600 shadow-sm transition hover:bg-blue-100">
+                                        <i class="fas fa-eye mr-1 text-blue-500"></i> Lihat KK
+                                    </button>
+                                </div>
                             @else
                                 <span class="text-xs italic text-rose-500">Tidak ada file</span>
                             @endif
